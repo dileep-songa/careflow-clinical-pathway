@@ -1,43 +1,55 @@
 # CareFlow: Clinical Pathway Process Mining
-# Python Package Dependencies
 
-# Data Processing & Analysis
-pandas==2.1.1
-numpy==1.24.3
-pyarrow==13.0.0
+## Project Overview
+This project analyzes hospital patient event logs to identify bottlenecks, inefficiencies, and opportunities to improve clinical operations.
 
-# Process Mining
-pm4py==2.7.11.19
+## Objective
+- Collect and clean hospital event logs
+- Perform process mining to discover patient journey flows
+- Identify bottlenecks and waiting time issues
+- Create dashboards and visualizations
+- Generate actionable insights for hospital administrators
 
-# Visualization & Dashboard
-matplotlib==3.8.0
-seaborn==0.13.0
-plotly==5.17.0
+## Key Technologies
+- **Data Processing:** Python, Pandas, SQL
+- **Process Mining:** PM4Py
+- **Data Warehouse:** Google BigQuery
+- **Visualization:** PowerBI, Looker, Matplotlib
+- **Version Control:** Git & GitHub
 
-# Jupyter Notebook
-jupyter==1.0.0
-ipython==8.16.0
+## Project Structure
+```text
+careflow-clinical-pathway/
+├── data/
+│   ├── raw/
+│   └── cleaned/
+├── notebooks/
+├── src/
+├── reports/
+├── README.md
+├── .gitignore
+├── requirements.txt
+├── PROJECT_UNDERSTANDING.md
+├── DATA_SCHEMA.md
+├── DAILY_LOG.md
+└── DEVELOPMENT_PLAN.md
+```
 
-# Database & Data Warehouse
-sqlalchemy==2.0.21
-google-cloud-bigquery==3.13.0
+## Timeline
+- Week 1: EHR data setup and exploration
+- Week 2: Data cleaning and normalization
+- Week 3: Process mining and bottleneck analysis
+- Week 4: Dashboard and final report
 
-# Data Transformation
-python-dateutil==2.8.2
-pytz==2023.3
+## Getting Started
+```bash
+git clone https://github.com/YOUR-USERNAME/careflow-clinical-pathway.git
+cd careflow-clinical-pathway
+python -m venv venv
+source venv/bin/activate  # Mac/Linux
+# or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+```
 
-# Environment & Configuration
-python-dotenv==1.0.0
-
-# Testing & Quality
-pytest==7.4.2
-pytest-cov==4.1.0
-
-# Code Quality
-black==23.10.0
-flake8==6.1.0
-pylint==3.0.0
-
-# Utilities
-click==8.1.7
-tqdm==4.66.1
+## Status
+🟢 Project initialized

@@ -1,265 +1,242 @@
-# CareFlow Project Understanding - Day 1 Analysis
+# CareFlow Data Schema Documentation
 
-## Project Context
-**Project Name:** CareFlow: Clinical Pathway Process Mining  
-**Domain:** Healthcare Operations & Process Analytics  
-**Company:** Infotact Solutions  
-**Internship Type:** Data Analytics & Process Mining  
-**Timeline:** 4 weeks
+## Overview
+This document defines the structure of hospital event logs that we'll collect, clean, and analyze for process mining.
 
 ---
 
-## Business Problem
+## Event Log Table Schema
 
-### The Challenge
-Hospital administrators struggle to understand why Emergency Room (ER) wait times are inconsistently high. The raw data from Electronic Health Records (EHRs) shows timestamps but does not reveal:
-- Why certain patient pathways take longer than others
-- Where bottlenecks occur in the clinical workflow
-- Hidden patterns in patient journeys (e.g., 40% of patients are sent back to triage)
-- Operational inefficiencies that impact patient care
+### Table Name: `hospital_events` (Raw Data)
 
-### Current Situation
-- Standard dashboards show "Average ER wait time: 3 hours"
-- But they don't answer: What causes the variation? Which departments are slow? When does delay happen?
-- Process mining can uncover the actual patient flow and reveal root causes
-
----
-
-## What is Process Mining?
-
-Process Mining is a data analysis technique that:
-1. **Extracts** event sequences from logs (e.g., patient admitted → triage → doctor → treatment → discharge)
-2. **Discovers** the actual process flow (not the intended one)
-3. **Detects** deviations, loops, and bottlenecks
-4. **Measures** time, resources, and compliance
-
-**Example:** Instead of just knowing "average wait time = 45 mins", process mining reveals:
-- Path A (70% of patients): 30 mins
-- Path B (20% of patients): 90 mins (includes re-triage)
-- Path C (10% of patients): 2 hours (includes radiology, then re-evaluation)
-
-This enables targeted solutions.
-
----
-
-## Hospital Workflow - Key Events
-
-Based on the project requirements, the hospital patient journey includes these events:
-
-| Event | Description | Key Data |
-|-------|-------------|----------|
-| **Admission** | Patient enters hospital | timestamp, patient_id, admission_type, priority |
-| **Triage** | Initial assessment (vital signs, complaints) | timestamp, severity_level, department_assigned |
-| **Doctor Consultation** | Clinical evaluation | timestamp, doctor_id, findings, treatment_plan |
-| **Treatment** | Medical intervention provided | timestamp, treatment_type, duration, department |
-| **Lab/Imaging** | Diagnostic tests (optional path) | timestamp, test_type, result, time_to_result |
-| **Discharge** | Patient leaves hospital | timestamp, outcome, follow_up_plan |
-
-### Optional Paths (Variations)
-- **Re-triage:** Patient reassigned after initial assessment (causes delays)
-- **Waiting:** Time between events
-- **Specialist Consultation:** Routed to cardiology, orthopedics, etc.
-
----
-
-## Data We'll Work With
-
-### Event Log Structure
-Our data will be in this format (Event Log):
-
-```
-patient_id  | case_id | event_type      | department  | timestamp           | duration_mins | doctor_id
------------ | ------- | --------------- | ----------- | ------------------- | ------------- | ---------
-P001        | C001    | admission       | ER          | 2024-10-01 08:15:00 | 5             | NULL
-P001        | C001    | triage          | ER          | 2024-10-01 08:20:00 | 15            | NURSE_01
-P001        | C001    | doctor_consult  | ER          | 2024-10-01 08:35:00 | 20            | DOC_002
-P001        | C001    | treatment       | ER          | 2024-10-01 08:55:00 | 30            | DOC_002
-P001        | C001    | discharge       | ER          | 2024-10-01 09:25:00 | 5             | DOC_002
+```sql
+CREATE TABLE hospital_events (
+    event_id STRING,              -- Unique identifier for each event
+    patient_id STRING,            -- De-identified patient ID
+    case_id STRING,               -- Unique hospital visit ID
+    event_type STRING,            -- Type of event (admission, triage, consultation, etc.)
+    event_timestamp TIMESTAMP,    -- When the event occurred
+    department STRING,            -- Department/location (ER, ICU, Surgery, etc.)
+    resource STRING,              -- Person involved (doctor, nurse ID)
+    duration_minutes INT64,       -- How long the event took
+    patient_age INT64,            -- Patient age category
+    severity_level STRING,        -- Triage level (critical, urgent, moderate, minor)
+    diagnosis_code STRING,        -- ICD-10 code (if available)
+    notes STRING,                 -- Event-specific notes
+    created_timestamp TIMESTAMP   -- When this record was created
+);
 ```
 
-Key insights from this log:
-- **Patient P001's journey:** 70 minutes total (admission to discharge)
-- **Wait times:** Between events
-- **Department movement:** All events in ER (no specialist visit)
-- **Staffing involved:** NURSE_01, DOC_002
+### Field Descriptions
+
+| Field | Type | Description | Example |
+|-------|------|-------------|----------|
+| `event_id` | STRING | Unique event identifier | EVT_20241001_000123 |
+| `patient_id` | STRING | De-identified patient | P_12345 |
+| `case_id` | STRING | Hospital visit/admission | CASE_20241001_001 |
+| `event_type` | STRING | Event category | admission, triage, doctor_consultation |
+| `event_timestamp` | TIMESTAMP | Date & time event occurred | 2024-10-01 08:15:30 |
+| `department` | STRING | Hospital location | Emergency Room, ICU, Radiology |
+| `resource` | STRING | Staff member involved | DOC_001, NURSE_05 |
+| `duration_minutes` | INT64 | Event duration | 25 |
+| `patient_age` | INT64 | Age of patient | 45 |
+| `severity_level` | STRING | Triage acuity | Critical, Urgent, Moderate, Minor |
+| `diagnosis_code` | STRING | Medical diagnosis code | J44.9 (COPD) |
+| `notes` | STRING | Additional context | "Patient had chest pain" |
+| `created_timestamp` | TIMESTAMP | Record creation time | 2024-10-01 10:30:00 |
 
 ---
 
-## Week-by-Week Breakdown (From Project Doc)
+## Event Types (Standardized)
 
-### Week 1: EHR Data Simulation & Setup
-**Left Side (Event Log Engineering):**
-- Create Python script to generate mock hospital event logs
-- Simulate realistic patient pathways with variations
-- Include operational inefficiencies (long waits, re-triages, loops)
+We will standardize all event names to these types:
 
-**Right Side (Warehouse Setup):**
-- Load raw event data into BigQuery
-- Configure data warehouse schema
-- Set up tables for efficient querying
-
-### Week 2: Data Normalization & Process Discovery
-**Left Side:**
-- Standardize event names (e.g., "DR_VISIT" → "doctor_consultation")
-- Convert timestamps to standard format
-- Validate data integrity
-
-**Right Side:**
-- Use PM4Py to discover process flow
-- Generate "As-Is" process map (actual workflow)
-- Identify primary paths and deviations
-
-### Week 3: Bottleneck Analysis & Dashboarding
-**Left Side:**
-- Calculate wait times between departments
-- Identify where patients spend most time
-- Compute average cycle time from admission to discharge
-
-**Right Side:**
-- Connect cleaned data to PowerBI/Looker
-- Create interactive dashboard
-- Add KPI cards and filtering capabilities
-
-### Week 4: Conformance & Final Report
-**Left Side:**
-- Compare actual process vs. hospital's "ideal" process
-- Identify non-compliant pathways
-- Flag bottleneck-causing variations
-
-**Right Side:**
-- Refine dashboard polish and drill-down features
-- Prepare presentation for hospital administrators
-- Document recommendations for improvement
+```python
+EVENT_TYPES = {
+    'admission': 'Patient enters hospital',
+    'triage': 'Initial nursing assessment',
+    'doctor_consultation': 'Doctor evaluation',
+    'lab_test': 'Laboratory test ordered/completed',
+    'imaging': 'Radiology/imaging test',
+    'treatment': 'Medical treatment provided',
+    'medication': 'Drug administered',
+    'specialist_referral': 'Sent to specialist',
+    'discharge': 'Patient leaves hospital',
+    're_triage': 'Patient reassessed (re-routing)',
+    'waiting': 'Idle time between events',
+    'admission_hold': 'Waiting for bed/admission'
+}
+```
 
 ---
 
-## Key Deliverables (From Project Doc)
+## Departments (Standard Mapping)
 
-1. **Source Code**
-   - Data cleaning scripts (Python/SQL)
-   - Process mining engine (PM4Py)
-   - Visualization generation code
-
-2. **Project Documentation**
-   - Data schema documentation
-   - Process mining methodology
-   - Business findings report
-
-3. **Project Report**
-   - Executive summary (1 page)
-   - Findings (2-3 pages)
-   - Recommendations (1 page)
-   - Supporting charts and diagrams
-
-4. **Presentation (PPT)**
-   - Problem statement
-   - Current workflow visualization
-   - Bottleneck analysis
-   - Recommended solutions
-
-5. **Model Evaluation Results**
-   - Process discovery accuracy
-   - Conformance checking results
-   - KPI baseline vs. expected
-
-6. **Project Demonstration**
-   - Live walkthrough of dashboard
-   - Process mining outputs
-   - Q&A session
+```python
+DEPARTMENT_MAPPING = {
+    'ER': 'Emergency Room',
+    'ICU': 'Intensive Care Unit',
+    'WARD_A': 'General Ward A',
+    'WARD_B': 'General Ward B',
+    'RADIOLOGY': 'Radiology Department',
+    'LAB': 'Laboratory',
+    'SURGERY': 'Operating Theatre',
+    'CARDIO': 'Cardiology',
+    'NEURO': 'Neurology',
+    'ORTHO': 'Orthopedics',
+    'PHARMACY': 'Pharmacy',
+}
+```
 
 ---
 
-## Technology Stack
+## Severity Levels (Triage Classification)
 
-| Component | Technology | Purpose |
-|-----------|-----------|----------|
-| **Data Processing** | Python, Pandas, SQL | Clean, transform event logs |
-| **Process Mining** | PM4Py (Python library) | Discover process flows |
-| **Data Storage** | Google BigQuery | Cloud warehouse for EHR data |
-| **Data Transformation** | DBT (optional) | Transform raw data following ELT pattern |
-| **Visualization** | PowerBI or Looker | Create interactive dashboards |
-| **Version Control** | Git & GitHub | Track code changes |
-
----
-
-## Key Questions We'll Answer
-
-### Week 1
-- What is the raw hospital event log structure?
-- How many patients flow through ER daily?
-- What are the main patient pathways?
-
-### Week 2
-- What is the standardized process flow (As-Is)?
-- Which paths do most patients follow?
-- Are there unexpected loops or re-routing?
-
-### Week 3
-- Where do patients spend the most time?
-- Which transitions are slowest?
-- What is the average end-to-end time?
-
-### Week 4
-- Are patients following the intended clinical pathway?
-- Where do deviations occur?
-- What changes would reduce wait times most effectively?
+| Level | Code | Description | Expected Action Time |
+|-------|------|-------------|----------------------|
+| Critical | 1 | Life-threatening, immediate intervention needed | 0-10 mins |
+| Urgent | 2 | Serious, needs prompt evaluation | 10-30 mins |
+| Moderate | 3 | Stable but needs medical attention | 30-90 mins |
+| Minor | 4 | Non-urgent, can wait longer | 90+ mins |
+| Non-urgent | 5 | Walk-in, self-limiting condition | No time constraint |
 
 ---
 
-## Success Criteria
+## Cleaned/Processed Table Schema
 
-✅ **Data Quality**
-- 100% of timestamps are valid and in sequence
-- Patient IDs are consistent throughout journey
-- No duplicate events for same patient at same time
+### Table Name: `hospital_events_cleaned`
 
-✅ **Process Mining**
-- Discover at least 3 distinct patient pathways
-- Identify at least 2 bottlenecks
-- Calculate average wait time by department
+After data cleaning, we'll have a standardized table:
 
-✅ **Visualization**
-- Dashboard shows process flow with wait times
-- KPIs are accurate and actionable
-- Administrators can filter by date, department, severity
-
-✅ **Business Value**
-- Provide at least 2 specific recommendations
-- Show potential impact (e.g., "Adding 1 nurse could reduce wait time by 15%")
-- Present findings in non-technical language
-
----
-
-## Next Steps (Day 2-3)
-
-1. **Set up development environment**
-   - Install Python libraries (pandas, pm4py, matplotlib)
-   - Set up Jupyter notebook
-   - Connect to BigQuery (if using real data)
-
-2. **Create mock data generator**
-   - Write Python script to generate sample hospital events
-   - Create 100-200 realistic patient journeys
-   - Save to CSV for initial analysis
-
-3. **Inspect data**
-   - Load data into pandas DataFrame
-   - Explore structure and statistics
-   - Identify data quality issues
+```sql
+CREATE TABLE hospital_events_cleaned (
+    event_sequence INT64,        -- Sequential order in patient journey
+    case_id STRING,              -- Unique visit ID (primary key for process mining)
+    event_type STRING,           -- Standardized event type
+    event_timestamp TIMESTAMP,   -- Standardized datetime
+    department STRING,           -- Mapped department name
+    resource STRING,             -- Standardized resource ID
+    duration_minutes INT64,      -- Cleaned duration
+    severity_level STRING,       -- Normalized severity
+    patient_demographic STRING,  -- Age group (0-18, 19-40, 41-65, 65+)
+    time_since_admission INT64,  -- Minutes elapsed since admission
+    time_to_next_event INT64,    -- Wait time until next event
+    day_of_week STRING,          -- day name for trend analysis
+    hour_of_day INT64,           -- Hour of day (0-23)
+    PRIMARY KEY (case_id, event_sequence)
+);
+```
 
 ---
 
-## Personal Reflection
+## KPI Calculation Fields
 
-As an intern on this project, my role is to:
-- **Learn** process mining concepts and healthcare analytics
-- **Apply** these skills to solve real operational problems
-- **Deliver** actionable insights that hospital administrators can use
-- **Document** my work professionally for the team
+Derived metrics we'll calculate:
 
-This is not just about writing code—it's about understanding the business problem, asking the right questions, and turning data into decisions.
+| KPI | Formula | Business Meaning |
+|-----|---------|------------------|
+| **Total Cycle Time** | discharge_time - admission_time | How long patient spent in hospital |
+| **Triage-to-Doctor Time** | doctor_consult_time - triage_time | Speed of initial evaluation |
+| **Wait Time (Department)** | next_event_time - event_end_time | Idle time between events |
+| **Throughput (Department)** | # patients / 24 hours | How many patients processed daily |
+| **Re-triage Rate** | (# re-triages / # admissions) × 100 | % of patients reassessed |
+| **Specialist Routing %** | (# specialist visits / # admissions) × 100 | % requiring specialist |
+| **Average Wait by Severity** | AVG(wait_time) GROUP BY severity | How urgency affects wait |
 
 ---
 
-*Document created: Day 1 of internship*  
-*Reviewed: Project brief, healthcare workflow, process mining concepts*
+## Data Quality Rules
+
+Validations we'll apply:
+
+```python
+DATA_QUALITY_CHECKS = {
+    'no_null_keys': 'patient_id, case_id, event_timestamp must not be null',
+    'timestamp_order': 'Events must be in chronological order per case',
+    'valid_event_type': 'event_type must be in ALLOWED_EVENT_TYPES',
+    'valid_department': 'department must be in ALLOWED_DEPARTMENTS',
+    'valid_severity': 'severity_level must be in [1, 2, 3, 4, 5]',
+    'positive_duration': 'duration_minutes must be > 0',
+    'no_duplicates': 'No duplicate (patient_id, event_type, timestamp) combinations',
+    'reasonable_age': 'patient_age must be between 0 and 120',
+    'no_future_dates': 'event_timestamp cannot be in the future'
+}
+```
+
+---
+
+## Example Event Log (Raw)
+
+```
+event_id,patient_id,case_id,event_type,event_timestamp,department,resource,duration_minutes,patient_age,severity_level
+EVT_001,P_ABC123,CASE_001,admission,2024-10-01 08:00:00,ER,ADMIN_01,5,42,2
+EVT_002,P_ABC123,CASE_001,triage,2024-10-01 08:05:30,ER,NURSE_03,15,42,2
+EVT_003,P_ABC123,CASE_001,doctor_consultation,2024-10-01 08:20:45,ER,DOC_002,25,42,2
+EVT_004,P_ABC123,CASE_001,lab_test,2024-10-01 08:46:00,LAB,TECH_01,30,42,2
+EVT_005,P_ABC123,CASE_001,imaging,2024-10-01 09:16:15,RADIOLOGY,TECH_02,20,42,2
+EVT_006,P_ABC123,CASE_001,doctor_consultation,2024-10-01 09:37:00,ER,DOC_002,15,42,2
+EVT_007,P_ABC123,CASE_001,treatment,2024-10-01 09:52:30,ER,NURSE_03,45,42,2
+EVT_008,P_ABC123,CASE_001,discharge,2024-10-01 10:38:00,ER,DOC_002,5,42,2
+```
+
+### Analysis of this journey:
+- **Total time:** 2 hours 38 minutes
+- **Path:** Admission → Triage → Doctor → Lab → Imaging → Doctor again → Treatment → Discharge
+- **Wait times:**
+  - Triage to Doctor: 15 mins
+  - Doctor to Lab: 25 mins
+  - Lab to Imaging: 46 mins (longest wait)
+  - Imaging to Doctor: 21 mins
+  - Doctor to Treatment: 15 mins
+- **Key insight:** 46-minute wait between lab and imaging is a potential bottleneck
+
+---
+
+## Cleaned Example
+
+```
+event_sequence,case_id,event_type,event_timestamp,department,duration_minutes,severity_level,time_since_admission,time_to_next_event
+1,CASE_001,admission,2024-10-01 08:00:00,ER,5,Urgent,0,5
+2,CASE_001,triage,2024-10-01 08:05:30,ER,15,Urgent,5,15
+3,CASE_001,doctor_consultation,2024-10-01 08:20:45,ER,25,Urgent,20,25
+4,CASE_001,lab_test,2024-10-01 08:46:00,LAB,30,Urgent,46,30
+5,CASE_001,imaging,2024-10-01 09:16:15,RADIOLOGY,20,Urgent,76,21
+6,CASE_001,doctor_consultation,2024-10-01 09:37:00,ER,15,Urgent,97,15
+7,CASE_001,treatment,2024-10-01 09:52:30,ER,45,Urgent,112,45
+8,CASE_001,discharge,2024-10-01 10:38:00,ER,5,Urgent,158,0
+```
+
+---
+
+## Data Flow Pipeline
+
+```
+Raw EHR Data (XML/CSV)
+        ↓
+   Load to BigQuery (hospital_events)
+        ↓
+  Data Cleaning & Validation
+        ↓
+   Standardization (hospital_events_cleaned)
+        ↓
+   Process Mining Analysis (PM4Py)
+        ↓
+  Dashboard Visualization (PowerBI)
+        ↓
+   Business Insights & Recommendations
+```
+
+---
+
+## Next Steps (Day 2)
+
+1. Create Python script to validate schema compliance
+2. Generate mock data following this schema
+3. Load sample data into local database or BigQuery
+4. Test data quality checks
+5. Generate exploratory data analysis report
+
+---
+
+*Data Schema v1.0 - Day 1*
+*Subject to updates as project requirements clarify*

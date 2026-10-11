@@ -1,55 +1,69 @@
-# CareFlow: Clinical Pathway Process Mining
+# CareFlow Development Plan
 
-## Project Overview
-This project analyzes hospital patient event logs to identify bottlenecks, inefficiencies, and opportunities to improve clinical operations.
+## Week 1: Data Setup & Exploration
 
-## Objective
-- Collect and clean hospital event logs
-- Perform process mining to discover patient journey flows
-- Identify bottlenecks and waiting time issues
-- Create dashboards and visualizations
-- Generate actionable insights for hospital administrators
+### Day 1: Project Understanding
+- [x] Read project requirements thoroughly
+- [x] Understand hospital workflow and patient journey
+- [x] Identify key event types (admission, triage, treatment, discharge)
+- [x] Document data schema
 
-## Key Technologies
-- **Data Processing:** Python, Pandas, SQL
-- **Process Mining:** PM4Py
-- **Data Warehouse:** Google BigQuery
-- **Visualization:** PowerBI, Looker, Matplotlib
-- **Version Control:** Git & GitHub
+### Day 2: Environment Setup
+- [ ] Install Python libraries
+- [ ] Create synthetic hospital event logs
+- [ ] Validate data structure
+- [ ] Begin EDA
 
-## Project Structure
-```text
-careflow-clinical-pathway/
-├── data/
-│   ├── raw/
-│   └── cleaned/
-├── notebooks/
-├── src/
-├── reports/
-├── README.md
-├── .gitignore
-├── requirements.txt
-├── PROJECT_UNDERSTANDING.md
-├── DATA_SCHEMA.md
-├── DAILY_LOG.md
-└── DEVELOPMENT_PLAN.md
-```
+### Day 3: Data Quality Review
+- [ ] Check missing values and outliers
+- [ ] Confirm timestamp parsing
+- [ ] Validate event order by case ID
+- [ ] Prepare cleaned dataset
 
-## Timeline
-- Week 1: EHR data setup and exploration
-- Week 2: Data cleaning and normalization
-- Week 3: Process mining and bottleneck analysis
-- Week 4: Dashboard and final report
+### Day 4: Initial Analysis
+- [ ] Compute summary statistics
+- [ ] Explore department distribution
+- [ ] Identify early bottlenecks
+- [ ] Record observations
 
-## Getting Started
-```bash
-git clone https://github.com/YOUR-USERNAME/careflow-clinical-pathway.git
-cd careflow-clinical-pathway
-python -m venv venv
-source venv/bin/activate  # Mac/Linux
-# or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-```
+### Day 5: Reporting
+- [ ] Summarize findings
+- [ ] Update project log
+- [ ] Prepare next-day plan
 
-## Status
-🟢 Project initialized
+---
+
+## Week 2: Data Cleaning & Normalization
+
+### Objectives
+- Standardize event names
+- Remove invalid records
+- Create cleaned event log table
+- Prepare for PM4Py process discovery
+
+---
+
+## Week 3: Process Mining & Analysis
+
+### Objectives
+- Discover process flow
+- Detect bottlenecks
+- Calculate wait times and cycle times
+- Build business insights
+
+---
+
+## Week 4: Dashboard & Final Submission
+
+### Objectives
+- Build final dashboard
+- Prepare presentation
+- Write final report
+- Final demo
+
+---
+
+## Daily Commit Guidance
+- Commit after each meaningful task
+- Use format: `feat: ...`, `data: ...`, `analysis: ...`, `docs: ...`
+- Push updates to GitHub daily
