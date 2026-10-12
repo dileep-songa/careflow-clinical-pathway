@@ -170,21 +170,89 @@ Time Benchmarks: Expected times for key transitions
 
 ---
 
-## Day 2 (Upcoming)
+## Day 2 - Simulated Hospital Dataset Generation & Validation
+**Date:** October 11, 2026
+**Status:** ✅ Complete
 
-### Goals for Day 2
-- [ ] Install and verify Python libraries (pandas, pm4py, matplotlib)
-- [ ] Create synthetic hospital event data generator
-- [ ] Write data validation script
-- [ ] Generate exploratory data analysis
-- [ ] Document findings in Day 2 log
+### Objectives for Day 2
+- [x] Implement synthetic clinical pathway event log generator in `src/data_generator.py`
+- [x] Model realistic operational inefficiencies, wait times, and re-triage loop-backs
+- [x] Enforce data quality and schema compliance (500 cases, 3,140 events)
+- [x] Create comprehensive automated test suite in `tests/test_data_generator.py`
 
-### Expected Deliverables
-- `src/data_generator.py` - Mock data creation
-- `notebooks/01_data_exploration.ipynb` - Initial analysis
-- `data/sample_events.csv` - 500-1000 sample events
-- Update to DAILY_LOG.md
+### What Was Done
+- Built probabilistic clinical pathway simulator generating 6 pathways:
+  - Standard Routine (40%, 200 cases)
+  - Diagnostic Lab (22%, 110 cases)
+  - Diagnostic X-Ray (16%, 80 cases)
+  - Comprehensive Lab + X-Ray (10%, 50 cases)
+  - Re-Triage Routine (7%, 35 cases)
+  - Re-Triage Diagnostic Lab (5%, 25 cases)
+- Simulated 60 re-triage loops (12% of cohort) with average reassessment delay of 65.6 minutes.
+- Verified deterministic reproducibility using random seed 42.
+- 11 unit tests created and passing.
 
 ---
 
-*Last Updated: Day 1 Evening*
+## Day 3 - BigQuery Ingestion Foundation & Offline Schema Validation
+**Date:** October 12, 2026
+**Status:** ✅ Complete
+
+### Objectives for Day 3
+- [x] Build BigQuery raw ingestion module with offline validation (`src/bq_loader.py`)
+- [x] Author BigQuery DDL schema specification (`sql/schema_hospital_events_raw.sql`)
+- [x] Create environment configuration template (`.env.example`)
+- [x] Build automated test suite covering schema, offline mode, and mocked live loads (`tests/test_bq_loader.py`)
+- [x] Run regression checks against existing data generator tests
+
+### What Was Done
+
+#### 1. Ingestion Module (`src/bq_loader.py`)
+- Implemented pure offline validation (`validate_csv_for_bigquery`) using Python standard library (zero network calls, zero credentials needed).
+- Defined BigQuery schema matching generator contract (`Case_ID`, `Activity_Name`, `Timestamp`, `Department`, `Resource`, `Data_Type`).
+- Implemented `load_to_bigquery` supporting official Google Cloud BigQuery client with:
+  - Pre-load offline validation check (aborts before calling cloud if invalid).
+  - Explicit configuration requirement for project, dataset, table.
+  - Safe default `write_disposition = 'WRITE_EMPTY'` to prevent silent data overwrite.
+  - Safe credential and error handling without printing secrets.
+- Implemented CLI supporting `--mode offline` and `--mode live`.
+
+#### 2. BigQuery DDL Schema (`sql/schema_hospital_events_raw.sql`)
+- Partitioned by `DATE(Timestamp)` for efficient time-series querying.
+- Clustered by `Case_ID, Activity_Name` for fast process mining trace assembly.
+
+#### 3. Security & Configuration (`.env.example`)
+- Documented environment variables (`GCP_PROJECT_ID`, `BIGQUERY_DATASET`, `BIGQUERY_TABLE_RAW`).
+- Maintained `.gitignore` exclusions for `.env`, key files, and raw CSV files.
+
+#### 4. Automated Testing (`tests/test_bq_loader.py`)
+- Built 12 unit tests covering:
+  - Canonical dataset schema validation (3,140 rows, 500 cases).
+  - Missing columns, invalid timestamps, empty values, and non-simulated flags.
+  - Read-only preservation of raw CSV (SHA-256 hash verified).
+  - Deterministic/repeatable validation results.
+  - Configuration validation and error handling for missing/placeholder project IDs.
+  - Mocked live-mode BigQuery load execution and load job configuration.
+  - Confirmation that offline mode never calls BigQuery APIs.
+- Regression check: All 11 existing tests in `tests/test_data_generator.py` remain passing (23 total tests passed in 0.37s).
+
+### Commands Run
+```powershell
+python -m src.bq_loader --mode offline
+python -m src.bq_loader --mode live
+pytest -v
+git diff --check
+```
+
+### Test Results
+- `tests/test_bq_loader.py`: 12 passed.
+- `tests/test_data_generator.py`: 11 passed.
+- Total: 23 passed in 0.37s.
+
+### Blockers & Next Steps
+- **Cloud Ingestion:** Live BigQuery load requires GCP project credentials and `google-cloud-bigquery` package installation. Offline validation is 100% functional without cloud access.
+- **Next Task:** dbt initial cleaning project setup (`stg_hospital_events.sql`) to transform raw BigQuery event logs.
+
+---
+
+*Last Updated: Day 3 (October 12, 2026)*
