@@ -1,0 +1,28 @@
+# ==============================================================================
+# CareFlow Process Mining - dbt Project Configuration
+# ==============================================================================
+
+name: 'careflow_dbt'
+version: '1.0.0'
+config-version: 2
+
+# Profile to use from profiles.yml
+profile: 'careflow_bigquery'
+
+# Directory paths
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Default configurations for models
+models:
+  careflow_dbt:
+    staging:
+      +materialized: view

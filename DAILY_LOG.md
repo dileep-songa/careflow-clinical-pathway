@@ -236,6 +236,24 @@ Time Benchmarks: Expected times for key transitions
   - Confirmation that offline mode never calls BigQuery APIs.
 - Regression check: All 11 existing tests in `tests/test_data_generator.py` remain passing (23 total tests passed in 0.37s).
 
+#### 5. dbt Initial Cleaning Phase Setup (`careflow_dbt/`)
+- Designed and initialized dbt project structure for BigQuery staging:
+  - `careflow_dbt/dbt_project.yml`: Project configuration (name `careflow_dbt`, profile `careflow_bigquery`, staging materialization as `view`).
+  - `careflow_dbt/profiles.yml.example`: BigQuery connection profiles supporting OAuth (ADC) and Service Account methods.
+  - `careflow_dbt/models/staging/_sources.yml`: Declared `raw_hospital_data` source with table `hospital_events_raw` and `not_null` column tests.
+  - `careflow_dbt/models/staging/stg_hospital_events.sql`: Non-destructive staging model:
+    - Filters invalid records defensively (`Case_ID IS NOT NULL AND TRIM(Case_ID) != ''`, `Activity_Name IS NOT NULL AND TRIM(Activity_Name) != ''`, `Timestamp IS NOT NULL`).
+    - Preserves case IDs and raw activity names (`Registration`, `Triage`, etc.).
+    - Normalizes standard lowercase/snake_case `activity_name`.
+    - Exposes UTC `event_timestamp` and calendar `event_date`.
+    - Calculates 1-indexed `event_sequence` per case (`ROW_NUMBER() OVER (PARTITION BY Case_ID ORDER BY Timestamp ASC)`) for PM4Py trace reconstruction.
+    - Calculates `previous_activity` and `transition_minutes_from_previous` using window functions.
+    - Preserves all 60 legitimate clinical re-triage loop-backs without silent deduplication.
+  - `careflow_dbt/models/staging/_staging_models.yml`: Schema tests and accepted values documentation for staging views.
+  - `careflow_dbt/README.md`: Execution documentation covering setup, compilation, and testing.
+  - Resolved BigQuery dataset naming by eliminating redundant custom schema suffix, ensuring views write directly to `BIGQUERY_DATASET_STAGING` (`careflow_staging`).
+- Built automated test suite (`tests/test_dbt_setup.py`) with 7 tests verifying YAML schemas, Jinja references, defensive blank/whitespace filtering, and validating SQL transformation logic against the canonical simulated dataset (3,140 events, 500 cases, 60 re-triage loop-backs preserved).
+
 ### Commands Run
 ```powershell
 python -m src.bq_loader --mode offline
@@ -247,11 +265,12 @@ git diff --check
 ### Test Results
 - `tests/test_bq_loader.py`: 12 passed.
 - `tests/test_data_generator.py`: 11 passed.
-- Total: 23 passed in 0.37s.
+- `tests/test_dbt_setup.py`: 7 passed.
+- Total: 30 passed in 0.46s.
 
 ### Blockers & Next Steps
-- **Cloud Ingestion:** Live BigQuery load requires GCP project credentials and `google-cloud-bigquery` package installation. Offline validation is 100% functional without cloud access.
-- **Next Task:** dbt initial cleaning project setup (`stg_hospital_events.sql`) to transform raw BigQuery event logs.
+- **Cloud Environment:** Neither `dbt-core`/`dbt-bigquery` nor a live GCP BigQuery project is currently configured in the environment. dbt project configurations, sources, and staging models are fully authored and verified offline.
+- **Next Steps:** Install `dbt-bigquery` and connect to a provisioned GCP project when authorized; proceed with Week 2 data normalization and PM4Py process discovery.
 
 ---
 

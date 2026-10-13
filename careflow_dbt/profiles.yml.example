@@ -1,0 +1,34 @@
+# ==============================================================================
+# CareFlow dbt Profiles Template for Google BigQuery
+# ==============================================================================
+# Instructions:
+# 1. Copy this template to ~/.dbt/profiles.yml (or your local project root if using DBT_PROFILES_DIR).
+# 2. Configure GCP_PROJECT_ID and GCP_REGION in your environment or replace the defaults below.
+# 3. Authenticate with Google Cloud:
+#      gcloud auth application-default login
+# ==============================================================================
+
+careflow_bigquery:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID', 'your-gcp-project-id') }}"
+      dataset: "{{ env_var('BIGQUERY_DATASET_STAGING', 'careflow_staging') }}"
+      threads: 4
+      timeout_seconds: 300
+      location: "{{ env_var('GCP_REGION', 'us-central1') }}"
+      priority: interactive
+
+    # Alternative: Service Account Authentication
+    prod:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT_ID', 'your-gcp-project-id') }}"
+      dataset: "{{ env_var('BIGQUERY_DATASET_STAGING', 'careflow_staging') }}"
+      threads: 8
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS', '/path/to/keyfile.json') }}"
+      timeout_seconds: 300
+      location: "{{ env_var('GCP_REGION', 'us-central1') }}"
+      priority: interactive

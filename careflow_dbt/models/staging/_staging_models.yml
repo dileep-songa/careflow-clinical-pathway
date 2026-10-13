@@ -1,0 +1,85 @@
+version: 2
+
+models:
+  - name: stg_hospital_events
+    description: >
+      Staging view for hospital event logs. Standardizes activity names, extracts event
+      dates, determines 1-indexed sequential event ordering per patient case, and derives
+      inter-activity transition durations for process mining and PM4Py readiness.
+    columns:
+      - name: case_id
+        description: "Unique patient journey identifier (e.g., CASE_0001)."
+        tests:
+          - not_null
+
+      - name: event_sequence
+        description: "1-indexed sequential order of the event within the case journey."
+        tests:
+          - not_null
+
+      - name: raw_activity_name
+        description: "Original clinical activity name preserved from raw EHR extract."
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'Registration'
+                - 'Triage'
+                - 'Consultation'
+                - 'Laboratory'
+                - 'X-Ray'
+                - 'Treatment'
+                - 'Discharge'
+
+      - name: activity_name
+        description: "Standardized lower/snake_case clinical activity identifier."
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'registration'
+                - 'triage'
+                - 'consultation'
+                - 'laboratory'
+                - 'x_ray'
+                - 'treatment'
+                - 'discharge'
+
+      - name: event_timestamp
+        description: "Exact UTC timestamp of event execution."
+        tests:
+          - not_null
+
+      - name: event_date
+        description: "Calendar date of event execution extracted from event_timestamp."
+        tests:
+          - not_null
+
+      - name: department
+        description: "Hospital department or clinical service unit."
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'ER'
+                - 'LAB'
+                - 'RADIOLOGY'
+
+      - name: resource_id
+        description: "De-identified clinician or administrative staff member identifier."
+        tests:
+          - not_null
+
+      - name: data_provenance
+        description: "Origin indicator of the data record (SIMULATED)."
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'SIMULATED'
+
+      - name: previous_activity
+        description: "Preceding clinical activity in this patient journey (NULL for first event)."
+
+      - name: transition_minutes_from_previous
+        description: "Elapsed duration in minutes from the previous event (NULL for first event)."

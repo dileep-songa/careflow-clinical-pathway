@@ -20,6 +20,15 @@ This project analyzes hospital patient event logs to identify bottlenecks, ineff
 ## Project Structure
 ```text
 careflow-clinical-pathway/
+├── careflow_dbt/
+│   ├── models/
+│   │   └── staging/
+│   │       ├── _sources.yml
+│   │       ├── _staging_models.yml
+│   │       └── stg_hospital_events.sql
+│   ├── dbt_project.yml
+│   ├── profiles.yml.example
+│   └── README.md
 ├── data/
 │   ├── raw/
 │   └── cleaned/
@@ -33,7 +42,8 @@ careflow-clinical-pathway/
 │   └── project_config.py
 ├── tests/
 │   ├── test_data_generator.py
-│   └── test_bq_loader.py
+│   ├── test_bq_loader.py
+│   └── test_dbt_setup.py
 ├── reports/
 ├── .env.example
 ├── README.md
@@ -98,11 +108,25 @@ When connecting to an active Google Cloud project:
    ```
    *Safety default: Uses `write_disposition = WRITE_EMPTY` to prevent accidental overwrites.*
 
-### 4. Running Automated Tests
-Run unit tests across the generator and BigQuery ingestion modules:
+### 4. dbt Initial Cleaning Phase (`careflow_dbt/`)
+Once raw event logs are staged in BigQuery:
+1. Navigate to the dbt project directory:
+   ```bash
+   cd careflow_dbt
+   ```
+2. Compile and run the staging models:
+   ```bash
+   dbt compile
+   dbt run
+   dbt test
+   ```
+   *The staging model (`stg_hospital_events`) cleans column names, formats timestamps, sequences events (1..N per case), and computes transition durations for PM4Py.*
+
+### 5. Running Automated Tests
+Run the complete unit test suite across data generator, BigQuery loader, and dbt setup:
 ```bash
 pytest -v
 ```
 
 ## Status
-🟢 Week 1: Data Generator & BigQuery Ingestion Foundation Implemented (23/23 tests passing)
+🟢 Week 1: Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (30/30 tests passing)

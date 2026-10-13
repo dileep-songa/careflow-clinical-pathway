@@ -1,0 +1,42 @@
+version: 2
+
+sources:
+  - name: raw_hospital_data
+    description: "Raw simulated clinical event logs ingested into Google BigQuery."
+    database: "{{ env_var('GCP_PROJECT_ID', 'your-gcp-project-id') }}"
+    schema: "{{ env_var('BIGQUERY_DATASET', 'careflow_raw') }}"
+    tables:
+      - name: hospital_events_raw
+        description: "Raw simulated hospital event log table loaded via src/bq_loader.py."
+        columns:
+          - name: Case_ID
+            description: "Unique patient encounter identifier."
+            tests:
+              - not_null
+
+          - name: Activity_Name
+            description: "Clinical activity name in the pathway."
+            tests:
+              - not_null
+
+          - name: Timestamp
+            description: "Exact UTC timestamp of event occurrence."
+            tests:
+              - not_null
+
+          - name: Department
+            description: "Hospital department or clinical service unit."
+            tests:
+              - not_null
+
+          - name: Resource
+            description: "De-identified clinician or staff identifier."
+            tests:
+              - not_null
+
+          - name: Data_Type
+            description: "Provenance indicator (SIMULATED or PROD)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['SIMULATED', 'PROD']
