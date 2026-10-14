@@ -116,7 +116,15 @@ def get_pathway_definitions(total_cases: int = 500) -> List[Tuple[str, List[str]
 
     Returns:
         List of tuples: (variant_name, activity_sequence, case_count)
+
+    Raises:
+        ValueError: If total_cases is a boolean, non-integer, or less than 1.
     """
+    if isinstance(total_cases, bool) or not isinstance(total_cases, int) or total_cases < 1:
+        raise ValueError(
+            f"total_cases must be a positive integer (int >= 1), got {type(total_cases).__name__}: {total_cases!r}"
+        )
+
     # Proportions matching clinical assumptions
     v1_count = int(round(total_cases * 0.40))  # 200
     v2_count = int(round(total_cases * 0.22))  # 110
@@ -173,7 +181,15 @@ def generate_event_log(
 
     Returns:
         List of event dictionary records following the CareFlow schema.
+
+    Raises:
+        ValueError: If num_cases is a boolean, non-integer, or less than 1.
     """
+    if isinstance(num_cases, bool) or not isinstance(num_cases, int) or num_cases < 1:
+        raise ValueError(
+            f"num_cases must be a positive integer (int >= 1), got {type(num_cases).__name__}: {num_cases!r}"
+        )
+
     rng = Random(seed)
 
     if start_time is None:

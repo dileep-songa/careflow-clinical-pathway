@@ -274,4 +274,62 @@ git diff --check
 
 ---
 
-*Last Updated: Day 3 (October 12, 2026)*
+## Day 5 - Data Quality Engineering and Test Hardening
+**Date:** October 14, 2026
+**Status:** ✅ Complete
+
+### Objectives for Day 5
+- [x] Audit data integrity, validation edge cases, deduplication rules, and event ordering determinism
+- [x] Investigate deduplication key `(Case_ID, Activity_Name, Timestamp)` against legitimate clinical loops
+- [x] Implement deterministic secondary window ordering and tie-breaking in dbt staging model
+- [x] Add duplicate event-key detection to offline BigQuery CSV validator
+- [x] Validate case counts as positive integers (rejecting booleans, non-integers, zero, negative values) in generator functions
+- [x] Add focused regression tests for simultaneous timestamps, duplicate event keys, invalid case counts, and clinical loop preservation
+- [x] Verify 100% test pass rate across the hardened suite
+
+### What Was Done
+
+#### 1. Clinical & Deterministic Ordering in dbt (`careflow_dbt/models/staging/stg_hospital_events.sql`)
+- Audited deduplication key `(Case_ID, Activity_Name, Timestamp)`: Confirmed that legitimate clinical loop-backs (all 60 re-triages and 265 diagnostic reviews) occur across distinct timestamps and are 100% preserved.
+- Confirmed that the project intentionally defines `(raw_case_id, raw_activity_name, raw_timestamp)` as the event uniqueness key, with the documented limitation that two legitimate separate clinical events sharing all three values within the exact same second would be collapsed into a single staged event.
+- Positioned dbt staging deduplication (`QUALIFY ... = 1`) as a downstream warehouse safeguard for duplicate keys already present in BigQuery (e.g. from repeated ingestion batches or overlapping load jobs).
+- Hardened window functions (`ROW_NUMBER`, `LAG`, `TIMESTAMP_DIFF`) with deterministic secondary ordering:
+  `ORDER BY raw_timestamp ASC, raw_activity_name ASC, raw_resource ASC`
+- Hardened `QUALIFY` row selection with deterministic tie-breaking:
+  `ORDER BY raw_resource ASC, raw_department ASC`
+- Documented in SQL that secondary alphabetical sorting ensures query execution repeatability across BigQuery runs without claiming clinical precedence for simultaneous events without sub-second logging or system event IDs. Documented that if all columns tie, duplicate rows are physically identical.
+
+#### 2. Offline BigQuery Ingestion Validator Hardening (`src/bq_loader.py`)
+- Enhanced `validate_csv_for_bigquery` with duplicate event-key tracking `(Case_ID, Activity_Name, Timestamp)`.
+- Clarified detection scope: The validator detects duplicate keys strictly within the local input CSV file; it does not detect whether the same batch was previously loaded into BigQuery (which is managed via warehouse write dispositions and downstream dbt staging deduplication).
+- Documented event uniqueness limitation: Legitimate clinical loops with distinct timestamps pass cleanly; however, separate clinical actions sharing Case_ID, Activity_Name, and Timestamp within the exact same second are rejected as duplicates.
+- Flagged duplicate event keys as hard validation failures while distinguishing them from legitimate repeated activities (which possess distinct timestamps).
+- Preserved existing function signature, return structure (`ValidationResult`), and issue reporting conventions.
+
+#### 3. Generator Input Boundary Validation (`src/data_generator.py`)
+- Added explicit type and boundary validation in `get_pathway_definitions` and `generate_event_log`.
+- Explicitly rejected boolean inputs (`isinstance(val, bool)`), non-integers (`not isinstance(val, int)`), zero, and negative values with informative `ValueError` messages.
+- Preserved baseline 500-case canonical dataset and deterministic generator behavior.
+
+#### 4. Test Suite Expansion & Hardening (`tests/`)
+- **`tests/test_data_generator.py`**: Added `test_invalid_case_count_validation` covering booleans (`True`, `False`), zero, negative integers, floats, strings, `None`, and positive boundary integer (`1`).
+- **`tests/test_bq_loader.py`**:
+  - Added `test_duplicate_event_keys_fail_validation` verifying that duplicate `(Case_ID, Activity_Name, Timestamp)` tuples fail offline validation.
+  - Added `test_legitimate_repeated_activities_pass_validation` verifying that multi-triage and multi-consultation clinical pathways with distinct timestamps pass validation cleanly.
+- **`tests/test_dbt_setup.py`**:
+  - Updated `apply_stg_hospital_events_transformation` helper with deterministic tie-breaking and deduplication row selection.
+  - Added assertion confirming SQL contains explicit secondary ordering clauses.
+  - Added `test_staging_tie_breaking_determinism_for_simultaneous_timestamps` verifying that simultaneous timestamps within a case order deterministically by activity and resource, resulting in 0-minute duration.
+  - Added `test_staging_deduplication_deterministic_row_selection` verifying deterministic row selection when metadata differs on duplicate timestamps.
+  - Added verification that all 265 diagnostic review follow-up consultations are preserved in the canonical dataset.
+
+### Test Results
+- `tests/test_bq_loader.py`: 14 passed (+2 new tests)
+- `tests/test_data_generator.py`: 12 passed (+1 new test with 8 subtests)
+- `tests/test_dbt_setup.py`: 9 passed (+2 new tests)
+- Total: 35 passed, 8 subtests passed in 0.63s (100% pass rate).
+- `git diff --check`: 0 whitespace errors.
+
+---
+
+*Last Updated: Day 5 (October 14, 2026)*

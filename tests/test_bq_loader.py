@@ -108,6 +108,53 @@ class TestBigQueryLoader(unittest.TestCase):
         finally:
             temp_path.unlink(missing_ok=True)
 
+    def test_duplicate_event_keys_fail_validation(self):
+        """Test that records with duplicate (Case_ID, Activity_Name, Timestamp) fail validation."""
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".csv", newline="") as tf:
+            tf.write("Case_ID,Activity_Name,Timestamp,Department,Resource,Data_Type\n")
+            tf.write("CASE_0001,Registration,2024-10-01 08:00:00,ER,REG_CLERK_01,SIMULATED\n")
+            # Duplicate event key (same case, activity, and timestamp)
+            tf.write("CASE_0001,Registration,2024-10-01 08:00:00,ER,REG_CLERK_02,SIMULATED\n")
+            temp_path = Path(tf.name)
+
+        try:
+            result = bq_loader.validate_csv_for_bigquery(temp_path)
+            self.assertFalse(result.is_valid)
+            self.assertTrue(
+                any("Duplicate event key detected" in issue for issue in result.issues),
+                f"Expected duplicate key issue, got: {result.issues}",
+            )
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    def test_legitimate_repeated_activities_pass_validation(self):
+        """Test that legitimate clinical loops (re-triage, follow-up consults) pass validation when timestamps differ."""
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".csv", newline="") as tf:
+            tf.write("Case_ID,Activity_Name,Timestamp,Department,Resource,Data_Type\n")
+            tf.write("CASE_0001,Registration,2024-10-01 08:00:00,ER,REG_01,SIMULATED\n")
+            tf.write("CASE_0001,Triage,2024-10-01 08:15:00,ER,NURSE_01,SIMULATED\n")
+            # Legitimate clinical re-triage loop-back (60 mins later)
+            tf.write("CASE_0001,Triage,2024-10-01 09:15:00,ER,NURSE_02,SIMULATED\n")
+            # Initial consultation
+            tf.write("CASE_0001,Consultation,2024-10-01 09:30:00,ER,DOC_01,SIMULATED\n")
+            tf.write("CASE_0001,Laboratory,2024-10-01 09:50:00,Lab,LAB_01,SIMULATED\n")
+            # Follow-up consultation (40 mins later)
+            tf.write("CASE_0001,Consultation,2024-10-01 10:30:00,ER,DOC_01,SIMULATED\n")
+            tf.write("CASE_0001,Treatment,2024-10-01 11:00:00,ER,NURSE_01,SIMULATED\n")
+            tf.write("CASE_0001,Discharge,2024-10-01 11:30:00,ER,DOC_01,SIMULATED\n")
+            temp_path = Path(tf.name)
+
+        try:
+            result = bq_loader.validate_csv_for_bigquery(temp_path)
+            self.assertTrue(result.is_valid, f"Expected valid result, got issues: {result.issues}")
+            self.assertEqual(len(result.issues), 0)
+            self.assertEqual(result.unique_cases, 1)
+            self.assertEqual(result.total_rows, 8)
+            self.assertEqual(result.activity_distribution["Triage"], 2)
+            self.assertEqual(result.activity_distribution["Consultation"], 2)
+        finally:
+            temp_path.unlink(missing_ok=True)
+
     def test_empty_and_missing_file_handling(self):
         """Test proper handling of missing file and 0-byte file."""
         non_existent = PROJECT_ROOT / "data" / "raw" / "non_existent_file.csv"

@@ -166,6 +166,34 @@ class TestSimulatedDatasetGeneration(unittest.TestCase):
         self.assertTrue(res["is_valid"], f"Validation failed with issues: {res['issues']}")
         self.assertEqual(len(res["issues"]), 0)
 
+    def test_invalid_case_count_validation(self):
+        """Test that non-positive, boolean, and non-integer case counts raise clear ValueErrors."""
+        invalid_values = [
+            0,
+            -1,
+            -50,
+            True,   # Boolean True is an int subclass in Python and must be explicitly rejected
+            False,  # Boolean False
+            10.5,   # Float
+            "500",  # String
+            None,   # NoneType
+        ]
+
+        for val in invalid_values:
+            with self.subTest(val=val):
+                with self.assertRaises(ValueError) as ctx_defs:
+                    data_generator.get_pathway_definitions(val)
+                self.assertIn("positive integer", str(ctx_defs.exception))
+
+                with self.assertRaises(ValueError) as ctx_gen:
+                    data_generator.generate_event_log(num_cases=val)
+                self.assertIn("positive integer", str(ctx_gen.exception))
+
+        # Boundary test: positive integer 1 must succeed without error
+        defs_one = data_generator.get_pathway_definitions(1)
+        self.assertIsInstance(defs_one, list)
+        self.assertGreater(len(defs_one), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

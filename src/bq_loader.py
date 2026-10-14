@@ -198,6 +198,23 @@ def validate_csv_for_bigquery(
     Runs entirely locally using the Python standard library without credentials
     or network connectivity. Does NOT modify the target CSV file.
 
+    Validation checks:
+    1. File existence and non-zero byte size.
+    2. Header matches expected schema contract columns exactly.
+    3. Required columns contain no null, empty, or whitespace-only values.
+    4. Data_Type column is tagged 'SIMULATED'.
+    5. Timestamps parse as ISO datetime (%Y-%m-%d %H:%M:%S).
+    6. No duplicate event keys within the input file. The project intentionally
+       treats (Case_ID, Activity_Name, Timestamp) as the event uniqueness key.
+       Scope and limitations:
+       - File-local scope: This validator inspects duplicate keys strictly within
+         the local input CSV file. It does not detect whether the same batch was
+         previously loaded into BigQuery (managed via write disposition or warehouse ELT).
+       - Event key limitation: Legitimate clinical loops (e.g., repeated Triage or
+         follow-up Consultation) possess distinct timestamps and pass cleanly.
+         However, if two legitimate separate clinical events occur at the exact same
+         second with the same activity name, this contract rejects them as duplicate keys.
+
     Args:
         csv_path: Path to the CSV file to inspect.
         max_issues: Maximum number of specific record-level issues to collect.
@@ -219,6 +236,7 @@ def validate_csv_for_bigquery(
     unique_cases: set[str] = set()
     activities: Dict[str, int] = {}
     departments: Dict[str, int] = {}
+    seen_event_keys: set[Tuple[str, str, str]] = set()
     earliest_dt: Optional[datetime] = None
     latest_dt: Optional[datetime] = None
     row_count = 0
@@ -287,6 +305,23 @@ def validate_csv_for_bigquery(
                             result.issues.append(
                                 f"Row {row_idx}: Invalid timestamp '{timestamp_str}' ({ve})."
                             )
+
+                # Check duplicate event keys (Case_ID, Activity_Name, Timestamp) within this file.
+                # The project intentionally defines (Case_ID, Activity_Name, Timestamp) as the event uniqueness key.
+                # Scope: This validator inspects duplicates within this file; warehouse-level duplicates are handled
+                # downstream by write dispositions or dbt staging deduplication.
+                # Limitation: Legitimate loops with distinct timestamps pass; separate events sharing all three values
+                # within the exact same second would be rejected as duplicate keys.
+                if case_id and activity and timestamp_str:
+                    event_key = (case_id, activity, timestamp_str)
+                    if event_key in seen_event_keys:
+                        if len(result.issues) < max_issues:
+                            result.issues.append(
+                                f"Row {row_idx}: Duplicate event key detected for Case_ID '{case_id}', "
+                                f"Activity '{activity}', Timestamp '{timestamp_str}'."
+                            )
+                    else:
+                        seen_event_keys.add(event_key)
 
     except Exception as exc:
         result.issues.append(f"Failed to read CSV file: {exc}")

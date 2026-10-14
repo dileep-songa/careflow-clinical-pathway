@@ -33,15 +33,20 @@ cleaned_and_normalized AS (
         raw_data_type AS data_provenance,
 
         -- Event sequence within patient journey (1-indexed, chronological)
+        -- Deterministic secondary ordering: When events within a case have identical timestamps,
+        -- ordering by raw_activity_name ASC and raw_resource ASC provides query determinism across runs.
+        -- Note: This ensures SQL execution reproducibility, but does not assert true clinical
+        -- chronological precedence between concurrent events without sub-second logging or event IDs.
+        -- If all ordering columns tie, remaining ambiguity represents physically identical events.
         ROW_NUMBER() OVER (
             PARTITION BY raw_case_id
-            ORDER BY raw_timestamp ASC
+            ORDER BY raw_timestamp ASC, raw_activity_name ASC, raw_resource ASC
         ) AS event_sequence,
 
         -- Previous activity in journey to model process transitions
         LAG(raw_activity_name) OVER (
             PARTITION BY raw_case_id
-            ORDER BY raw_timestamp ASC
+            ORDER BY raw_timestamp ASC, raw_activity_name ASC, raw_resource ASC
         ) AS previous_activity,
 
         -- Transition duration (minutes elapsed since preceding activity)
@@ -49,17 +54,25 @@ cleaned_and_normalized AS (
             raw_timestamp,
             LAG(raw_timestamp) OVER (
                 PARTITION BY raw_case_id
-                ORDER BY raw_timestamp ASC
+                ORDER BY raw_timestamp ASC, raw_activity_name ASC, raw_resource ASC
             ),
             MINUTE
         ) AS transition_minutes_from_previous
 
     FROM source_events
-    -- Guard against duplicate physical rows with identical case, activity, and timestamp.
-    -- Note: Legitimate clinical re-triages have distinct timestamps and are fully preserved.
+    -- Downstream warehouse safeguard: Deduplicate records already present in the raw BigQuery table
+    -- (e.g. from repeated ingestion batches or overlapping load jobs).
+    -- Uniqueness key contract: The project intentionally defines (raw_case_id, raw_activity_name, raw_timestamp)
+    -- as the event uniqueness key. Legitimate clinical re-triages and repeat consults have distinct timestamps
+    -- and are fully preserved.
+    -- Limitation: If two legitimate separate events occur at the exact same timestamp with the same activity name,
+    -- this contract collapses them into a single staged event.
+    -- Deterministic row selection: If duplicate records differ in resource or department metadata,
+    -- order by raw_resource ASC, raw_department ASC to break ties deterministically.
+    -- If all columns tie, duplicate rows are physically identical and dropping one is lossless.
     QUALIFY ROW_NUMBER() OVER (
         PARTITION BY raw_case_id, raw_activity_name, raw_timestamp
-        ORDER BY raw_timestamp ASC
+        ORDER BY raw_resource ASC, raw_department ASC
     ) = 1
 )
 

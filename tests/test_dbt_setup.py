@@ -81,24 +81,29 @@ def apply_stg_hospital_events_transformation(
             "raw_data_type": str(r.get("Data_Type", "")).strip(),
         })
 
-    # Replicate QUALIFY physical record deduplication
-    seen_exact = set()
-    deduped_events = []
+    # Replicate QUALIFY physical record deduplication:
+    # QUALIFY ROW_NUMBER() OVER (PARTITION BY raw_case_id, raw_activity_name, raw_timestamp
+    #                            ORDER BY raw_resource ASC, raw_department ASC) = 1
+    grouped_for_dedup: Dict[Tuple[str, str, Any], List[Dict[str, Any]]] = {}
     for r in filtered_events:
         key = (r["raw_case_id"], r["raw_activity_name"], r["raw_timestamp"])
-        if key in seen_exact:
-            continue
-        seen_exact.add(key)
-        deduped_events.append(r)
+        grouped_for_dedup.setdefault(key, []).append(r)
 
-    # Replicate window functions grouped by raw_case_id
+    deduped_events = []
+    for key, group in grouped_for_dedup.items():
+        # Order candidates by raw_resource ASC, raw_department ASC and select row 1
+        best_row = min(group, key=lambda x: (x["raw_resource"], x["raw_department"]))
+        deduped_events.append(best_row)
+
+    # Replicate window functions grouped by raw_case_id with deterministic tie-breaking
     cases: Dict[str, List[Dict[str, Any]]] = {}
     for r in deduped_events:
         cases.setdefault(r["raw_case_id"], []).append(r)
 
     transformed: List[Dict[str, Any]] = []
     for cid, case_rows in cases.items():
-        case_rows.sort(key=lambda x: x["raw_timestamp"])
+        # ORDER BY raw_timestamp ASC, raw_activity_name ASC, raw_resource ASC
+        case_rows.sort(key=lambda x: (x["raw_timestamp"], x["raw_activity_name"], x["raw_resource"]))
         for idx, row in enumerate(case_rows, start=1):
             prev_act = case_rows[idx - 2]["raw_activity_name"] if idx > 1 else None
             prev_ts = case_rows[idx - 2]["raw_timestamp"] if idx > 1 else None
@@ -254,6 +259,16 @@ class TestDbtConfiguration(unittest.TestCase):
         self.assertIn("LAG(raw_activity_name) OVER", sql_content)
         self.assertIn("TIMESTAMP_DIFF", sql_content)
 
+        # Deterministic secondary ordering in window functions and deduplication
+        self.assertIn(
+            "ORDER BY raw_timestamp ASC, raw_activity_name ASC, raw_resource ASC",
+            sql_content,
+        )
+        self.assertIn(
+            "ORDER BY raw_resource ASC, raw_department ASC",
+            sql_content,
+        )
+
         # Deduplication guard clause
         self.assertIn("QUALIFY ROW_NUMBER() OVER", sql_content)
 
@@ -333,7 +348,7 @@ class TestDbtConfiguration(unittest.TestCase):
         unique_cases = {r["case_id"] for r in transformed_rows}
         self.assertEqual(len(unique_cases), 500)
 
-        # Count re-triage loop-backs
+        # Count re-triage loop-backs (all 60 preserved)
         retriage_transitions = [
             r["transition_minutes_from_previous"]
             for r in transformed_rows
@@ -344,6 +359,15 @@ class TestDbtConfiguration(unittest.TestCase):
         for wait in retriage_transitions:
             self.assertGreaterEqual(wait, 35, "Re-triage bottleneck wait should be >= 35 mins")
 
+        # Count diagnostic review follow-up consultation loop-backs (all 265 preserved)
+        consult_after_diagnostic = [
+            r["transition_minutes_from_previous"]
+            for r in transformed_rows
+            if r["raw_activity_name"] == "Consultation"
+            and r["previous_activity"] in ("Laboratory", "X-Ray")
+        ]
+        self.assertEqual(len(consult_after_diagnostic), 265)
+
         # Confirm 1st events have NULL transition and subsequent have valid transitions
         for r in transformed_rows:
             if r["event_sequence"] == 1:
@@ -352,6 +376,60 @@ class TestDbtConfiguration(unittest.TestCase):
             else:
                 self.assertIsNotNone(r["previous_activity"])
                 self.assertGreaterEqual(r["transition_minutes_from_previous"], 0)
+
+    def test_staging_tie_breaking_determinism_for_simultaneous_timestamps(self):
+        """Test that simultaneous events in the same case are ordered deterministically by activity and resource.
+
+        Verifies that regardless of input arrival order, secondary ordering:
+        ORDER BY raw_timestamp ASC, raw_activity_name ASC, raw_resource ASC
+        produces identical, reproducible event sequences and 0-minute transition durations.
+        """
+        # Case with Registration at 08:00, then Consultation and Laboratory at identical timestamp 08:30
+        order_a = [
+            {"Case_ID": "CASE_TIE", "Activity_Name": "Registration", "Timestamp": "2024-10-01 08:00:00", "Department": "ER", "Resource": "REG_01", "Data_Type": "SIMULATED"},
+            {"Case_ID": "CASE_TIE", "Activity_Name": "Laboratory", "Timestamp": "2024-10-01 08:30:00", "Department": "Lab", "Resource": "LAB_01", "Data_Type": "SIMULATED"},
+            {"Case_ID": "CASE_TIE", "Activity_Name": "Consultation", "Timestamp": "2024-10-01 08:30:00", "Department": "ER", "Resource": "DOC_01", "Data_Type": "SIMULATED"},
+        ]
+        # Same records in reverse arrival order
+        order_b = [
+            {"Case_ID": "CASE_TIE", "Activity_Name": "Registration", "Timestamp": "2024-10-01 08:00:00", "Department": "ER", "Resource": "REG_01", "Data_Type": "SIMULATED"},
+            {"Case_ID": "CASE_TIE", "Activity_Name": "Consultation", "Timestamp": "2024-10-01 08:30:00", "Department": "ER", "Resource": "DOC_01", "Data_Type": "SIMULATED"},
+            {"Case_ID": "CASE_TIE", "Activity_Name": "Laboratory", "Timestamp": "2024-10-01 08:30:00", "Department": "Lab", "Resource": "LAB_01", "Data_Type": "SIMULATED"},
+        ]
+
+        res_a = apply_stg_hospital_events_transformation(order_a)
+        res_b = apply_stg_hospital_events_transformation(order_b)
+
+        # Output must be identical regardless of input order
+        self.assertEqual(res_a, res_b)
+        self.assertEqual(len(res_a), 3)
+
+        # Registration is 1st (08:00)
+        self.assertEqual(res_a[0]["raw_activity_name"], "Registration")
+        self.assertEqual(res_a[0]["event_sequence"], 1)
+
+        # Consultation alphabetically precedes Laboratory ('Consultation' < 'Laboratory')
+        self.assertEqual(res_a[1]["raw_activity_name"], "Consultation")
+        self.assertEqual(res_a[1]["event_sequence"], 2)
+        self.assertEqual(res_a[1]["previous_activity"], "Registration")
+        self.assertEqual(res_a[1]["transition_minutes_from_previous"], 30)
+
+        # Laboratory is 3rd with 0-minute duration from simultaneous Consultation
+        self.assertEqual(res_a[2]["raw_activity_name"], "Laboratory")
+        self.assertEqual(res_a[2]["event_sequence"], 3)
+        self.assertEqual(res_a[2]["previous_activity"], "Consultation")
+        self.assertEqual(res_a[2]["transition_minutes_from_previous"], 0)
+
+    def test_staging_deduplication_deterministic_row_selection(self):
+        """Test that duplicate (Case_ID, Activity_Name, Timestamp) records deterministically pick lowest resource."""
+        records = [
+            {"Case_ID": "CASE_DEDUP", "Activity_Name": "Triage", "Timestamp": "2024-10-01 08:15:00", "Department": "ER", "Resource": "NURSE_02", "Data_Type": "SIMULATED"},
+            {"Case_ID": "CASE_DEDUP", "Activity_Name": "Triage", "Timestamp": "2024-10-01 08:15:00", "Department": "ER", "Resource": "NURSE_01", "Data_Type": "SIMULATED"},
+        ]
+        result = apply_stg_hospital_events_transformation(records)
+        self.assertEqual(len(result), 1)
+        # Deterministically selects NURSE_01 because of ORDER BY raw_resource ASC
+        self.assertEqual(result[0]["resource_id"], "NURSE_01")
 
 
 if __name__ == "__main__":
