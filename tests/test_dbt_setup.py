@@ -21,6 +21,9 @@ Validates:
 import csv
 from datetime import datetime
 from pathlib import Path
+import shutil
+import subprocess
+import sys
 from typing import Any, Dict, List, Optional
 import unittest
 import yaml
@@ -430,6 +433,49 @@ class TestDbtConfiguration(unittest.TestCase):
         self.assertEqual(len(result), 1)
         # Deterministically selects NURSE_01 because of ORDER BY raw_resource ASC
         self.assertEqual(result[0]["resource_id"], "NURSE_01")
+
+    def test_gitignore_protects_dbt_profiles_and_artifacts(self):
+        """Test that .gitignore protects local dbt profile files, build targets, and telemetry artifacts."""
+        gitignore_path = PROJECT_ROOT / ".gitignore"
+        self.assertTrue(gitignore_path.is_file(), "Missing .gitignore")
+        with open(gitignore_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        self.assertIn("profiles.yml", content)
+        self.assertIn("target/", content)
+        self.assertIn("dbt_packages/", content)
+        self.assertIn(".user.yml", content)
+
+    def test_dbt_parse_offline_execution(self):
+        """Test that dbt parse runs successfully and builds the project manifest offline when dbt is installed."""
+        dbt_bin = shutil.which("dbt")
+        if not dbt_bin:
+            candidate = Path(sys.executable).parent / ("dbt.exe" if sys.platform == "win32" else "dbt")
+            if candidate.is_file():
+                dbt_bin = str(candidate)
+
+        if not dbt_bin:
+            self.skipTest("dbt executable not available in current environment")
+
+        cmd = [
+            dbt_bin,
+            "parse",
+            "--project-dir",
+            str(DBT_DIR),
+            "--profiles-dir",
+            str(DBT_DIR),
+        ]
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
+        )
+        self.assertEqual(
+            proc.returncode,
+            0,
+            f"dbt parse failed with returncode {proc.returncode}.\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}",
+        )
 
 
 if __name__ == "__main__":

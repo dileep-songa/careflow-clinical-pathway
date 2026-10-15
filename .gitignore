@@ -54,6 +54,14 @@ logs/
 .env
 .env.local
 
+# dbt
+profiles.yml
+**/profiles.yml
+target/
+dbt_packages/
+.user.yml
+**/.user.yml
+
 # Cache
 .cache/
 *.pkl

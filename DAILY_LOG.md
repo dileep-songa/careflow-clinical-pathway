@@ -332,4 +332,70 @@ git diff --check
 
 ---
 
-*Last Updated: Day 5 (October 14, 2026)*
+## Day 6 - dbt Validation, Fixes, and Git Commit
+**Date:** October 15, 2026
+**Status:** ✅ Complete
+
+### Objectives for Day 6
+- [x] Configure dedicated Python 3.12 virtual environment (`.venv`) with `dbt-core` (1.12.6) and `dbt-bigquery` (1.12.1)
+- [x] Diagnose and resolve `dbt parse` profile discovery error (`Could not find profile named 'careflow_bigquery'`)
+- [x] Protect local development profiles (`profiles.yml`), dbt build artifacts (`target/`, `dbt_packages/`), and telemetry files (`.user.yml`) from Git tracking
+- [x] Execute genuine offline `dbt parse` validation using installed dbt binary
+- [x] Attempt `dbt compile` and record the exact boundary requirement (Application Default Credentials / GCP auth needed by `dbt-bigquery` adapter)
+- [x] Review raw-to-staging SQL contract, tie-breaking determinism, and clinical loop preservation
+- [x] Expand automated regression test suite to 37 passed tests (+2 new dbt tests)
+- [x] Prepare and verify focused Day 6 Git commit
+
+### What Was Done
+
+#### 1. Environment & dbt Tooling Setup
+- Created isolated virtual environment at `.venv` using Python 3.12.9.
+- Verified installation of `dbt-core` (1.12.6), `dbt-bigquery` (1.12.1), `pytest` (9.1.1), and `pyyaml` (6.0.3).
+
+#### 2. Profile Discovery Diagnosis & Root Cause Analysis
+- **Observed Error:** `dbt parse --project-dir careflow_dbt --profiles-dir careflow_dbt` initially exited with code 1 (`Runtime Error: Could not find profile named 'careflow_bigquery'`).
+- **Root Cause:** `dbt_project.yml` specifies `profile: 'careflow_bigquery'`. The repository contained `careflow_dbt/profiles.yml.example`, but no local `profiles.yml` existed in `careflow_dbt/` or `~/.dbt/`. When passing `--profiles-dir careflow_dbt`, dbt expects `profiles.yml` specifically.
+- **Resolution:**
+  - Created local non-secret development `careflow_dbt/profiles.yml` matching the example template.
+  - Added `profiles.yml`, `**/profiles.yml`, `target/`, `dbt_packages/`, `.user.yml`, and `**/.user.yml` to `.gitignore` to prevent any credentials or build artifacts from leaking into source control.
+
+#### 3. Genuine dbt Offline Parsing Execution
+- Executed: `.\.venv\Scripts\dbt.exe parse --project-dir careflow_dbt --profiles-dir careflow_dbt`
+- **Result:** Exited with code 0! Full project manifest parsed:
+  `Found 1 model, 20 data tests, 1 source, 561 macros`
+- Generated internal project manifest at `careflow_dbt\target\manifest.json`.
+
+#### 4. Live Compilation Boundary Assessment (`dbt compile`)
+- Executed: `.\.venv\Scripts\dbt.exe compile --project-dir careflow_dbt --profiles-dir careflow_dbt`
+- **Result:** Failed with expected database authentication error:
+  `Database Error: Runtime Error: Failed to authenticate with supplied credentials. Your default credentials were not found.`
+- **Finding:** The `dbt-bigquery` adapter requires active Application Default Credentials (`gcloud auth application-default login`) or a service account key to establish client relations during `compile`. Offline dbt validation is strictly complete at `dbt parse`.
+
+#### 5. Automated Test Suite Expansion (`tests/test_dbt_setup.py`)
+- Added `test_gitignore_protects_dbt_profiles_and_artifacts`: Validates that `.gitignore` contains `profiles.yml`, `target/`, `dbt_packages/`, and `.user.yml`.
+- Added `test_dbt_parse_offline_execution`: Programmatically discovers the dbt executable in `.venv` and validates that `dbt parse` runs cleanly with exit code 0.
+
+### Commands Executed
+```powershell
+.\.venv\Scripts\dbt.exe --version
+.\.venv\Scripts\dbt.exe parse --project-dir careflow_dbt --profiles-dir careflow_dbt
+.\.venv\Scripts\dbt.exe compile --project-dir careflow_dbt --profiles-dir careflow_dbt
+.\.venv\Scripts\python.exe -m pytest -v
+git diff --check
+git status
+```
+
+### Test Results
+- `tests/test_bq_loader.py`: 14 passed
+- `tests/test_data_generator.py`: 12 passed (with 8 subtests)
+- `tests/test_dbt_setup.py`: 11 passed (+2 new tests)
+- Total: 37 passed, 8 subtests passed in 8.74s (100% pass rate).
+- `git diff --check`: 0 whitespace errors.
+
+### What Remains Unverified Without Live BigQuery
+- Live BigQuery query execution, dataset provisioning (`careflow_raw`, `careflow_staging`), and live data test runs (`dbt test`).
+- Offline dbt parsing and Python transformation simulation against the 3,140-row baseline are 100% verified.
+
+---
+
+*Last Updated: Day 6 (October 15, 2026)*
