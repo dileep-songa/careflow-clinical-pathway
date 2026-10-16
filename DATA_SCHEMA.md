@@ -1,7 +1,15 @@
 # CareFlow Data Schema Documentation
 
 ## Overview
+
+> [!NOTE]
+> **Design Evolution & Implementation Contract:**
+> The 13-column schema shown below represents the preliminary exploratory data dictionary drafted on Day 1.
+> The **Week 1 implementation contract** standardized in `src/data_generator.py`, `src/bq_loader.py`, `sql/schema_hospital_events_raw.sql`, and `careflow_dbt/` implements the 6 core columns required for process mining: `Case_ID`, `Activity_Name`, `Timestamp`, `Department`, `Resource`, and `Data_Type`.
+> Derived attributes (such as `event_sequence`, `previous_activity`, and `transition_minutes_from_previous`) are calculated downstream in the dbt staging layer (`stg_hospital_events.sql`) rather than hardcoded in the raw ingestion table.
+
 This document defines the structure of hospital event logs that we'll collect, clean, and analyze for process mining.
+
 
 ---
 

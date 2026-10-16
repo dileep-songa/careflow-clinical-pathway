@@ -69,12 +69,15 @@ git clone https://github.com/dileep-songa/careflow-clinical-pathway.git
 cd careflow-clinical-pathway
 python -m venv .venv
 # Activate virtual environment:
-# On Windows:
-.venv\Scripts\activate
+# On Windows (PowerShell):
+.\.venv\Scripts\Activate.ps1
+# On Windows (cmd.exe):
+.\.venv\Scripts\activate.bat
 # On Mac/Linux:
 source .venv/bin/activate
 
 pip install -r requirements.txt
+pip install dbt-core==1.12.6 dbt-bigquery==1.12.1 PyYAML==6.0.3
 ```
 
 ### 2. Generate Simulated Hospital Event Log
@@ -109,12 +112,21 @@ When connecting to an active Google Cloud project:
    *Safety default: Uses `write_disposition = WRITE_EMPTY` to prevent accidental overwrites.*
 
 ### 4. dbt Initial Cleaning Phase (`careflow_dbt/`)
-Once raw event logs are staged in BigQuery:
+
+#### A. Offline Validation Mode (Zero Cloud Credentials / Free)
+Validates the dbt project manifest, model syntax, and source configurations offline without connecting to BigQuery:
+```bash
+dbt parse --project-dir careflow_dbt --profiles-dir careflow_dbt
+```
+*Note: `dbt parse` succeeds offline without network or credentials. In contrast, `dbt compile` attempts to inspect warehouse relations and stops with a credential error when Google Cloud credentials are unavailable.*
+
+#### B. Live BigQuery Staging (Week 2 Live Run)
+Once raw event logs are staged in BigQuery and GCP credentials are authenticated:
 1. Navigate to the dbt project directory:
    ```bash
    cd careflow_dbt
    ```
-2. Compile and run the staging models:
+2. Compile, run, and test the staging models in the warehouse:
    ```bash
    dbt compile
    dbt run
@@ -129,4 +141,4 @@ pytest -v
 ```
 
 ## Status
-🟢 Week 1: Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (30/30 tests passing)
+🟢 Week 1: Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing)

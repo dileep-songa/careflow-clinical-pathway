@@ -8,28 +8,36 @@
 - [x] Identify key event types (admission, triage, treatment, discharge)
 - [x] Document data schema
 
-### Day 2: Environment Setup
-- [ ] Install Python libraries
-- [ ] Create synthetic hospital event logs
-- [ ] Validate data structure
-- [ ] Begin EDA
+### Day 2: Environment Setup & Data Generation
+- [x] Install Python libraries
+- [x] Create synthetic hospital event logs (500 cases, 3,140 events)
+- [x] Validate data structure and schema constraints
+- [x] Add automated unit tests for generator
 
-### Day 3: Data Quality Review
-- [ ] Check missing values and outliers
-- [ ] Confirm timestamp parsing
-- [ ] Validate event order by case ID
-- [ ] Prepare cleaned dataset
+### Day 3: BigQuery Ingestion & Offline Validation
+- [x] Build BigQuery raw table schema (partitioned & clustered)
+- [x] Create offline CSV schema validator
+- [x] Implement BigQuery loader with safe write-disposition defaults
+- [x] Add offline validation test suite
 
-### Day 4: Initial Analysis
-- [ ] Compute summary statistics
-- [ ] Explore department distribution
-- [ ] Identify early bottlenecks
-- [ ] Record observations
+### Day 4: dbt Staging Configuration
+- [x] Set up careflow_dbt project structure
+- [x] Configure source mappings and staging model (`stg_hospital_events`)
+- [x] Add schema tests for null checks and accepted values
+- [x] Test SQL transformation logic against canonical baseline
 
-### Day 5: Reporting
-- [ ] Summarize findings
-- [ ] Update project log
-- [ ] Prepare next-day plan
+### Day 5: Quality Hardening & Test Expansion
+- [x] Harden generator boundary validation (reject invalid case counts)
+- [x] Add secondary deterministic ordering to dbt window functions
+- [x] Add intra-file duplicate-key rejection to offline loader
+- [x] Expand regression test suite to 35 passing tests
+
+### Day 6: dbt Validation & Integration Readiness
+- [x] Verify Python 3.12 compatibility with dbt Core and dbt-bigquery
+- [x] Resolve dbt profile discovery and protect profiles in `.gitignore`
+- [x] Validate project manifest offline using `dbt parse`
+- [x] Expand test suite to 37 passing tests (+8 subtests)
+
 
 ---
 
