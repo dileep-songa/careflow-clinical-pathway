@@ -64,6 +64,7 @@ dbt_packages/
 
 # Cache
 .cache/
+.pytest_cache/
 *.pkl
 *.pickle
 

@@ -1,6 +1,7 @@
 """Project configuration for CareFlow.
 
 This file stores the base configuration used by the project modules.
+Note: Retained as baseline path and category configuration for downstream analytical workflows.
 """
 
 RAW_DATA_PATH = "data/raw/"

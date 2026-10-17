@@ -2,6 +2,7 @@
 
 Defines standardized event types, departments, severity levels,
 and other constants used throughout the project.
+Note: Retained as the project domain dictionary for clinical mappings and process mining parameters.
 """
 
 # Event Types (Standardized names for all hospital events)

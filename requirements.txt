@@ -3,11 +3,11 @@
 
 # Data Processing & Analysis
 pandas==2.1.1
-numpy==1.24.3
-pyarrow==13.0.0
+numpy==1.26.4
+pyarrow==14.0.2
 
 # Process Mining
-pm4py==2.7.11.19
+pm4py==2.7.8
 
 # Visualization & Dashboard
 matplotlib==3.8.0
@@ -21,6 +21,11 @@ ipython==8.16.0
 # Database & Data Warehouse
 sqlalchemy==2.0.21
 google-cloud-bigquery==3.13.0
+
+# dbt BigQuery Transformation
+dbt-core==1.12.6
+dbt-bigquery==1.12.1
+PyYAML==6.0.3
 
 # Data Transformation
 python-dateutil==2.8.2
