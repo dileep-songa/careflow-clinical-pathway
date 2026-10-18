@@ -1,0 +1,7 @@
+variant_rank,case_count,percentage,pathway
+1,200,40.0,Registration -> Triage -> Consultation -> Treatment -> Discharge
+2,110,22.0,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge
+3,80,16.0,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge
+4,50,10.0,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge
+5,35,7.0,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge
+6,25,5.0,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge

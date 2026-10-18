@@ -1,0 +1,58 @@
+{
+  "total_events": 3140,
+  "total_cases": 500,
+  "distinct_activities": 7,
+  "start_activities": {
+    "Registration": 500
+  },
+  "end_activities": {
+    "Discharge": 500
+  },
+  "activity_frequencies": {
+    "Consultation": 765,
+    "Triage": 560,
+    "Registration": 500,
+    "Treatment": 500,
+    "Discharge": 500,
+    "Laboratory": 185,
+    "X-Ray": 130
+  },
+  "min_duration_minutes": 95.0,
+  "max_duration_minutes": 354.0,
+  "mean_duration_minutes": 202.54,
+  "median_duration_minutes": 211.0,
+  "std_duration_minutes": 62.44,
+  "total_variants": 6,
+  "top_variants": [
+    {
+      "variant_rank": 1,
+      "case_count": 200,
+      "percentage": 40.0,
+      "pathway": "Registration -> Triage -> Consultation -> Treatment -> Discharge"
+    },
+    {
+      "variant_rank": 2,
+      "case_count": 110,
+      "percentage": 22.0,
+      "pathway": "Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge"
+    },
+    {
+      "variant_rank": 3,
+      "case_count": 80,
+      "percentage": 16.0,
+      "pathway": "Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge"
+    },
+    {
+      "variant_rank": 4,
+      "case_count": 50,
+      "percentage": 10.0,
+      "pathway": "Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge"
+    },
+    {
+      "variant_rank": 5,
+      "case_count": 35,
+      "percentage": 7.0,
+      "pathway": "Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge"
+    }
+  ]
+}
