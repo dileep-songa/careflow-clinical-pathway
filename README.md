@@ -33,18 +33,25 @@ careflow-clinical-pathway/
 │   ├── raw/
 │   └── cleaned/
 ├── notebooks/
+├── outputs/
+│   ├── dfg_transitions_summary.csv
+│   ├── pathway_variants_summary.csv
+│   └── process_mining_summary.json
+├── reports/
+│   └── MID_PROJECT_REVIEW.md
 ├── sql/
 │   └── schema_hospital_events_raw.sql
 ├── src/
 │   ├── constants.py
 │   ├── data_generator.py
 │   ├── bq_loader.py
+│   ├── process_miner.py
 │   └── project_config.py
 ├── tests/
 │   ├── test_data_generator.py
 │   ├── test_bq_loader.py
-│   └── test_dbt_setup.py
-├── reports/
+│   ├── test_dbt_setup.py
+│   └── test_process_miner.py
 ├── .env.example
 ├── README.md
 ├── .gitignore
@@ -56,8 +63,8 @@ careflow-clinical-pathway/
 ```
 
 ## Timeline
-- Week 1: Synthetic event log generation, BigQuery raw ingestion foundation & dbt setup
-- Week 2: Data cleaning, normalization, and PM4Py process discovery
+- Week 1: Synthetic event log generation, BigQuery raw ingestion foundation & dbt setup (Complete)
+- Week 2: Data cleaning, normalization, and offline PM4Py process discovery (Complete; live warehouse execution deferred pending GCP credentials)
 - Week 3: Process mining, bottleneck analysis, and dashboarding
 - Week 4: Conformance checking and final report
 
@@ -134,11 +141,25 @@ Once raw event logs are staged in BigQuery and GCP credentials are authenticated
    ```
    *The staging model (`stg_hospital_events`) cleans column names, formats timestamps, sequences events (1..N per case), and computes transition durations for PM4Py.*
 
-### 5. Running Automated Tests
-Run the complete unit test suite across data generator, BigQuery loader, and dbt setup:
+### 5. Process Mining & Pathway Discovery (PM4Py)
+Execute the offline process mining pipeline to discover clinical pathway variants, compute directly-follows graph (DFG) transitions, and calculate observed transition and case durations:
+```bash
+python -m src.process_miner --input data/raw/hospital_events_simulated.csv --output-dir outputs
+```
+
+Key outputs generated in `outputs/`:
+- `dfg_transitions_summary.csv`: 10 direct process transitions with frequency counts, median observed transition durations, and mean observed transition durations in minutes.
+- `pathway_variants_summary.csv`: 6 discovered pathway variants across 500 patient journeys, case counts, cohort percentages, and complete activity sequence traces.
+- `process_mining_summary.json`: Structured cohort summary covering total cases (500), events (3,140), start/end activity distributions (100% Registration / 100% Discharge), re-triage case volume (60 cases / 12.0%), and case duration statistics (Min: 95.0m, Median: 211.0m, Mean: 202.54m, Max: 354.0m, Std: 62.44m).
+
+### 6. Running Automated Tests
+Run the complete unit test suite across data generator, BigQuery loader, dbt setup, and process miner:
 ```bash
 pytest -v
 ```
 
+Current test coverage: **56 passing tests + 8 subtests** (100% pass rate).
+
 ## Status
-🟢 Week 1: Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing)
+- 🟢 **Week 1:** Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing)
+- 🟢 **Week 2:** Offline Process Mining Module, DFG Discovery, and Test Suite Expansion (56/56 tests passing, 8 subtests passing; live BigQuery run deferred pending GCP credentials)

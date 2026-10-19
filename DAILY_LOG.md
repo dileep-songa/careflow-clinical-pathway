@@ -449,3 +449,99 @@ git push origin main
 ---
 
 *Last Updated: Day 7 (October 16, 2026)*
+
+---
+
+## Day 8 - Environment Audit, Dependency Alignment, and Controlled PM4Py Installation
+**Date:** October 19, 2026
+**Status:** ✅ Complete
+
+### Objectives for Day 8
+- [x] Conduct comprehensive read-only audit of repository state, commits, and dataset integrity
+- [x] Align `requirements.txt` with exact Python 3.12 wheel pins (`numpy==1.26.4`, `pyarrow==14.0.2`, `pm4py==2.7.8`, `dbt-core==1.12.6`, `dbt-bigquery==1.12.1`, `PyYAML==6.0.3`)
+- [x] Add placeholder directories (`data/cleaned/.gitkeep`, `notebooks/.gitkeep`, `reports/.gitkeep`)
+- [x] Add clarifying docstrings to `src/constants.py` and `src/project_config.py`
+- [x] Create commit `a8d21d3` (`chore: finalize Week 1 environment and repository cleanup`) and push to `origin/main`
+- [x] Execute controlled installation of `pm4py==2.7.8` into project `.venv` without regressions
+- [x] Verify PM4Py import and version output (`2.7.8`)
+
+### What Was Done
+1. **Repository Audit & Cleanup:**
+   - Confirmed baseline CSV integrity: 197,844 bytes, 3,141 lines, MD5 `d8de55d0fccd116b3482c4c05a681d9e`.
+   - Verified that all 24 packages in `requirements.txt` have prebuilt wheels on PyPI for Python 3.12.
+   - Corrected invalid pin `pm4py==2.7.11.19` (404 on PyPI) to `pm4py==2.7.8`, which avoids C-extension compilation on Python 3.12 (`cvxopt ; python_version < "3.12"`).
+   - Staged and committed approved cleanup items in `a8d21d3` and synchronized with `origin/main`.
+2. **Controlled PM4Py Installation:**
+   - Ran `pip install pm4py==2.7.8` in `.venv`. Installed successfully without altering existing `pandas` (3.0.6) or `numpy` (2.5.4).
+   - Verified `python -c "import pm4py; print(pm4py.__version__)"` outputted `2.7.8`.
+   - Ran full test suite (37 tests + 8 subtests passed) and offline `dbt parse` (exit code 0), verifying zero environment regressions.
+
+---
+
+## Day 9 - Offline Process Mining Engine, DFG Discovery, and Test Suite Expansion
+**Date:** October 20, 2026
+**Status:** ✅ Complete
+
+### Objectives for Day 9
+- [x] Implement offline process mining module (`src/process_miner.py`)
+- [x] Validate canonical 6-column schema and enforce defensive error handling
+- [x] Implement deterministic multi-key sorting (`Case_ID`, `Timestamp`, `Activity_Name`, `Resource`)
+- [x] Convert clinical logs to PM4Py event log format without pandas 3.0 inference warnings
+- [x] Calculate cohort metrics and observed case duration statistics (Min, Median, Mean, Max, Std)
+- [x] Discover Directly-Follows Graph (DFG) across all 10 transitions with observed transition times
+- [x] Extract and rank 6 unique clinical pathway variants across all 500 patient encounters
+- [x] Detect re-triage encounters (60 cases / 12.0% of cohort) and transition intervals
+- [x] Implement graceful fallback when Graphviz system binary `dot` is absent
+- [x] Export reproducible summary tables to `outputs/` (`dfg_transitions_summary.csv`, `pathway_variants_summary.csv`, `process_mining_summary.json`)
+- [x] Build automated unit test suite (`tests/test_process_miner.py`) with 19 tests (expanding total suite to 56 tests)
+- [x] Verify baseline CSV immutability before and after execution
+- [x] Create commit `5e1e134` (`feat: implement offline process mining module, DFG discovery, and tests`) and push to `origin/main`
+
+### What Was Done
+1. **Core Process Mining Implementation:**
+   - Built `src/process_miner.py` providing `load_event_log`, `validate_event_log_dataframe`, `parse_and_sort_event_log`, `convert_to_pm4py_event_log`, `calculate_activity_frequencies`, `calculate_case_duration_statistics`, `extract_pathway_variants`, `discover_directly_follows_graph`, `build_transition_summary_table`, `render_dfg_visualization`, and `run_process_mining_pipeline`.
+   - Explicitly labeled all transition and case intervals as *observed transition time*, avoiding conflation with patient waiting time.
+2. **Clinical Pathway Findings Discovered:**
+   - Cohort: 500 cases, 3,140 events, 7 distinct activities. 100% start with `Registration`, 100% end with `Discharge`.
+   - Case Observed Duration: Min = 95.0m, Median = 211.0m, Mean = 202.54m, Max = 354.0m, Std = 62.44m.
+   - 6 Pathway Variants:
+     - Variant 1 (200 cases / 40.0%): Registration -> Triage -> Consultation -> Treatment -> Discharge
+     - Variant 2 (110 cases / 22.0%): Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge
+     - Variant 3 (80 cases / 16.0%): Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge
+     - Variant 4 (50 cases / 10.0%): Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge
+     - Variant 5 (35 cases / 7.0%): Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge
+     - Variant 6 (25 cases / 5.0%): Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge
+   - Key Observed Transition Intervals:
+     - `Laboratory -> Consultation`: 135 transitions, Median = 67.0m, Mean = 67.44m (longest transition in pathway).
+     - `Triage -> Triage` (re-triage loop): 60 transitions across 60 cases, Median = 64.5m, Mean = 65.63m.
+     - `X-Ray -> Consultation`: 130 transitions, Median = 61.0m, Mean = 60.36m.
+3. **Automated Testing & Remote Push:**
+   - Created `tests/test_process_miner.py` with 19 unit tests covering schema validation, error handling, a handcrafted 2-case 11-event fixture with known manual metrics, canonical dataset metrics, output exports, and dataset immutability.
+   - Executed full test suite: all 56 unit tests and 8 subtests passed in ~10-14s.
+   - Committed five files (`src/process_miner.py`, `tests/test_process_miner.py`, and 3 files in `outputs/`) under commit `5e1e134` and pushed to `origin/main`.
+
+### Commands Executed
+```powershell
+.\.venv\Scripts\python.exe -m pip install pm4py==2.7.8
+.\.venv\Scripts\python.exe -m src.process_miner --input data/raw/hospital_events_simulated.csv --output-dir outputs
+.\.venv\Scripts\python.exe -m pytest -v tests/test_process_miner.py
+.\.venv\Scripts\python.exe -m pytest -v
+.\.venv\Scripts\dbt.exe parse --project-dir careflow_dbt --profiles-dir careflow_dbt
+git diff --check
+git add src/process_miner.py tests/test_process_miner.py outputs/dfg_transitions_summary.csv outputs/pathway_variants_summary.csv outputs/process_mining_summary.json
+git commit -m "feat: implement offline process mining module, DFG discovery, and tests"
+git push origin main
+```
+
+### Test Results
+- `tests/test_bq_loader.py`: 14 passed
+- `tests/test_data_generator.py`: 12 passed (with 8 subtests)
+- `tests/test_dbt_setup.py`: 11 passed
+- `tests/test_process_miner.py`: 19 passed
+- Total: 56 passed, 8 subtests passed (100% pass rate).
+- `dbt parse`: Exit code 0.
+- `git diff --check`: 0 whitespace errors.
+
+---
+
+*Last Updated: Day 9 (October 20, 2026)*

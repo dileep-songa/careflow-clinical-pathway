@@ -41,13 +41,27 @@
 
 ---
 
-## Week 2: Data Cleaning & Normalization
+## Week 2: Data Cleaning, Normalization & Process Discovery
 
-### Objectives
-- Standardize event names
-- Remove invalid records
-- Create cleaned event log table
-- Prepare for PM4Py process discovery
+### Day 8: Environment Hardening & PM4Py Integration
+- [x] Audit repository and lock exact Python 3.12 wheel pins in `requirements.txt`
+- [x] Add directory structure placeholders (`data/cleaned/`, `notebooks/`, `reports/`)
+- [x] Create cleanup commit `a8d21d3` and push to remote
+- [x] Perform controlled installation of `pm4py==2.7.8` in `.venv`
+- [x] Verify PM4Py import and ensure zero regressions across 37 existing tests
+
+### Day 9: Offline Process Mining & DFG Discovery
+- [x] Implement `src/process_miner.py` with defensive validation and PM4Py formatting
+- [x] Calculate cohort metrics and observed case duration statistics (Mean: 202.5 min, Median: 211.0 min)
+- [x] Discover Directly-Follows Graph (DFG) across all 10 transitions with observed transition times
+- [x] Extract and rank 6 clinical pathway variants (including 60 re-triage encounters)
+- [x] Add graceful fallback when Graphviz system binary is missing
+- [x] Export reproducible summary tables to `outputs/`
+- [x] Add 19 automated unit tests in `tests/test_process_miner.py` (total: 56 passing tests + 8 subtests)
+- [x] Create commit `5e1e134` and push to remote
+
+### Cloud Integration Status (Deferred)
+- Note: Live BigQuery table provisioning (`careflow_raw.hospital_events_raw`) and warehouse view materialization (`careflow_staging.stg_hospital_events` via `dbt run`) are deferred until GCP credentials are configured. Offline process mining operates completely and deterministically on the baseline dataset.
 
 ---
 
