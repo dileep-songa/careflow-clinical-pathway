@@ -15,6 +15,7 @@ Validates:
 from __future__ import annotations
 
 import csv
+from datetime import datetime
 import hashlib
 from pathlib import Path
 import tempfile
@@ -25,6 +26,9 @@ import pandas as pd
 import pm4py
 
 from src.process_miner import (
+    NORMALIZED_COLUMN_MAPPING,
+    NORMALIZED_REQUIRED_BASE_COLUMNS,
+    RAW_REQUIRED_COLUMNS,
     REQUIRED_COLUMNS,
     build_transition_summary_table,
     calculate_activity_frequencies,
@@ -33,9 +37,12 @@ from src.process_miner import (
     discover_directly_follows_graph,
     extract_pathway_variants,
     load_event_log,
+    load_normalized_event_log,
+    normalize_staging_dataframe,
     render_dfg_visualization,
     run_process_mining_pipeline,
     validate_event_log_dataframe,
+    validate_normalized_event_log_dataframe,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -349,6 +356,221 @@ class TestProcessMinerOutputsAndRendering(unittest.TestCase):
             )
             # If dot is not in PATH, result is None; if dot is installed, it returns Path
             self.assertTrue(result is None or isinstance(result, Path))
+
+
+class TestProcessMinerNormalizedSchema(unittest.TestCase):
+    """Test normalized staging schema loading, validation, mapping, and metric parity."""
+
+    def test_valid_normalized_input_with_raw_activity_name(self) -> None:
+        """Verify normalized dataset with raw_activity_name loads and maps to canonical schema."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "case_id", "event_sequence", "raw_activity_name", "activity_name",
+                "event_timestamp", "event_date", "department", "resource_id",
+                "data_provenance", "previous_activity", "transition_minutes_from_previous",
+            ])
+            # Case C1: 2 events
+            writer.writerow(["C1", "1", "Registration", "registration", "2024-10-01 10:00:00", "2024-10-01", "ER", "R1", "SIMULATED", "", ""])
+            writer.writerow(["C1", "2", "Triage", "triage", "2024-10-01 10:20:00", "2024-10-01", "ER", "R2", "SIMULATED", "Registration", "20"])
+            temp_path = Path(f.name)
+
+        try:
+            # Test load_event_log with explicit schema="normalized"
+            df = load_event_log(temp_path, schema="normalized")
+            self.assertEqual(len(df), 2)
+            for col in REQUIRED_COLUMNS:
+                self.assertIn(col, df.columns)
+            self.assertEqual(df["Activity_Name"].tolist(), ["Registration", "Triage"])
+            self.assertEqual(df["Case_ID"].tolist(), ["C1", "C1"])
+            self.assertEqual(df["Data_Type"].tolist(), ["SIMULATED", "SIMULATED"])
+
+            # Test dedicated helper load_normalized_event_log
+            df_helper = load_normalized_event_log(temp_path)
+            self.assertEqual(len(df_helper), 2)
+            self.assertEqual(df_helper["Activity_Name"].tolist(), ["Registration", "Triage"])
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    def test_valid_normalized_input_with_only_activity_name(self) -> None:
+        """Verify normalized dataset with only activity_name (snake_case) falls back cleanly."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "case_id", "activity_name", "event_timestamp", "department", "resource_id", "data_provenance",
+            ])
+            writer.writerow(["C1", "registration", "2024-10-01 10:00:00", "ER", "R1", "SIMULATED"])
+            writer.writerow(["C1", "triage", "2024-10-01 10:25:00", "ER", "R2", "SIMULATED"])
+            temp_path = Path(f.name)
+
+        try:
+            df = load_event_log(temp_path, schema="normalized")
+            self.assertEqual(len(df), 2)
+            self.assertEqual(df["Activity_Name"].tolist(), ["registration", "triage"])
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    def test_normalized_missing_required_base_columns_raises_error(self) -> None:
+        """Verify ValueError is raised if any base normalized columns are missing."""
+        df_missing = pd.DataFrame(
+            {
+                "case_id": ["C1"],
+                "raw_activity_name": ["Registration"],
+                # Missing event_timestamp, department, resource_id, data_provenance
+            }
+        )
+        with self.assertRaises(ValueError) as ctx:
+            validate_normalized_event_log_dataframe(df_missing)
+        self.assertIn("missing required columns", str(ctx.exception).lower())
+
+    def test_normalized_missing_both_activity_columns_raises_error(self) -> None:
+        """Verify ValueError is raised if neither raw_activity_name nor activity_name is present."""
+        df_no_activity = pd.DataFrame(
+            {
+                "case_id": ["C1"],
+                "event_timestamp": ["2024-10-01 10:00:00"],
+                "department": ["ER"],
+                "resource_id": ["R1"],
+                "data_provenance": ["SIMULATED"],
+            }
+        )
+        with self.assertRaises(ValueError) as ctx:
+            validate_normalized_event_log_dataframe(df_no_activity)
+        self.assertIn("missing required columns", str(ctx.exception).lower())
+        self.assertIn("activity_name", str(ctx.exception).lower())
+
+    def test_normalized_empty_dataframe_raises_error(self) -> None:
+        """Verify ValueError is raised if normalized DataFrame has zero rows."""
+        df_empty = pd.DataFrame(
+            columns=NORMALIZED_REQUIRED_BASE_COLUMNS + ["raw_activity_name"]
+        )
+        with self.assertRaises(ValueError) as ctx:
+            validate_normalized_event_log_dataframe(df_empty)
+        self.assertIn("zero records", str(ctx.exception).lower())
+
+    def test_normalized_empty_or_whitespace_values_raise_error(self) -> None:
+        """Verify ValueError is raised if required normalized columns contain blank values."""
+        df_blank = pd.DataFrame(
+            {
+                "case_id": ["C1", "   "],
+                "raw_activity_name": ["Registration", "Triage"],
+                "event_timestamp": ["2024-10-01 10:00:00", "2024-10-01 10:15:00"],
+                "department": ["ER", "ER"],
+                "resource_id": ["R1", "R2"],
+                "data_provenance": ["SIMULATED", "SIMULATED"],
+            }
+        )
+        with self.assertRaises(ValueError) as ctx:
+            validate_normalized_event_log_dataframe(df_blank)
+        self.assertIn("empty or whitespace", str(ctx.exception).lower())
+
+    def test_normalized_allows_null_lag_columns(self) -> None:
+        """Verify validation passes when optional lag columns have null values for initial case events."""
+        df_with_null_lags = pd.DataFrame(
+            {
+                "case_id": ["C1", "C1"],
+                "raw_activity_name": ["Registration", "Triage"],
+                "event_timestamp": ["2024-10-01 10:00:00", "2024-10-01 10:20:00"],
+                "department": ["ER", "ER"],
+                "resource_id": ["R1", "R2"],
+                "data_provenance": ["SIMULATED", "SIMULATED"],
+                "previous_activity": [None, "Registration"],
+                "transition_minutes_from_previous": [None, "20"],
+            }
+        )
+        norm_df = normalize_staging_dataframe(df_with_null_lags)
+        self.assertEqual(len(norm_df), 2)
+        self.assertIn("Activity_Name", norm_df.columns)
+
+    def test_normalized_invalid_timestamp_raises_error(self) -> None:
+        """Verify ValueError is raised when normalized timestamp string fails parsing."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "case_id", "raw_activity_name", "event_timestamp",
+                "department", "resource_id", "data_provenance",
+            ])
+            writer.writerow(["C1", "Registration", "invalid-staging-ts", "ER", "R1", "SIMULATED"])
+            temp_path = Path(f.name)
+
+        try:
+            with self.assertRaises(ValueError) as ctx:
+                load_event_log(temp_path, schema="normalized")
+            self.assertIn("failed to parse timestamp", str(ctx.exception).lower())
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    def test_normalized_iso_and_utc_timestamps_parse_cleanly(self) -> None:
+        """Verify timestamps formatted with ISO8601 'T' and 'Z' parse to UTC without errors."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "case_id", "raw_activity_name", "event_timestamp",
+                "department", "resource_id", "data_provenance",
+            ])
+            writer.writerow(["C1", "Registration", "2024-10-01T10:00:00Z", "ER", "R1", "SIMULATED"])
+            writer.writerow(["C1", "Triage", "2024-10-01T10:25:00Z", "ER", "R2", "SIMULATED"])
+            temp_path = Path(f.name)
+
+        try:
+            df = load_event_log(temp_path, schema="normalized")
+            self.assertEqual(len(df), 2)
+            self.assertTrue(pd.api.types.is_datetime64_any_dtype(df["Timestamp"]))
+            self.assertEqual(str(df["Timestamp"].dt.tz), "UTC")
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    def test_unsupported_schema_value_raises_error(self) -> None:
+        """Verify ValueError is raised if an invalid schema string is provided."""
+        with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as f:
+            temp_path = Path(f.name)
+        try:
+            with self.assertRaises(ValueError) as ctx:
+                load_event_log(temp_path, schema="unsupported_schema")
+            self.assertIn("unsupported schema", str(ctx.exception).lower())
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    def test_schema_mismatch_fails_defensively(self) -> None:
+        """Verify passing raw CSV with schema='normalized' fails loudly without guessing."""
+        with self.assertRaises(ValueError) as ctx:
+            load_event_log(CANONICAL_CSV, schema="normalized")
+        self.assertIn("missing required columns", str(ctx.exception).lower())
+
+    def test_canonical_transformed_matches_raw_metrics(self) -> None:
+        """Verify pipeline execution on canonical data transformed to normalized staging schema produces identical metrics."""
+        from tests.test_dbt_setup import apply_stg_hospital_events_transformation
+
+        # Read canonical raw records
+        raw_df = pd.read_csv(CANONICAL_CSV, dtype=str)
+        raw_records = raw_df.to_dict(orient="records")
+        staged_records = apply_stg_hospital_events_transformation(raw_records)
+
+        # Write to temporary staging CSV
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=list(staged_records[0].keys()))
+            writer.writeheader()
+            for r in staged_records:
+                row_copy = dict(r)
+                if isinstance(row_copy.get("event_timestamp"), datetime):
+                    row_copy["event_timestamp"] = row_copy["event_timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+                writer.writerow(row_copy)
+            temp_staging_path = Path(f.name)
+
+        try:
+            results = run_process_mining_pipeline(temp_staging_path, schema="normalized")
+            summary = results["summary"]
+            self.assertEqual(summary.total_events, CANONICAL_ROWS)
+            self.assertEqual(summary.total_cases, CANONICAL_CASES)
+            self.assertEqual(summary.distinct_activities, 7)
+            self.assertEqual(summary.total_variants, 6)
+            self.assertEqual(summary.min_duration_minutes, 95.0)
+            self.assertEqual(summary.max_duration_minutes, 354.0)
+            self.assertEqual(summary.mean_duration_minutes, 202.54)
+            self.assertEqual(summary.median_duration_minutes, 211.0)
+            self.assertEqual(summary.std_duration_minutes, 62.44)
+        finally:
+            temp_staging_path.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

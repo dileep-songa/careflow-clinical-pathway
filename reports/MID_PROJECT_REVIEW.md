@@ -2,7 +2,6 @@
 ## Mid-Project Review Report: Pathway Discovery & Pipeline Status
 
 - **Project:** CareFlow — Clinical Pathway Process Mining
-- **Date:** October 20, 2026
 - **Intern / Analyst:** Data Analyst Intern
 - **Repository:** `c:\project\careflow-clinical-pathway`
 - **Milestone:** Mid-Project Review (Weeks 1–2 Review & Weeks 3–4 Roadmap)

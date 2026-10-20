@@ -42,8 +42,8 @@ if not logger.handlers:
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
 
-# Canonical 6-column contract
-REQUIRED_COLUMNS: List[str] = [
+# Canonical 6-column contract (Raw schema)
+RAW_REQUIRED_COLUMNS: List[str] = [
     "Case_ID",
     "Activity_Name",
     "Timestamp",
@@ -51,6 +51,27 @@ REQUIRED_COLUMNS: List[str] = [
     "Resource",
     "Data_Type",
 ]
+
+# Backward compatibility alias
+REQUIRED_COLUMNS: List[str] = RAW_REQUIRED_COLUMNS
+
+# Normalized schema required base columns (dbt staging output)
+NORMALIZED_REQUIRED_BASE_COLUMNS: List[str] = [
+    "case_id",
+    "event_timestamp",
+    "department",
+    "resource_id",
+    "data_provenance",
+]
+
+# Mapping from normalized staging columns to CareFlow canonical schema
+NORMALIZED_COLUMN_MAPPING: Dict[str, str] = {
+    "case_id": "Case_ID",
+    "event_timestamp": "Timestamp",
+    "department": "Department",
+    "resource_id": "Resource",
+    "data_provenance": "Data_Type",
+}
 
 
 @dataclass(frozen=True)
@@ -72,11 +93,15 @@ class EventLogSummary:
     top_variants: List[Dict[str, Any]]
 
 
-def load_event_log(file_path: Union[str, Path]) -> pd.DataFrame:
+def load_event_log(
+    file_path: Union[str, Path],
+    schema: str = "raw",
+) -> pd.DataFrame:
     """Load and validate a clinical event log CSV file without modifying it.
 
     Args:
         file_path: Path to the event log CSV.
+        schema: Schema format of the input file ('raw' or 'normalized'). Default: 'raw'.
 
     Returns:
         A validated, cleaned pandas DataFrame with parsed UTC Timestamps,
@@ -85,8 +110,14 @@ def load_event_log(file_path: Union[str, Path]) -> pd.DataFrame:
     Raises:
         FileNotFoundError: If the CSV file does not exist.
         ValueError: If the file is empty, missing required columns, contains
-            empty/whitespace required values, or contains unparseable timestamps.
+            empty/whitespace required values, contains unparseable timestamps,
+            or an unsupported schema is specified.
     """
+    if schema not in ("raw", "normalized"):
+        raise ValueError(
+            f"Unsupported schema '{schema}'. Expected 'raw' or 'normalized'."
+        )
+
     path = Path(file_path).resolve()
     if not path.is_file():
         raise FileNotFoundError(f"Event log file not found at: {path}")
@@ -100,12 +131,34 @@ def load_event_log(file_path: Union[str, Path]) -> pd.DataFrame:
     except Exception as exc:
         raise ValueError(f"Failed to read CSV at {path}: {exc}") from exc
 
-    validate_event_log_dataframe(df)
+    if schema == "normalized":
+        df = normalize_staging_dataframe(df)
+    else:
+        validate_event_log_dataframe(df)
+
     return parse_and_sort_event_log(df)
 
 
+def load_normalized_event_log(file_path: Union[str, Path]) -> pd.DataFrame:
+    """Load and validate a normalized staging event log CSV without modifying it.
+
+    Args:
+        file_path: Path to the normalized event log CSV.
+
+    Returns:
+        A validated, cleaned pandas DataFrame mapped to the canonical CareFlow schema
+        with parsed UTC Timestamps, sorted chronologically within each patient encounter.
+
+    Raises:
+        FileNotFoundError: If the CSV file does not exist.
+        ValueError: If the file is empty, missing required columns, contains
+            empty/whitespace required values, or contains unparseable timestamps.
+    """
+    return load_event_log(file_path, schema="normalized")
+
+
 def validate_event_log_dataframe(df: pd.DataFrame) -> None:
-    """Validate DataFrame structure against the CareFlow schema contract.
+    """Validate DataFrame structure against the CareFlow raw schema contract.
 
     Args:
         df: Raw event log DataFrame.
@@ -139,11 +192,96 @@ def validate_event_log_dataframe(df: pd.DataFrame) -> None:
         )
 
 
+def validate_normalized_event_log_dataframe(df: pd.DataFrame) -> None:
+    """Validate DataFrame structure against the normalized CareFlow staging contract.
+
+    Args:
+        df: Normalized staging event log DataFrame.
+
+    Raises:
+        ValueError: If base columns are missing, neither activity column is present,
+            the DataFrame is empty, or required columns contain null/whitespace values.
+    """
+    if df.empty:
+        raise ValueError("Normalized event log DataFrame contains zero records.")
+
+    # 1. Base column existence
+    missing_columns = [
+        col for col in NORMALIZED_REQUIRED_BASE_COLUMNS if col not in df.columns
+    ]
+    has_raw_activity = "raw_activity_name" in df.columns
+    has_activity = "activity_name" in df.columns
+
+    if not has_raw_activity and not has_activity:
+        missing_columns.append("raw_activity_name' or 'activity_name")
+
+    if missing_columns:
+        raise ValueError(
+            f"Normalized event log is missing required columns: {missing_columns}. "
+            f"Expected base columns: {NORMALIZED_REQUIRED_BASE_COLUMNS} and at least one "
+            f"of ['raw_activity_name', 'activity_name']."
+        )
+
+    # 2. Check for null or blank values across required columns
+    active_act_col = "raw_activity_name" if has_raw_activity else "activity_name"
+    cols_to_check = NORMALIZED_REQUIRED_BASE_COLUMNS + [active_act_col]
+
+    empty_report: Dict[str, int] = {}
+    for col in cols_to_check:
+        empty_mask = df[col].isna() | (df[col].astype(str).str.strip() == "")
+        empty_count = int(empty_mask.sum())
+        if empty_count > 0:
+            empty_report[col] = empty_count
+
+    if empty_report:
+        raise ValueError(
+            f"Normalized required columns contain empty or whitespace-only values: {empty_report}"
+        )
+
+
+def normalize_staging_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert normalized staging DataFrame into the canonical CareFlow schema.
+
+    Maps:
+        - case_id -> Case_ID
+        - raw_activity_name -> Activity_Name (when available; otherwise activity_name)
+        - event_timestamp -> Timestamp
+        - department -> Department
+        - resource_id -> Resource
+        - data_provenance -> Data_Type
+
+    Args:
+        df: Raw DataFrame matching the dbt staging schema.
+
+    Returns:
+        DataFrame conforming to CareFlow canonical schema (Case_ID, Activity_Name, Timestamp,
+        Department, Resource, Data_Type) plus any auxiliary staging columns preserved.
+
+    Raises:
+        ValueError: If validation fails.
+    """
+    validate_normalized_event_log_dataframe(df)
+
+    out_df = df.copy()
+
+    # Map activity name: raw_activity_name preferred, fallback to activity_name
+    if "raw_activity_name" in out_df.columns:
+        out_df["Activity_Name"] = out_df["raw_activity_name"]
+    else:
+        out_df["Activity_Name"] = out_df["activity_name"]
+
+    # Map base columns
+    for norm_col, canon_col in NORMALIZED_COLUMN_MAPPING.items():
+        out_df[canon_col] = out_df[norm_col]
+
+    return out_df
+
+
 def parse_and_sort_event_log(df: pd.DataFrame) -> pd.DataFrame:
     """Parse timestamps and deterministically order events by case and timestamp.
 
     Args:
-        df: Validated event log DataFrame with string timestamps.
+        df: Validated event log DataFrame with string timestamps or datetime values.
 
     Returns:
         Sorted DataFrame with parsed UTC datetimes.
@@ -153,18 +291,33 @@ def parse_and_sort_event_log(df: pd.DataFrame) -> pd.DataFrame:
     """
     cleaned_df = df.copy()
 
-    # Parse timestamps using strict ISO format
-    try:
-        cleaned_df["Timestamp"] = pd.to_datetime(
-            cleaned_df["Timestamp"],
-            format="%Y-%m-%d %H:%M:%S",
-            utc=True,
-            errors="raise",
-        )
-    except Exception as exc:
-        raise ValueError(
-            f"Failed to parse Timestamp column with format '%Y-%m-%d %H:%M:%S': {exc}"
-        ) from exc
+    # Parse timestamps using strict format with ISO8601 fallback
+    if not pd.api.types.is_datetime64_any_dtype(cleaned_df["Timestamp"]):
+        try:
+            cleaned_df["Timestamp"] = pd.to_datetime(
+                cleaned_df["Timestamp"],
+                format="%Y-%m-%d %H:%M:%S",
+                utc=True,
+                errors="raise",
+            )
+        except Exception:
+            try:
+                cleaned_df["Timestamp"] = pd.to_datetime(
+                    cleaned_df["Timestamp"],
+                    format="ISO8601",
+                    utc=True,
+                    errors="raise",
+                )
+            except Exception as exc:
+                raise ValueError(
+                    f"Failed to parse Timestamp column with format '%Y-%m-%d %H:%M:%S': {exc}"
+                ) from exc
+    else:
+        # Standardize existing datetime objects to UTC
+        if cleaned_df["Timestamp"].dt.tz is None:
+            cleaned_df["Timestamp"] = cleaned_df["Timestamp"].dt.tz_localize("UTC")
+        else:
+            cleaned_df["Timestamp"] = cleaned_df["Timestamp"].dt.tz_convert("UTC")
 
     # Deterministic multi-key sort: Case_ID ASC, Timestamp ASC, Activity_Name ASC, Resource ASC
     cleaned_df = cleaned_df.sort_values(
@@ -423,21 +576,25 @@ def compute_event_log_summary(
 def run_process_mining_pipeline(
     csv_path: Union[str, Path],
     output_dir: Optional[Union[str, Path]] = None,
+    schema: str = "raw",
 ) -> Dict[str, Any]:
     """Execute end-to-end offline process-mining pipeline on an event log CSV.
 
     Args:
-        csv_path: Path to raw input event log CSV.
+        csv_path: Path to input event log CSV.
         output_dir: Optional directory to store summary CSVs and diagram.
+        schema: Input schema format ('raw' or 'normalized'). Default: 'raw'.
 
     Returns:
         Dictionary containing summary dataclass, transition summary table,
         and paths to exported files.
     """
-    logger.info(f"Starting CareFlow offline process mining on: {csv_path}")
+    logger.info(
+        f"Starting CareFlow offline process mining on: {csv_path} (schema: {schema})"
+    )
 
     # 1. Load and validate
-    df = load_event_log(csv_path)
+    df = load_event_log(csv_path, schema=schema)
     logger.info(
         f"Loaded and validated {len(df)} events across {df['Case_ID'].nunique()} cases."
     )
@@ -526,12 +683,21 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="reports",
-        help="Directory to save analysis summaries and diagrams",
+        default="outputs",
+        help="Directory to save analysis summaries and diagrams (default: 'outputs')",
+    )
+    parser.add_argument(
+        "--schema",
+        type=str,
+        choices=["raw", "normalized"],
+        default="raw",
+        help="Schema type of the input event log ('raw' or 'normalized'). Default: 'raw'.",
     )
     args = parser.parse_args()
 
-    results = run_process_mining_pipeline(args.input, args.output_dir)
+    results = run_process_mining_pipeline(
+        args.input, args.output_dir, schema=args.schema
+    )
     summary: EventLogSummary = results["summary"]
 
     print("\n" + "=" * 60)
