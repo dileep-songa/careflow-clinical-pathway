@@ -539,7 +539,7 @@ class TestProcessMinerNormalizedSchema(unittest.TestCase):
 
     def test_canonical_transformed_matches_raw_metrics(self) -> None:
         """Verify pipeline execution on canonical data transformed to normalized staging schema produces identical metrics."""
-        from tests.test_dbt_setup import apply_stg_hospital_events_transformation
+        from src.staging_transform import apply_stg_hospital_events_transformation
 
         # Read canonical raw records
         raw_df = pd.read_csv(CANONICAL_CSV, dtype=str)
