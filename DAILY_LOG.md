@@ -544,4 +544,55 @@ git push origin main
 
 ---
 
-*Last Updated: Day 9 (October 20, 2026)*
+## Day 10 - Staging Transformation Refactor, Normalized Event Log Validation, and Process Map Visualization
+**Date:** October 21-22, 2026
+**Status:** ✅ Complete
+
+### Objectives for Day 10
+- [x] Extend `src/process_miner.py` to support normalized dbt staging event logs alongside raw logs
+- [x] Add comprehensive normalized schema unit tests in `tests/test_process_miner.py` (expanding suite from 56 to 68 tests)
+- [x] Refactor staging transformation from test module into dedicated production module `src/staging_transform.py`
+- [x] Build standalone event log normalization script `src/normalize_event_log.py`
+- [x] Generate and validate `data/cleaned/stg_hospital_events.csv` (3,140 events, 500 cases, 11 staging columns)
+- [x] Complete Mid-Project Review report (`reports/MID_PROJECT_REVIEW.md`) synthesizing pathway discovery findings
+- [x] Resolve Graphviz dependency requirement and render As-Is process map diagram (`outputs/dfg_visualization.png`)
+- [x] Create commits `cdd445d` (refactor normalization into production modules) and `05b4d21` (add DFG visualization) and push to `origin/main`
+
+### What Was Done
+1. **Normalized Schema Support in Process Miner:**
+   - Updated `src/process_miner.py` with `load_normalized_event_log`, `validate_normalized_event_log_dataframe`, and `normalize_staging_dataframe`.
+   - Added CLI `--schema` parameter supporting both `raw` and `normalized` input files.
+   - Added 12 new unit tests in `tests/test_process_miner.py` covering normalized schema validation, ISO/UTC timestamp parsing, missing columns, and metric parity against the raw pipeline.
+2. **Production Staging Transformation Refactor:**
+   - Extracted `apply_stg_hospital_events_transformation` from `tests/test_dbt_setup.py` into a new production module `src/staging_transform.py`.
+   - Updated `src/normalize_event_log.py` and `tests/test_dbt_setup.py` to import from `src.staging_transform`, eliminating test-module dependencies in production code.
+   - Executed `src/normalize_event_log.py` to generate `data/cleaned/stg_hospital_events.csv` with 100% parity across all 3,140 events, 500 cases, 60 re-triage loops, and 265 diagnostic follow-ups.
+3. **Mid-Project Review & As-Is Process Map Visualization:**
+   - Compiled comprehensive mid-project documentation in `reports/MID_PROJECT_REVIEW.md` detailing discovered variants, transitions, operational bottlenecks, and zero-spend cloud boundaries.
+   - Generated the As-Is clinical process map diagram `outputs/dfg_visualization.png` (30,312 bytes) using PM4Py and Graphviz `dot`.
+   - Committed the visualization under commit `05b4d21` (`feat: add Week 2 process mining visualization`) and synchronized with `origin/main`.
+
+### Commands Executed
+```powershell
+.\.venv\Scripts\python.exe -m src.normalize_event_log --input data/raw/hospital_events_simulated.csv --output data/cleaned/stg_hospital_events.csv
+.\.venv\Scripts\python.exe -m src.process_miner --input data/cleaned/stg_hospital_events.csv --output-dir outputs --schema normalized
+.\.venv\Scripts\python.exe -m pytest -v
+.\.venv\Scripts\dbt.exe parse --project-dir careflow_dbt --profiles-dir careflow_dbt
+git diff --check
+git commit -m "refactor: extract event normalization into production modules"
+git commit -m "feat: add Week 2 process mining visualization"
+git push origin main
+```
+
+### Test Results
+- `tests/test_bq_loader.py`: 14 passed
+- `tests/test_data_generator.py`: 12 passed (with 8 subtests)
+- `tests/test_dbt_setup.py`: 11 passed
+- `tests/test_process_miner.py`: 31 passed (19 baseline + 12 normalized schema tests)
+- Total: 68 passed, 8 subtests passed (100% pass rate).
+- `dbt parse`: Exit code 0.
+- `git diff --check`: 0 whitespace errors.
+
+---
+
+*Last Updated: Day 10 (October 22, 2026)*

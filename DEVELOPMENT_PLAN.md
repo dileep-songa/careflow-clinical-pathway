@@ -60,6 +60,15 @@
 - [x] Add 19 automated unit tests in `tests/test_process_miner.py` (total: 56 passing tests + 8 subtests)
 - [x] Create commit `5e1e134` and push to remote
 
+### Day 10: Event Normalization, Schema Adapter & As-Is Visualization
+- [x] Extract staging transformation logic into production module `src/staging_transform.py`
+- [x] Create standalone event log normalization script `src/normalize_event_log.py`
+- [x] Generate and validate normalized event log `data/cleaned/stg_hospital_events.csv` (3,140 events across 500 cases)
+- [x] Extend `src/process_miner.py` to support normalized dbt staging schema
+- [x] Add 12 unit tests for normalized schema validation and metric parity (total: 68 passing tests + 8 subtests)
+- [x] Render and export As-Is clinical process map diagram (`outputs/dfg_visualization.png`) via commit `05b4d21`
+- [x] Complete comprehensive Mid-Project Review report (`reports/MID_PROJECT_REVIEW.md`)
+
 ### Cloud Integration Status (Deferred)
 - Note: Live BigQuery table provisioning (`careflow_raw.hospital_events_raw`) and warehouse view materialization (`careflow_staging.stg_hospital_events` via `dbt run`) are deferred until GCP credentials are configured. Offline process mining operates completely and deterministically on the baseline dataset.
 

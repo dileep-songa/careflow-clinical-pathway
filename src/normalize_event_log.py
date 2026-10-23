@@ -195,7 +195,7 @@ def normalize_event_log(
         raw_records = list(csv.DictReader(f))
 
     logger.info(f"Read {len(raw_records)} raw records. Applying staging transformation...")
-    # Reuses tested transformation logic from tests/test_dbt_setup.py
+    # Reuses tested transformation logic from src.staging_transform
     transformed_records = apply_stg_hospital_events_transformation(raw_records)
 
     logger.info(

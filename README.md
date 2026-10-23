@@ -35,6 +35,7 @@ careflow-clinical-pathway/
 ├── notebooks/
 ├── outputs/
 │   ├── dfg_transitions_summary.csv
+│   ├── dfg_visualization.png
 │   ├── pathway_variants_summary.csv
 │   └── process_mining_summary.json
 ├── reports/
@@ -45,6 +46,8 @@ careflow-clinical-pathway/
 │   ├── constants.py
 │   ├── data_generator.py
 │   ├── bq_loader.py
+│   ├── staging_transform.py
+│   ├── normalize_event_log.py
 │   ├── process_miner.py
 │   └── project_config.py
 ├── tests/
@@ -149,6 +152,7 @@ python -m src.process_miner --input data/raw/hospital_events_simulated.csv --out
 
 Key outputs generated in `outputs/`:
 - `dfg_transitions_summary.csv`: 10 direct process transitions with frequency counts, median observed transition durations, and mean observed transition durations in minutes.
+- `dfg_visualization.png`: Discovered As-Is clinical process map diagram generated via PM4Py Directly-Follows Graph (DFG) rendering.
 - `pathway_variants_summary.csv`: 6 discovered pathway variants across 500 patient journeys, case counts, cohort percentages, and complete activity sequence traces.
 - `process_mining_summary.json`: Structured cohort summary covering total cases (500), events (3,140), start/end activity distributions (100% Registration / 100% Discharge), re-triage case volume (60 cases / 12.0%), and case duration statistics (Min: 95.0m, Median: 211.0m, Mean: 202.54m, Max: 354.0m, Std: 62.44m).
 
@@ -158,8 +162,8 @@ Run the complete unit test suite across data generator, BigQuery loader, dbt set
 pytest -v
 ```
 
-Current test coverage: **56 passing tests + 8 subtests** (100% pass rate).
+Current test coverage: **68 passing tests + 8 subtests** (100% pass rate).
 
 ## Status
 - 🟢 **Week 1:** Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing)
-- 🟢 **Week 2:** Offline Process Mining Module, DFG Discovery, and Test Suite Expansion (56/56 tests passing, 8 subtests passing; live BigQuery run deferred pending GCP credentials)
+- 🟢 **Week 2:** Data Normalization, Offline Process Mining, DFG Discovery & Visualization (68/68 tests passing, 8 subtests passing; live BigQuery run deferred pending GCP credentials)
