@@ -36,7 +36,7 @@
 - [x] Verify Python 3.12 compatibility with dbt Core and dbt-bigquery
 - [x] Resolve dbt profile discovery and protect profiles in `.gitignore`
 - [x] Validate project manifest offline using `dbt parse`
-- [x] Expand test suite to 37 passing tests (+8 subtests)
+- [x] Expand test suite to 37 passing tests (+8 subtests) [Week 1 milestone snapshot]
 
 
 ---
@@ -57,7 +57,7 @@
 - [x] Extract and rank 6 clinical pathway variants (including 60 re-triage encounters)
 - [x] Add graceful fallback when Graphviz system binary is missing
 - [x] Export reproducible summary tables to `outputs/`
-- [x] Add 19 automated unit tests in `tests/test_process_miner.py` (total: 56 passing tests + 8 subtests)
+- [x] Add 19 automated unit tests in `tests/test_process_miner.py` (total: 56 passing tests + 8 subtests at Day 9 snapshot)
 - [x] Create commit `5e1e134` and push to remote
 
 ### Day 10: Event Normalization, Schema Adapter & As-Is Visualization
@@ -65,12 +65,14 @@
 - [x] Create standalone event log normalization script `src/normalize_event_log.py`
 - [x] Generate and validate normalized event log `data/cleaned/stg_hospital_events.csv` (3,140 events across 500 cases)
 - [x] Extend `src/process_miner.py` to support normalized dbt staging schema
-- [x] Add 12 unit tests for normalized schema validation and metric parity (total: 68 passing tests + 8 subtests)
+- [x] Add 12 unit tests for normalized schema validation and metric parity (current full suite: 68 passing tests + 8 subtests)
 - [x] Render and export As-Is clinical process map diagram (`outputs/dfg_visualization.png`) via commit `05b4d21`
 - [x] Complete comprehensive Mid-Project Review report (`reports/MID_PROJECT_REVIEW.md`)
 
-### Cloud Integration Status (Deferred)
-- Note: Live BigQuery table provisioning (`careflow_raw.hospital_events_raw`) and warehouse view materialization (`careflow_staging.stg_hospital_events` via `dbt run`) are deferred until GCP credentials are configured. Offline process mining operates completely and deterministically on the baseline dataset.
+### Cloud Integration Status
+- **Raw BigQuery Table (Verified):** The canonical table `exalted-mode-467509-h1.careflow_raw.hospital_events_raw` is provisioned in BigQuery and populated with all 3,140 simulated events across 500 cases with 100% verified schema integrity (zero missing values across all six columns, zero missing timestamps, and 100% tagged as `SIMULATED`).
+- **dbt Resource Discovery & Offline Verification (Verified):** The dbt staging model, source definitions, and schema tests are fully configured and verified offline (`dbt parse` succeeds with 0 errors; `dbt ls` discovers 1 staging model, 20 data tests, and 1 source).
+- **dbt Staging Cloud Materialization (Deferred / Optional):** Live execution of `dbt run` and `dbt test` against BigQuery to materialize `careflow_staging.stg_hospital_events` is optional, has not been executed, and is not part of the current zero-spend workflow. Offline process mining operates completely and deterministically on the verified local normalized dataset (`data/cleaned/stg_hospital_events.csv`).
 
 ---
 

@@ -1,24 +1,24 @@
-# CareFlow: Clinical Pathway Process Mining
-## Mid-Project Review Report: Pathway Discovery & Pipeline Status
+# CareFlow Clinical Pathway Analytics
+## Mid-Project Technical Review & Progress Assessment
 
-- **Project:** CareFlow — Clinical Pathway Process Mining
+- **Project:** CareFlow Clinical Pathway Analytics
 - **Intern / Analyst:** Data Analyst Intern
 - **Repository:** `c:\project\careflow-clinical-pathway`
-- **Milestone:** Mid-Project Review (Weeks 1–2 Review & Weeks 3–4 Roadmap)
-- **Status:** ✅ Complete Offline / Cloud Boundary Documented
+- **Scope:** Weeks 1-2 Results & Weeks 3-4 Roadmap
+- **Status:** Complete Offline (Weeks 1-2) / Cloud Boundary Documented / Weeks 3-4 Pending
 
 ---
 
 ## 1. Executive Summary
 
-The CareFlow Clinical Pathway Process Mining project has reached its Mid-Project milestone. Spanning Weeks 1 and 2, the project successfully established the end-to-end data pipeline foundation and executed offline process discovery on the simulated emergency department encounter log.
+The CareFlow Clinical Pathway Analytics project has reached its Mid-Project milestone. Covering the scope of Weeks 1-2 results and establishing the Weeks 3-4 roadmap, the project successfully established the end-to-end data pipeline foundation and executed offline process discovery on the synthetic emergency department encounter log.
 
 ### Key Achievements to Date:
 1. **Synthetic EHR Data Generation:** Generated a canonical dataset of 500 patient encounters and 3,140 chronological events (`data/raw/hospital_events_simulated.csv`) with verified schema integrity and deterministic reproducibility.
 2. **Data Warehouse & dbt Architecture:** Designed the raw BigQuery schema contract (`schema_hospital_events_raw.sql`), developed the Python ingestion module (`src/bq_loader.py`), and configured the staging transformation models (`stg_hospital_events.sql`) with offline validation (`dbt parse`).
 3. **Environment Hardening & Dependency Pinning:** Stabilized all 24 dependencies with prebuilt wheels for Python 3.12, locked `pm4py==2.7.8` in `requirements.txt`, and verified zero C-compiler dependencies.
 4. **Offline Process Mining Engine (`src/process_miner.py`):** Implemented an automated process discovery pipeline that parses timestamps, enforces deterministic multi-key sorting, interfaces with PM4Py, extracts pathway variants, computes directly-follows transitions, and exports summary statistics.
-5. **Rigorous Test Suite:** Built a comprehensive test suite of 56 automated unit tests and 8 subtests (100% pass rate) covering data generation, schema validation, dbt modeling, and process mining metrics.
+5. **Rigorous Test Suite:** Built a comprehensive test suite of 68 automated unit tests and 8 subtests (100% pass rate) covering data generation, schema validation, dbt modeling, process mining metrics, and normalized schema parity.
 
 ---
 
@@ -26,11 +26,11 @@ The CareFlow Clinical Pathway Process Mining project has reached its Mid-Project
 
 | Roadmap Milestone | Original Schedule | Status | Implementation Evidence |
 | :--- | :--- | :--- | :--- |
-| **Week 1: Synthetic Event Log & Warehouse Setup** | Days 1–5 | **COMPLETED** | `src/data_generator.py`, `src/bq_loader.py`, `careflow_dbt/`, 37 unit tests passing. |
-| **Week 2: Data Cleaning & Process Discovery** | Days 6–10 | **COMPLETED (Offline)** | `src/process_miner.py`, `outputs/` tables, PM4Py 2.7.8 integration, 19 unit tests added (total 56 + 8 subtests). |
+| **Week 1: Synthetic Event Log & Warehouse Setup** | Days 1-5 | **COMPLETED** | `src/data_generator.py`, `src/bq_loader.py`, `careflow_dbt/`, 37 unit tests passing (historical Week 1 snapshot). |
+| **Week 2: Data Cleaning & Process Discovery** | Days 6-10 | **COMPLETED (Offline)** | `src/staging_transform.py`, `src/normalize_event_log.py`, `src/process_miner.py`, `outputs/`, PM4Py integration, full suite of 68 tests + 8 subtests passing. |
 | **Mid-Project Review** | End of Week 2 | **COMPLETED** | This comprehensive report (`reports/MID_PROJECT_REVIEW.md`) validating discovery outputs and pipeline boundaries. |
-| **Week 3: Bottleneck Modeling & Dashboarding** | Days 11–15 | **READY TO START** | Transition duration summaries ready for dimensional modeling and Power BI ingestion. |
-| **Week 4: Conformance Checking & Final Report** | Days 16–20 | **PLANNED** | Ground-truth pathway variants documented for normative token-replay conformance checking. |
+| **Week 3: Bottleneck Modeling & Dashboarding** | Days 11-15 | **NOT STARTED** | Transition duration summaries ready for dimensional modeling and Power BI ingestion. |
+| **Week 4: Conformance Checking & Final Report** | Days 16-20 | **PLANNED** | Ground-truth pathway variants documented for normative token-replay conformance checking. |
 
 ---
 
@@ -40,41 +40,44 @@ The CareFlow data pipeline bridges raw event ingestion, analytical transformatio
 
 ```text
 [Simulated EHR Generator]
-       │ (500 cases, 3,140 events)
-       ▼
+       | (500 cases, 3,140 events)
+       v
  [data/raw/hospital_events_simulated.csv]
-       │
-       ├─────────────────────────────────────────┐
-       ▼                                         ▼
-[Offline Validation / Schema Gate]     [BigQuery Warehouse (Future Live)]
+       |
+       +-----------------------------------------+
+       |                                         |
+       v                                         v
+[Offline Validation / Schema Gate]     [BigQuery Raw Layer (Verified)]
   - src/bq_loader.py (--mode offline)    - careflow_raw.hospital_events_raw
-  - Strict type & null checking          - Managed Cloud Ingestion
-       │                                         │
-       ▼                                         ▼
-[dbt Staging Models (careflow_dbt/)]   [dbt Warehouse View (Future Live)]
-  - Offline dbt parse (manifest valid)   - careflow_staging.stg_hospital_events
-  - SQL deduplication & sequencing               │
-       │                                         │
-       └──────────────────┬──────────────────────┘
-                          │
-                          ▼
+  - Strict type & null checking          - 3,140 events, 500 cases verified
+       |                                         |
+       v                                         v
+[dbt Staging Models (careflow_dbt/)]   [dbt Warehouse View (Deferred)]
+  - Offline dbt parse & dbt ls           - careflow_staging.stg_hospital_events
+  - 1 model, 20 tests discovered                 |
+       |                                         |
+       +------------------+----------------------+
+                          |
+                          v
             [PM4Py Process Mining Engine]
               - src/process_miner.py
               - Multi-key deterministic sorting
               - DFG & Variant Extraction
-                          │
-                          ▼
+                          |
+                          v
              [outputs/ Reproducible Tables]
               - dfg_transitions_summary.csv
               - pathway_variants_summary.csv
               - process_mining_summary.json
 ```
 
-### Cloud Integration Boundary & Offline Continuity
-To adhere to zero-cloud-spend policies during the foundational engineering phase:
-- **Offline Modes:** `python -m src.bq_loader --mode offline` and `dbt parse --project-dir careflow_dbt --profiles-dir careflow_dbt` validate schemas, manifests, and SQL compilation locally without cloud credentials.
-- **Process Mining Decoupling:** `src/process_miner.py` reads directly from the validated raw CSV, enabling complete process discovery and statistical analysis without requiring active BigQuery connections.
-- **Pending Live Execution:** Live table creation (`careflow_raw.hospital_events_raw`) and dbt warehouse materialization (`dbt run` / `dbt test`) will be executed when GCP service account credentials and project quotas are provisioned.
+### Cloud Integration Boundary & Verification Status
+To adhere to zero-cloud-spend policies and maintain strict verification standards:
+- **Synthetic Dataset Disclosure:** All analyzed clinical event logs are synthetic (simulated EHR encounters generated via `src/data_generator.py` with 100% `SIMULATED` provenance tags).
+- **Raw BigQuery Table (Verified):** The raw table `careflow_raw.hospital_events_raw` in GCP project `exalted-mode-467509-h1` has been verified via read-only inspection: contains 3,140 events, 500 unique cases, zero missing timestamps, zero null values across all six columns, and 100% `SIMULATED` provenance tags.
+- **dbt Resource Discovery (Verified):** `dbt parse` and `dbt ls` execute successfully offline with zero errors, validating the dbt manifest and discovering 1 staging model (`stg_hospital_events`), 20 data tests (7 source tests + 13 model tests), and 1 source (`raw_hospital_data.hospital_events_raw`).
+- **Process Mining Decoupling (Verified):** `src/process_miner.py` operates against both raw CSVs and the locally generated normalized staging dataset (`data/cleaned/stg_hospital_events.csv`), enabling complete process discovery without requiring cloud connections.
+- **dbt Cloud Staging Materialization (Deferred / Optional):** Live execution of `dbt run` and `dbt test` against BigQuery to materialize `careflow_staging.stg_hospital_events` in the warehouse is optional, has not been executed, and is not part of the current zero-spend workflow.
 
 ---
 
@@ -102,16 +105,16 @@ Process discovery identified exactly **6 distinct clinical pathway variants**:
 
 | Rank | Case Volume | Cohort % | Activity Sequence Trace | Clinical Interpretation |
 | :---: | :---: | :---: | :--- | :--- |
-| **1** | 200 | 40.0% | `Registration → Triage → Consultation → Treatment → Discharge` | Standard low-acuity pathway (no diagnostic imaging or labs). |
-| **2** | 110 | 22.0% | `Registration → Triage → Consultation → Laboratory → Consultation → Treatment → Discharge` | Routine diagnostic lab investigation with physician follow-up. |
-| **3** | 80 | 16.0% | `Registration → Triage → Consultation → X-Ray → Consultation → Treatment → Discharge` | Routine radiological examination with physician follow-up. |
-| **4** | 50 | 10.0% | `Registration → Triage → Consultation → Laboratory → X-Ray → Consultation → Treatment → Discharge` | High-complexity multi-diagnostic pathway requiring both lab and radiology. |
-| **5** | 35 | 7.0% | `Registration → Triage → Triage → Consultation → Treatment → Discharge` | Clinical condition deterioration/re-evaluation during triage waiting interval. |
-| **6** | 25 | 5.0% | `Registration → Triage → Triage → Consultation → Laboratory → Consultation → Treatment → Discharge` | Re-triage encounter combined with laboratory investigation. |
+| **1** | 200 | 40.0% | `Registration -> Triage -> Consultation -> Treatment -> Discharge` | Standard low-acuity pathway (no diagnostic imaging or labs). |
+| **2** | 110 | 22.0% | `Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge` | Routine diagnostic lab investigation with physician follow-up. |
+| **3** | 80 | 16.0% | `Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge` | Routine radiological examination with physician follow-up. |
+| **4** | 50 | 10.0% | `Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge` | High-complexity multi-diagnostic pathway requiring both lab and radiology. |
+| **5** | 35 | 7.0% | `Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge` | Clinical condition deterioration/re-evaluation during triage waiting interval. |
+| **6** | 25 | 5.0% | `Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge` | Re-triage encounter combined with laboratory investigation. |
 
 ### Re-Triage Operational Analysis
 - **Volume:** Re-triage occurs in exactly 60 encounters (12.0% of all cases; 35 in Variant 5 + 25 in Variant 6).
-- **Self-Loop Transition:** The directly-follows graph contains 60 self-loop transitions for `Triage → Triage`.
+- **Self-Loop Transition:** The directly-follows graph contains 60 self-loop transitions for `Triage -> Triage`.
 - **Interval Duration:** Median observed duration between consecutive triages is **64.5 minutes** (Mean: 65.63 min, Min: 40.0 min, Max: 88.0 min).
 - **Clinical Implication:** In clinical environments, repeat triage indicates clinical deterioration while awaiting consultation, representing a critical operational metric for patient safety audits.
 
@@ -144,13 +147,13 @@ To maintain rigorous healthcare analytics standards, timing metrics must be corr
      - Active service delivery duration (e.g., blood draw, specimen centrifuge, analysis)
      - Inter-departmental patient/specimen transit time
      - Queue waiting time awaiting an available physician
-   - Therefore, `Laboratory → Consultation` (median 67.0 min) is accurately reported as the *longest direct transition in the pathway*, but must **not** be asserted as purely "idle patient waiting time" or a definitive "clinical bottleneck" without queue-depth or capacity modeling.
+   - Therefore, `Laboratory -> Consultation` (median 67.0 min) is accurately reported as the *longest direct transition in the pathway*, but must **not** be asserted as purely "idle patient waiting time" or a definitive "clinical bottleneck" without queue-depth or capacity modeling.
 
 2. **Transition Priority Ranking:**
-   - `Laboratory → Consultation` exhibits the highest median transition duration across all 10 transitions (67.0 min).
-   - `Triage → Triage` exhibits the second-highest median duration (64.5 min) and indicates waiting queue reassessments.
-   - `X-Ray → Consultation` exhibits the third-highest median duration (61.0 min).
-   - Diagnostic review steps (`Laboratory → Consultation` and `X-Ray → Consultation`) consistently require the longest transit/processing intervals before treatment can proceed.
+   - `Laboratory -> Consultation` exhibits the highest median transition duration across all 10 transitions (67.0 min).
+   - `Triage -> Triage` exhibits the second-highest median duration (64.5 min) and indicates waiting queue reassessments.
+   - `X-Ray -> Consultation` exhibits the third-highest median duration (61.0 min).
+   - Diagnostic review steps (`Laboratory -> Consultation` and `X-Ray -> Consultation`) consistently require the longest transit/processing intervals before treatment can proceed.
 
 ---
 
@@ -175,11 +178,11 @@ With discovery completed and verified, the project advances to Week 3 analytics 
 - **Power BI Dashboard Development:**
   - Executive Overview: Cohort volume, average length of stay (ALOS), variant breakdown.
   - Process Explorer: Visual DFG transition flow and pathway variant selector.
-  - Operational Bottlenecks: Distribution histograms for `Laboratory → Consultation` and `Triage → Triage` intervals.
+  - Operational Bottlenecks: Distribution histograms for `Laboratory -> Consultation` and `Triage -> Triage` intervals.
   - Re-Triage Audit: Dedicated safety drill-down for the 60 re-triage encounters.
 
 ### Week 4: Conformance Checking & Final Project Deliverables
-- **Normative Pathway Definition:** Formulate Variant 1 (`Registration → Triage → Consultation → Treatment → Discharge`) and standard diagnostic variants as normative clinical reference models.
+- **Normative Pathway Definition:** Formulate Variant 1 (`Registration -> Triage -> Consultation -> Treatment -> Discharge`) and standard diagnostic variants as normative clinical reference models.
 - **Token-Based Replay & Alignment:** Measure fitness, precision, and deviation percentages using PM4Py conformance checking algorithms.
 - **Final Report & Presentation:** Produce the formal internship capstone report and executive presentation summarizing operational insights and recommended clinical process interventions.
 
@@ -188,12 +191,12 @@ With discovery completed and verified, the project advances to Week 3 analytics 
 ## 8. Verification & Audit Summary
 
 - **Baseline Dataset Integrity:** `data/raw/hospital_events_simulated.csv` verified unchanged (197,844 bytes, 3,141 lines, MD5: `d8de55d0fccd116b3482c4c05a681d9e`).
-- **Regression Test Coverage:** 56 unit tests + 8 subtests passing across 4 test modules:
+- **Regression Test Coverage:** 68 unit tests + 8 subtests passing across 4 test modules:
   - `tests/test_bq_loader.py`: 14 passed
   - `tests/test_data_generator.py`: 12 passed (+ 8 subtests)
   - `tests/test_dbt_setup.py`: 11 passed
-  - `tests/test_process_miner.py`: 19 passed
-- **dbt Offline Parse:** Verified valid manifest via `dbt parse` (Exit code: 0).
+  - `tests/test_process_miner.py`: 31 passed (19 baseline + 12 normalized schema tests)
+- **dbt Offline Verification:** Verified valid manifest via `dbt parse` (Exit code: 0) and confirmed 1 model, 20 data tests, and 1 source via `dbt ls`.
 - **Code Quality:** `git diff --check` passed with 0 whitespace errors.
 
 *Report Prepared By: Data Analyst Intern*

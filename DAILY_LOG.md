@@ -569,6 +569,7 @@ git push origin main
    - Executed `src/normalize_event_log.py` to generate `data/cleaned/stg_hospital_events.csv` with 100% parity across all 3,140 events, 500 cases, 60 re-triage loops, and 265 diagnostic follow-ups.
 3. **Mid-Project Review & As-Is Process Map Visualization:**
    - Compiled comprehensive mid-project documentation in `reports/MID_PROJECT_REVIEW.md` detailing discovered variants, transitions, operational bottlenecks, and zero-spend cloud boundaries.
+   - Documented the verified cloud integration boundary: canonical BigQuery table `careflow_raw.hospital_events_raw` confirmed populated with 3,140 simulated events (500 cases, zero nulls, 100% SIMULATED provenance), while live warehouse execution of `dbt run` for `careflow_staging.stg_hospital_events` is optional, has not been executed, and remains deferred under zero-cloud-spend policies.
    - Generated the As-Is clinical process map diagram `outputs/dfg_visualization.png` (30,312 bytes) using PM4Py and Graphviz `dot`.
    - Committed the visualization under commit `05b4d21` (`feat: add Week 2 process mining visualization`) and synchronized with `origin/main`.
 

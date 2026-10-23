@@ -1,7 +1,7 @@
-# CareFlow: Clinical Pathway Process Mining
+# CareFlow Clinical Pathway Analytics
 
 ## Project Overview
-This project analyzes hospital patient event logs to identify bottlenecks, inefficiencies, and opportunities to improve clinical operations.
+CareFlow Clinical Pathway Analytics analyzes emergency department patient event logs to discover clinical workflows, identify operational bottlenecks, and surface opportunities for clinical operations improvement. All analyzed event data is synthetic (simulated EHR encounters) designed for reproducible healthcare process analytics.
 
 ## Objective
 - Collect and clean hospital event logs
@@ -67,9 +67,9 @@ careflow-clinical-pathway/
 
 ## Timeline
 - Week 1: Synthetic event log generation, BigQuery raw ingestion foundation & dbt setup (Complete)
-- Week 2: Data cleaning, normalization, and offline PM4Py process discovery (Complete; live warehouse execution deferred pending GCP credentials)
-- Week 3: Process mining, bottleneck analysis, and dashboarding
-- Week 4: Conformance checking and final report
+- Week 2: Data cleaning, normalization, and offline PM4Py process discovery (Complete; raw BigQuery table verified using read-only checks; dbt parse/resource discovery verified offline; live dbt staging execution deferred)
+- Week 3: Bottleneck modeling, dimensional design, and Power BI dashboarding (Not Started)
+- Week 4: Conformance checking, token replay, and final internship report (Planned)
 
 ## Getting Started
 
@@ -130,13 +130,16 @@ dbt parse --project-dir careflow_dbt --profiles-dir careflow_dbt
 ```
 *Note: `dbt parse` succeeds offline without network or credentials. In contrast, `dbt compile` attempts to inspect warehouse relations and stops with a credential error when Google Cloud credentials are unavailable.*
 
-#### B. Live BigQuery Staging (Week 2 Live Run)
-Once raw event logs are staged in BigQuery and GCP credentials are authenticated:
+#### B. Live BigQuery Staging (Deferred / Optional Warehouse Run - Not Part of Zero-Spend Workflow)
+> [!NOTE]
+> **Cloud Safety Boundary:** The raw simulated event log is already loaded and verified in BigQuery (`careflow_raw.hospital_events_raw`, 3,140 rows). However, running `dbt run` or `dbt test` against BigQuery creates/modifies warehouse views and is **deferred, optional, and has NOT been executed** under the project's zero-cloud-spend policy. Offline normalization (`src/normalize_event_log.py`) and process mining (`src/process_miner.py`) run entirely locally without requiring these commands.
+
+If live warehouse staging is explicitly authorized in the future:
 1. Navigate to the dbt project directory:
    ```bash
    cd careflow_dbt
    ```
-2. Compile, run, and test the staging models in the warehouse:
+2. (Optional future command - do not run in zero-spend mode):
    ```bash
    dbt compile
    dbt run
@@ -165,5 +168,7 @@ pytest -v
 Current test coverage: **68 passing tests + 8 subtests** (100% pass rate).
 
 ## Status
-- 🟢 **Week 1:** Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing)
-- 🟢 **Week 2:** Data Normalization, Offline Process Mining, DFG Discovery & Visualization (68/68 tests passing, 8 subtests passing; live BigQuery run deferred pending GCP credentials)
+- 🟢 **Week 1 Milestone (Historical Snapshot):** Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing at Week 1 close)
+- 🟢 **Week 2 Milestone (Current Full Suite):** Data Normalization, Offline Process Mining, DFG Discovery & Visualization (68/68 tests passing, 8 subtests passing; raw BigQuery table verified using read-only checks; dbt parse/resource discovery verified offline; live dbt staging materialization deferred)
+- ⚪ **Week 3 Milestone:** Bottleneck Modeling & Power BI Dashboarding (Not Started)
+- ⚪ **Week 4 Milestone:** Conformance Checking & Final Capstone Report (Planned)
