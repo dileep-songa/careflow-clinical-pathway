@@ -67,7 +67,7 @@ careflow-clinical-pathway/
 
 ## Timeline
 - Week 1: Synthetic event log generation, BigQuery raw ingestion foundation & dbt setup (Complete)
-- Week 2: Data cleaning, normalization, and offline PM4Py process discovery (Complete; raw BigQuery table verified using read-only checks; dbt parse/resource discovery verified offline; live dbt staging execution deferred)
+- Week 2: Data cleaning, normalization, and offline PM4Py process discovery (Complete; raw BigQuery table and careflow_staging.stg_hospital_events VIEW verified in BigQuery; 20 dbt data tests passed)
 - Week 3: Bottleneck modeling, dimensional design, and Power BI dashboarding (Not Started)
 - Week 4: Conformance checking, token replay, and final internship report (Planned)
 
@@ -128,24 +128,27 @@ Validates the dbt project manifest, model syntax, and source configurations offl
 ```bash
 dbt parse --project-dir careflow_dbt --profiles-dir careflow_dbt
 ```
-*Note: `dbt parse` succeeds offline without network or credentials. In contrast, `dbt compile` attempts to inspect warehouse relations and stops with a credential error when Google Cloud credentials are unavailable.*
+*Note on Offline Validation:* `dbt parse` validates project syntax, YAML configurations, and model manifests entirely offline without network access or cloud credentials. In contrast, connection-dependent commands (`dbt compile`, `dbt run`, `dbt test`) connect to the BigQuery adapter and require active Google Cloud authentication (such as Application Default Credentials via `gcloud auth application-default login`).
 
-#### B. Live BigQuery Staging (Deferred / Optional Warehouse Run - Not Part of Zero-Spend Workflow)
-> [!NOTE]
-> **Cloud Safety Boundary:** The raw simulated event log is already loaded and verified in BigQuery (`careflow_raw.hospital_events_raw`, 3,140 rows). However, running `dbt run` or `dbt test` against BigQuery creates/modifies warehouse views and is **deferred, optional, and has NOT been executed** under the project's zero-cloud-spend policy. Offline normalization (`src/normalize_event_log.py`) and process mining (`src/process_miner.py`) run entirely locally without requiring these commands.
+#### B. Live BigQuery Staging Execution & Verification (Completed October 24, 2026)
+On October 24, 2026, the dbt staging pipeline was executed and validated in Google BigQuery:
 
-If live warehouse staging is explicitly authorized in the future:
 1. Navigate to the dbt project directory:
-   ```bash
-   cd careflow_dbt
-   ```
-2. (Optional future command - do not run in zero-spend mode):
-   ```bash
-   dbt compile
-   dbt run
-   dbt test
-   ```
-   *The staging model (`stg_hospital_events`) cleans column names, formats timestamps, sequences events (1..N per case), and computes transition durations for PM4Py.*
+    ```bash
+    cd careflow_dbt
+    ```
+2. Execute the staging model materialization:
+    ```bash
+    dbt run --select stg_hospital_events
+    ```
+    *Result:* Materialized `careflow_staging.stg_hospital_events` as a BigQuery **VIEW** (`PASS=1, WARN=0, ERROR=0`).
+3. Run the complete warehouse data test suite:
+    ```bash
+    dbt test
+    ```
+    *Result:* All **20 data tests passed** (`PASS=20, WARN=0, ERROR=0`), validating primary keys, not-null constraints, and accepted values across both source table (`hospital_events_raw`) and staging view (`stg_hospital_events`).
+
+*Verified Cloud State:* Read-only metadata inspection confirms `exalted-mode-467509-h1.careflow_staging.stg_hospital_events` returns 3,140 rows across 500 unique cases and 11 staging fields. Offline normalization (`src/normalize_event_log.py`) replicates this SQL transformation in Python, verified to yield matching reported row counts (3,140), case counts (500), schema structure (11 fields), and downstream PM4Py process-mining metrics. An exhaustive cell-by-cell cloud comparison was not performed.
 
 ### 5. Process Mining & Pathway Discovery (PM4Py)
 Execute the offline process mining pipeline to discover clinical pathway variants, compute directly-follows graph (DFG) transitions, and calculate observed transition and case durations:
@@ -169,6 +172,6 @@ Current test coverage: **68 passing tests + 8 subtests** (100% pass rate).
 
 ## Status
 - 🟢 **Week 1 Milestone (Historical Snapshot):** Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing at Week 1 close)
-- 🟢 **Week 2 Milestone (Current Full Suite):** Data Normalization, Offline Process Mining, DFG Discovery & Visualization (68/68 tests passing, 8 subtests passing; raw BigQuery table verified using read-only checks; dbt parse/resource discovery verified offline; live dbt staging materialization deferred)
+- 🟢 **Week 2 Milestone (Current Full Suite):** Data Normalization, Offline Process Mining, DFG Discovery & Visualization (68/68 Python tests passing, 8 subtests passing; raw BigQuery table and `careflow_staging.stg_hospital_events` VIEW verified live; 20/20 dbt warehouse tests passing)
 - ⚪ **Week 3 Milestone:** Bottleneck Modeling & Power BI Dashboarding (Not Started)
 - ⚪ **Week 4 Milestone:** Conformance Checking & Final Capstone Report (Planned)

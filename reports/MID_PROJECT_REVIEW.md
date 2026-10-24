@@ -5,7 +5,7 @@
 - **Intern / Analyst:** Data Analyst Intern
 - **Repository:** `c:\project\careflow-clinical-pathway`
 - **Scope:** Weeks 1-2 Results & Weeks 3-4 Roadmap
-- **Status:** Complete Offline (Weeks 1-2) / Cloud Boundary Documented / Weeks 3-4 Pending
+- **Status:** Complete (Weeks 1-2 Verified in BigQuery & PM4Py) / Weeks 3-4 Pending
 
 ---
 
@@ -15,7 +15,7 @@ The CareFlow Clinical Pathway Analytics project has reached its Mid-Project mile
 
 ### Key Achievements to Date:
 1. **Synthetic EHR Data Generation:** Generated a canonical dataset of 500 patient encounters and 3,140 chronological events (`data/raw/hospital_events_simulated.csv`) with verified schema integrity and deterministic reproducibility.
-2. **Data Warehouse & dbt Architecture:** Designed the raw BigQuery schema contract (`schema_hospital_events_raw.sql`), developed the Python ingestion module (`src/bq_loader.py`), and configured the staging transformation models (`stg_hospital_events.sql`) with offline validation (`dbt parse`).
+2. **Data Warehouse & dbt Architecture:** Designed the raw BigQuery schema contract (`schema_hospital_events_raw.sql`), developed the Python ingestion module (`src/bq_loader.py`), materialized the staging model as a BigQuery VIEW (`careflow_staging.stg_hospital_events`), and verified all 20 dbt data tests passing in the warehouse.
 3. **Environment Hardening & Dependency Pinning:** Stabilized all 24 dependencies with prebuilt wheels for Python 3.12, locked `pm4py==2.7.8` in `requirements.txt`, and verified zero C-compiler dependencies.
 4. **Offline Process Mining Engine (`src/process_miner.py`):** Implemented an automated process discovery pipeline that parses timestamps, enforces deterministic multi-key sorting, interfaces with PM4Py, extracts pathway variants, computes directly-follows transitions, and exports summary statistics.
 5. **Rigorous Test Suite:** Built a comprehensive test suite of 68 automated unit tests and 8 subtests (100% pass rate) covering data generation, schema validation, dbt modeling, process mining metrics, and normalized schema parity.
@@ -27,7 +27,7 @@ The CareFlow Clinical Pathway Analytics project has reached its Mid-Project mile
 | Roadmap Milestone | Original Schedule | Status | Implementation Evidence |
 | :--- | :--- | :--- | :--- |
 | **Week 1: Synthetic Event Log & Warehouse Setup** | Days 1-5 | **COMPLETED** | `src/data_generator.py`, `src/bq_loader.py`, `careflow_dbt/`, 37 unit tests passing (historical Week 1 snapshot). |
-| **Week 2: Data Cleaning & Process Discovery** | Days 6-10 | **COMPLETED (Offline)** | `src/staging_transform.py`, `src/normalize_event_log.py`, `src/process_miner.py`, `outputs/`, PM4Py integration, full suite of 68 tests + 8 subtests passing. |
+| **Week 2: Data Cleaning & Process Discovery** | Days 6-10 | **COMPLETED** | `src/staging_transform.py`, `src/normalize_event_log.py`, `src/process_miner.py`, `outputs/`, BigQuery staging view materialized, 20 dbt tests passed, full suite of 68 tests + 8 subtests passing. |
 | **Mid-Project Review** | End of Week 2 | **COMPLETED** | This comprehensive report (`reports/MID_PROJECT_REVIEW.md`) validating discovery outputs and pipeline boundaries. |
 | **Week 3: Bottleneck Modeling & Dashboarding** | Days 11-15 | **NOT STARTED** | Transition duration summaries ready for dimensional modeling and Power BI ingestion. |
 | **Week 4: Conformance Checking & Final Report** | Days 16-20 | **PLANNED** | Ground-truth pathway variants documented for normative token-replay conformance checking. |
@@ -52,9 +52,9 @@ The CareFlow data pipeline bridges raw event ingestion, analytical transformatio
   - Strict type & null checking          - 3,140 events, 500 cases verified
        |                                         |
        v                                         v
-[dbt Staging Models (careflow_dbt/)]   [dbt Warehouse View (Deferred)]
+[dbt Staging Models (careflow_dbt/)]   [dbt Warehouse View (Verified)]
   - Offline dbt parse & dbt ls           - careflow_staging.stg_hospital_events
-  - 1 model, 20 tests discovered                 |
+  - 1 model, 20 tests discovered         - 3,140 events, 20 tests passed
        |                                         |
        +------------------+----------------------+
                           |
@@ -72,12 +72,12 @@ The CareFlow data pipeline bridges raw event ingestion, analytical transformatio
 ```
 
 ### Cloud Integration Boundary & Verification Status
-To adhere to zero-cloud-spend policies and maintain strict verification standards:
-- **Synthetic Dataset Disclosure:** All analyzed clinical event logs are synthetic (simulated EHR encounters generated via `src/data_generator.py` with 100% `SIMULATED` provenance tags).
-- **Raw BigQuery Table (Verified):** The raw table `careflow_raw.hospital_events_raw` in GCP project `exalted-mode-467509-h1` has been verified via read-only inspection: contains 3,140 events, 500 unique cases, zero missing timestamps, zero null values across all six columns, and 100% `SIMULATED` provenance tags.
-- **dbt Resource Discovery (Verified):** `dbt parse` and `dbt ls` execute successfully offline with zero errors, validating the dbt manifest and discovering 1 staging model (`stg_hospital_events`), 20 data tests (7 source tests + 13 model tests), and 1 source (`raw_hospital_data.hospital_events_raw`).
-- **Process Mining Decoupling (Verified):** `src/process_miner.py` operates against both raw CSVs and the locally generated normalized staging dataset (`data/cleaned/stg_hospital_events.csv`), enabling complete process discovery without requiring cloud connections.
-- **dbt Cloud Staging Materialization (Deferred / Optional):** Live execution of `dbt run` and `dbt test` against BigQuery to materialize `careflow_staging.stg_hospital_events` in the warehouse is optional, has not been executed, and is not part of the current zero-spend workflow.
+To maintain strict data engineering verification standards and cloud discipline:
+- **Synthetic Dataset Disclosure:** All analyzed clinical event logs are synthetic (simulated EHR encounters generated via `src/data_generator.py` with 100% `SIMULATED` provenance tags). They do not represent real patient records or real hospital performance measurements.
+- **Raw BigQuery Table (Verified):** The raw table `careflow_raw.hospital_events_raw` in GCP project `exalted-mode-467509-h1` has been verified via read-only inspection: contains 3,140 events, 500 unique cases, zero missing timestamps, zero null values across all six columns, and 100% `SIMULATED` provenance tags. Note: The physical table in BigQuery Sandbox was created without native date partitioning/clustering (migration deferred to preserve data safety), and tables and views in the Sandbox are subject to a default 60-day expiration window (scheduled for 2026-12-23 UTC).
+- **BigQuery Staging View Materialization (Verified Live):** On October 24, 2026, the dbt staging model was executed against BigQuery (`dbt run --select stg_hospital_events`, `PASS=1`), successfully materializing `exalted-mode-467509-h1.careflow_staging.stg_hospital_events` as a BigQuery **VIEW**. Read-only metadata inspection confirms 3,140 rows, 500 unique cases, and 11 normalized staging fields (`case_id`, `event_sequence`, `raw_activity_name`, `activity_name`, `event_timestamp`, `event_date`, `department`, `resource_id`, `data_provenance`, `previous_activity`, `transition_minutes_from_previous`).
+- **Warehouse dbt Data Tests (Verified Live):** On October 24, 2026, the full dbt test suite was executed against BigQuery (`dbt test`). All 20 data tests passed with zero errors (`Done. PASS=20 WARN=0 ERROR=0 TOTAL=20`), verifying primary keys, not-null constraints, and accepted values across both raw source and staged view.
+- **Process Mining Decoupling & Metric Parity (Verified):** `src/process_miner.py` operates against both raw CSVs and the locally generated normalized staging dataset (`data/cleaned/stg_hospital_events.csv`). The Python staging transformation replicates the BigQuery SQL logic, verified to yield matching reported row counts (3,140), case counts (500), schema structure (11 fields), and downstream PM4Py process-mining metrics while supporting fully offline execution. An exhaustive cell-by-cell cloud comparison was not performed.
 
 ---
 
@@ -172,7 +172,8 @@ While the simulated dataset effectively models clinical pathway variants and dia
 
 With discovery completed and verified, the project advances to Week 3 analytics and Week 4 conformance checking:
 
-### Week 3: Bottleneck Modeling & Power BI Dashboard
+### Week 3: Bottleneck Modeling & Power BI Dashboard (Not Started)
+*Note: Week 3 dimensional modeling (`fact_patient_events`, `dim_patient`, etc.) and the final Power BI dashboard have not started. They remain planned for Week 3 pending review approval.*
 - **Dimensional Modeling:** Structure star-schema data models (Fact: `fact_patient_events`, Dimensions: `dim_patient`, `dim_activity`, `dim_department`, `dim_pathway_variant`).
 - **Transition Duration Metrics:** Precalculate transition durations, re-triage indicators, and case-level elapsed times in SQL/dbt staging views.
 - **Power BI Dashboard Development:**
@@ -181,7 +182,7 @@ With discovery completed and verified, the project advances to Week 3 analytics 
   - Operational Bottlenecks: Distribution histograms for `Laboratory -> Consultation` and `Triage -> Triage` intervals.
   - Re-Triage Audit: Dedicated safety drill-down for the 60 re-triage encounters.
 
-### Week 4: Conformance Checking & Final Project Deliverables
+### Week 4: Conformance Checking & Final Project Deliverables (Planned)
 - **Normative Pathway Definition:** Formulate Variant 1 (`Registration -> Triage -> Consultation -> Treatment -> Discharge`) and standard diagnostic variants as normative clinical reference models.
 - **Token-Based Replay & Alignment:** Measure fitness, precision, and deviation percentages using PM4Py conformance checking algorithms.
 - **Final Report & Presentation:** Produce the formal internship capstone report and executive presentation summarizing operational insights and recommended clinical process interventions.
@@ -196,6 +197,7 @@ With discovery completed and verified, the project advances to Week 3 analytics 
   - `tests/test_data_generator.py`: 12 passed (+ 8 subtests)
   - `tests/test_dbt_setup.py`: 11 passed
   - `tests/test_process_miner.py`: 31 passed (19 baseline + 12 normalized schema tests)
+- **BigQuery Staging & Warehouse Tests:** `careflow_staging.stg_hospital_events` VIEW materialized on October 24, 2026; 20/20 dbt data tests verified passing against BigQuery (`PASS=20, WARN=0, ERROR=0`).
 - **dbt Offline Verification:** Verified valid manifest via `dbt parse` (Exit code: 0) and confirmed 1 model, 20 data tests, and 1 source via `dbt ls`.
 - **Code Quality:** `git diff --check` passed with 0 whitespace errors.
 
