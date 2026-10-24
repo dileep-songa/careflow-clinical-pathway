@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: raw_hospital_data
     description: "Raw simulated clinical event logs ingested into Google BigQuery."
-    database: "{{ env_var('GCP_PROJECT_ID', 'your-gcp-project-id') }}"
+    database: "{{ env_var('GCP_PROJECT_ID', 'exalted-mode-467509-h1') }}"
     schema: "{{ env_var('BIGQUERY_DATASET', 'careflow_raw') }}"
     tables:
       - name: hospital_events_raw
