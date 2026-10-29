@@ -1,0 +1,501 @@
+case_id,observed_pathway,is_conformant,status,rule_ids,review_reasons,total_deviations
+CASE_0001,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0002,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0003,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0004,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0005,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0006,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0007,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0008,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0009,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0010,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0011,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0012,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0013,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0014,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0015,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0016,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0017,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0018,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0019,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0020,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0021,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0022,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0023,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0024,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0025,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0026,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0027,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0028,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0029,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0030,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0031,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0032,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0033,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0034,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0035,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0036,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0037,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0038,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0039,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0040,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0041,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0042,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0043,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0044,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0045,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0046,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0047,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0048,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0049,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0050,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0051,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0052,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0053,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0054,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0055,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0056,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0057,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0058,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0059,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0060,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0061,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0062,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0063,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0064,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0065,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0066,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0067,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0068,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0069,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0070,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0071,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0072,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0073,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0074,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0075,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0076,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0077,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0078,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0079,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0080,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0081,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0082,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0083,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0084,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0085,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0086,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0087,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0088,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0089,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0090,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0091,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0092,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0093,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0094,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0095,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0096,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0097,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0098,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0099,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0100,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0101,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0102,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0103,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0104,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0105,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0106,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0107,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0108,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0109,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0110,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0111,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0112,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0113,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0114,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0115,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0116,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0117,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0118,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0119,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0120,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0121,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0122,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0123,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0124,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0125,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0126,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0127,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0128,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0129,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0130,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0131,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0132,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0133,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0134,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0135,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0136,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0137,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0138,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0139,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0140,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0141,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0142,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0143,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0144,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0145,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0146,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0147,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0148,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0149,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0150,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0151,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0152,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0153,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0154,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0155,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0156,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0157,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0158,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0159,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0160,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0161,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0162,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0163,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0164,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0165,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0166,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0167,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0168,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0169,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0170,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0171,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0172,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0173,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0174,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0175,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0176,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0177,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0178,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0179,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0180,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0181,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0182,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0183,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0184,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0185,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0186,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0187,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0188,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0189,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0190,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0191,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0192,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0193,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0194,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0195,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0196,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0197,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0198,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0199,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0200,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0201,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0202,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0203,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0204,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0205,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0206,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0207,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0208,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0209,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0210,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0211,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0212,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0213,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0214,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0215,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0216,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0217,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0218,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0219,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0220,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0221,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0222,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0223,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0224,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0225,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0226,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0227,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0228,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0229,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0230,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0231,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0232,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0233,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0234,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0235,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0236,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0237,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0238,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0239,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0240,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0241,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0242,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0243,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0244,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0245,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0246,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0247,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0248,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0249,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0250,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0251,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0252,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0253,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0254,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0255,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0256,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0257,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0258,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0259,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0260,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0261,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0262,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0263,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0264,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0265,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0266,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0267,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0268,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0269,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0270,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0271,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0272,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0273,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0274,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0275,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0276,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0277,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0278,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0279,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0280,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0281,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0282,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0283,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0284,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0285,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0286,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0287,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0288,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0289,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0290,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0291,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0292,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0293,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0294,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0295,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0296,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0297,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0298,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0299,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0300,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0301,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0302,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0303,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0304,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0305,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0306,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0307,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0308,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0309,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0310,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0311,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0312,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0313,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0314,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0315,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0316,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0317,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0318,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0319,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0320,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0321,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0322,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0323,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0324,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0325,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0326,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0327,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0328,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0329,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0330,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0331,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0332,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0333,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0334,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0335,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0336,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0337,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0338,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0339,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0340,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0341,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0342,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0343,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0344,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0345,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0346,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0347,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0348,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0349,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0350,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0351,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0352,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0353,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0354,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0355,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0356,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0357,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0358,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0359,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0360,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0361,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0362,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0363,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0364,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0365,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0366,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0367,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0368,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0369,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0370,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0371,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0372,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0373,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0374,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0375,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0376,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0377,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0378,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0379,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0380,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0381,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0382,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0383,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0384,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0385,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0386,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0387,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0388,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0389,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0390,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0391,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0392,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0393,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0394,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0395,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0396,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0397,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0398,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0399,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0400,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0401,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0402,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0403,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0404,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0405,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0406,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0407,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0408,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0409,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0410,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0411,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0412,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0413,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0414,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0415,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0416,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0417,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0418,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0419,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0420,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0421,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0422,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0423,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0424,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0425,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0426,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0427,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0428,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0429,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0430,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0431,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0432,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0433,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0434,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0435,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0436,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0437,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0438,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0439,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0440,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0441,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0442,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0443,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0444,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0445,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0446,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0447,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0448,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0449,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0450,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0451,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0452,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0453,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0454,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0455,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0456,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0457,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0458,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0459,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0460,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0461,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0462,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0463,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0464,Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0465,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0466,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0467,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0468,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0469,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0470,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0471,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0472,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0473,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0474,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0475,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0476,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0477,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0478,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0479,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0480,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0481,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0482,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0483,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0484,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0485,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0486,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0487,Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0488,Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0489,Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge,False,REVIEW_CANDIDATE,RULE_REPEATED_TRIAGE,Encounter includes repeated triage (2 Triage events observed). Operational review candidate for waiting-time reassessment / acuity evolution audit.,1
+CASE_0490,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0491,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0492,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0493,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0494,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0495,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0496,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0497,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0498,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0499,Registration -> Triage -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0
+CASE_0500,Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge,True,CONFORMANT,NONE,Conformant with workflow rules,0

@@ -1,0 +1,68 @@
+{
+  "total_cases_evaluated": 500,
+  "conformant_cases": 440,
+  "flagged_cases": 60,
+  "deviation_rate_percent": 12.0,
+  "total_rule_deviations": 60,
+  "deviations_by_rule": {
+    "RULE_MANDATORY_ACTIVITIES": 0,
+    "RULE_START_ACTIVITY": 0,
+    "RULE_END_ACTIVITY": 0,
+    "RULE_ACTIVITY_ORDER": 0,
+    "RULE_DIAGNOSTIC_FOLLOWUP": 0,
+    "RULE_REPEATED_TRIAGE": 60,
+    "RULE_DUPLICATE_EVENTS": 0
+  },
+  "variant_breakdown": {
+    "Registration -> Triage -> Consultation -> Treatment -> Discharge": {
+      "total_cases": 200,
+      "flagged_cases": 0,
+      "conformant_cases": 200,
+      "compliance_rate_percent": 100.0
+    },
+    "Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge": {
+      "total_cases": 110,
+      "flagged_cases": 0,
+      "conformant_cases": 110,
+      "compliance_rate_percent": 100.0
+    },
+    "Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge": {
+      "total_cases": 80,
+      "flagged_cases": 0,
+      "conformant_cases": 80,
+      "compliance_rate_percent": 100.0
+    },
+    "Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge": {
+      "total_cases": 50,
+      "flagged_cases": 0,
+      "conformant_cases": 50,
+      "compliance_rate_percent": 100.0
+    },
+    "Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge": {
+      "total_cases": 35,
+      "flagged_cases": 35,
+      "conformant_cases": 0,
+      "compliance_rate_percent": 0.0
+    },
+    "Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge": {
+      "total_cases": 25,
+      "flagged_cases": 25,
+      "conformant_cases": 0,
+      "compliance_rate_percent": 0.0
+    }
+  },
+  "validation_metadata": {
+    "dataset_provenance": "SIMULATED",
+    "is_synthetic": true,
+    "evaluated_at": "2026-10-28 20:34:17",
+    "rules_applied": [
+      "RULE_MANDATORY_ACTIVITIES",
+      "RULE_START_ACTIVITY",
+      "RULE_END_ACTIVITY",
+      "RULE_ACTIVITY_ORDER",
+      "RULE_DIAGNOSTIC_FOLLOWUP",
+      "RULE_REPEATED_TRIAGE",
+      "RULE_DUPLICATE_EVENTS"
+    ]
+  }
+}
