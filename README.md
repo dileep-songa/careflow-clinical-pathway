@@ -37,24 +37,44 @@ careflow-clinical-pathway/
 │   ├── dfg_transitions_summary.csv
 │   ├── dfg_visualization.png
 │   ├── pathway_variants_summary.csv
-│   └── process_mining_summary.json
+│   ├── process_mining_summary.json
+│   ├── bottleneck_analysis_summary.csv
+│   ├── bottleneck_analysis.png
+│   ├── bottleneck_findings.md
+│   ├── conformance_case_results.csv
+│   ├── conformance_findings_summary.json
+│   ├── conformance_findings.md
+│   ├── pathway_improvement_comparison.csv
+│   ├── pathway_improvement_summary.json
+│   ├── pathway_improvement_report.md
+│   └── pathway_improvement_comparison.png
 ├── reports/
-│   └── MID_PROJECT_REVIEW.md
+│   ├── MID_PROJECT_REVIEW.md
+│   └── WEEK_3_PROGRESS_REPORT.md
 ├── sql/
 │   └── schema_hospital_events_raw.sql
 ├── src/
 │   ├── constants.py
+│   ├── project_config.py
 │   ├── data_generator.py
 │   ├── bq_loader.py
 │   ├── staging_transform.py
 │   ├── normalize_event_log.py
 │   ├── process_miner.py
-│   └── project_config.py
+│   ├── bottleneck_analyzer.py
+│   ├── bottleneck_visualizer.py
+│   ├── conformance_checker.py
+│   └── pathway_improvement.py
 ├── tests/
 │   ├── test_data_generator.py
 │   ├── test_bq_loader.py
 │   ├── test_dbt_setup.py
-│   └── test_process_miner.py
+│   ├── test_process_miner.py
+│   ├── test_bottleneck_analyzer.py
+│   ├── test_bottleneck_visualization.py
+│   ├── test_bottleneck_findings.py
+│   ├── test_conformance_checker.py
+│   └── test_pathway_improvement.py
 ├── .env.example
 ├── README.md
 ├── .gitignore
@@ -68,8 +88,8 @@ careflow-clinical-pathway/
 ## Timeline
 - Week 1: Synthetic event log generation, BigQuery raw ingestion foundation & dbt setup (Complete)
 - Week 2: Data cleaning, normalization, and offline PM4Py process discovery (Complete; raw BigQuery table and careflow_staging.stg_hospital_events VIEW verified in BigQuery; 20 dbt data tests passed)
-- Week 3: Bottleneck modeling, dimensional design, and Power BI dashboarding (Not Started)
-- Week 4: Conformance checking, token replay, and final internship report (Planned)
+- Week 3: Bottleneck analysis, transition ranking, workflow conformance checking, and As-Is vs. To-Be improvement simulation (Complete; 171 automated tests passed, complete analytical suite and Week 3 progress report verified)
+- Week 4: Dimensional modeling, star-schema design, interactive Power BI dashboarding, and final internship presentation (Planned)
 
 ## Getting Started
 
@@ -163,15 +183,15 @@ Key outputs generated in `outputs/`:
 - `process_mining_summary.json`: Structured cohort summary covering total cases (500), events (3,140), start/end activity distributions (100% Registration / 100% Discharge), re-triage case volume (60 cases / 12.0%), and case duration statistics (Min: 95.0m, Median: 211.0m, Mean: 202.54m, Max: 354.0m, Std: 62.44m).
 
 ### 6. Running Automated Tests
-Run the complete unit test suite across data generator, BigQuery loader, dbt setup, and process miner:
+Run the complete unit test suite across data generator, BigQuery loader, dbt setup, process miner, bottleneck analyzer, visualizer, conformance checker, and pathway improvement engine:
 ```bash
 pytest -v
 ```
 
-Current test coverage: **68 passing tests + 8 subtests** (100% pass rate).
+Current test coverage: **171 passing tests + 8 subtests** (100% pass rate across 11 test suites).
 
 ## Status
 - 🟢 **Week 1 Milestone (Historical Snapshot):** Data Generator, BigQuery Ingestion Foundation & dbt Cleaning Configured (37/37 tests passing, 8 subtests passing at Week 1 close)
-- 🟢 **Week 2 Milestone (Current Full Suite):** Data Normalization, Offline Process Mining, DFG Discovery & Visualization (68/68 Python tests passing, 8 subtests passing; raw BigQuery table and `careflow_staging.stg_hospital_events` VIEW verified live; 20/20 dbt warehouse tests passing)
-- ⚪ **Week 3 Milestone:** Bottleneck Modeling & Power BI Dashboarding (Not Started)
-- ⚪ **Week 4 Milestone:** Conformance Checking & Final Capstone Report (Planned)
+- 🟢 **Week 2 Milestone:** Data Normalization, Offline Process Mining, DFG Discovery & Visualization (68/68 Python tests passing, 8 subtests passing; raw BigQuery table and `careflow_staging.stg_hospital_events` VIEW verified live; 20/20 dbt warehouse tests passing)
+- 🟢 **Week 3 Milestone:** Bottleneck Analysis, Workflow Conformance Checking, As-Is vs. To-Be Improvement Simulation & Progress Report (171/171 Python tests passing, 8 subtests; BigQuery table & staging view verified live; 20/20 dbt warehouse tests compiled)
+- ⚪ **Week 4 Milestone:** Dimensional Modeling, Star-Schema Design, Interactive Power BI Dashboarding & Final Capstone Presentation (Planned)

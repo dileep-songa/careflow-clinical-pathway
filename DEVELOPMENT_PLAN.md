@@ -72,17 +72,42 @@
 ### Cloud Integration Status
 - **Raw BigQuery Table (Verified):** The canonical table `exalted-mode-467509-h1.careflow_raw.hospital_events_raw` is provisioned in BigQuery and populated with all 3,140 simulated events across 500 cases with 100% verified schema integrity (zero missing values across all six columns, zero missing timestamps, and 100% tagged as `SIMULATED`).
 - **dbt Resource Discovery & Offline Verification (Verified):** The dbt staging model, source definitions, and schema tests are fully configured and verified offline (`dbt parse` succeeds with 0 errors; `dbt ls` discovers 1 staging model, 20 data tests, and 1 source).
-- **dbt Staging Cloud Materialization (Deferred / Optional):** Live execution of `dbt run` and `dbt test` against BigQuery to materialize `careflow_staging.stg_hospital_events` is optional, has not been executed, and is not part of the current zero-spend workflow. Offline process mining operates completely and deterministically on the verified local normalized dataset (`data/cleaned/stg_hospital_events.csv`).
+- **dbt Staging Cloud Materialization (Verified):** The staging model was materialized as a BigQuery VIEW (`careflow_staging.stg_hospital_events`) on October 24, 2026, confirmed returning 3,140 events across 500 cases with 100% simulated provenance. Offline process mining operates completely and deterministically on the verified local normalized dataset (`data/cleaned/stg_hospital_events.csv`), which maintains 100% parity with the cloud staging view. Further materializations of physical warehouse tables remain deferred under zero-spend policies.
 
 ---
 
 ## Week 3: Process Mining & Analysis
 
 ### Objectives
-- Discover process flow
-- Detect bottlenecks
-- Calculate wait times and cycle times
-- Build business insights
+- [x] Discover process flow and variant frequencies
+- [x] Detect bottlenecks and rank transition times
+- [x] Measure observed elapsed times across clinical milestones
+- [x] Implement workflow conformance checking and audit rules
+- [x] Model hypothetical As-Is vs. To-Be operational improvement scenarios
+- [x] Build business insights, visual charts, and executive progress report
+
+### Day 11–12: Bottleneck Analysis Engine
+- [x] Build `src/bottleneck_analyzer.py` with data quality and timing consistency checks
+- [x] Export ranked transition metrics to `outputs/bottleneck_analysis_summary.csv`
+- [x] Add 20 automated unit tests in `tests/test_bottleneck_analyzer.py`
+
+### Day 13: Bottleneck Visualization & Findings Report
+- [x] Implement `src/bottleneck_visualizer.py` generating `outputs/bottleneck_analysis.png`
+- [x] Compile detailed analytical report `outputs/bottleneck_findings.md`
+- [x] Add 32 tests across `tests/test_bottleneck_visualization.py` and `tests/test_bottleneck_findings.py`
+
+### Day 14: Patient Pathway Conformance Checking
+- [x] Implement `src/conformance_checker.py` evaluating 7 clinical workflow rules
+- [x] Classify 60 re-triage encounters as operational review candidates
+- [x] Export case-level results and JSON/Markdown summaries (`outputs/conformance_*`)
+- [x] Add 23 unit tests in `tests/test_conformance_checker.py`
+
+### Day 15: As-Is vs. To-Be Improvement Engine & Full Audit
+- [x] Build `src/pathway_improvement.py` modeling queue coordination and administrative streamlining
+- [x] Recalculate duration percentiles and variant distributions from simulated traces
+- [x] Export comparison CSV, JSON summary, Markdown report, and PNG chart (`outputs/pathway_improvement_*`)
+- [x] Add 28 unit tests in `tests/test_pathway_improvement.py` (total project suite: 171 passed, 8 subtests passed)
+- [x] Complete comprehensive Week 3 Progress Report (`reports/WEEK_3_PROGRESS_REPORT.md`)
 
 ---
 
