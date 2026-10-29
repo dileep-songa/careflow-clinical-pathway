@@ -1,0 +1,405 @@
+{
+  "metadata": {
+    "analysis_title": "CareFlow As-Is vs. To-Be Pathway Improvement Analysis",
+    "generated_at": "2026-10-29 13:10:15",
+    "data_provenance": "SIMULATED_DATASET",
+    "is_synthetic": true,
+    "disclaimer": "All baseline data originates from synthetic simulation models. The To-Be workflow is an illustrative operational scenario and does not claim to measure real-world clinical outcomes or replace institutional policy."
+  },
+  "scenario_configuration": {
+    "scenario_name": "Operational Coordination & Queue Optimization",
+    "scenario_description": "Conservative illustrative scenario modeling: (1) elimination of avoidable re-triage wait time via queue coordination, (2) 15% reduction in laboratory and radiology review turnaround via automated stat-alerts, and (3) 15% reduction in discharge administrative processing.",
+    "resolve_repeated_triage": true,
+    "transition_reductions": [
+      {
+        "source_activity": "Laboratory",
+        "target_activity": "Consultation",
+        "percentage_reduction": 15.0,
+        "fixed_minutes_reduction": 0.0,
+        "min_floor_minutes": 15.0,
+        "rationale": "Automated electronic stat-lab alerts and dedicated physician review routing"
+      },
+      {
+        "source_activity": "X-Ray",
+        "target_activity": "Consultation",
+        "percentage_reduction": 15.0,
+        "fixed_minutes_reduction": 0.0,
+        "min_floor_minutes": 15.0,
+        "rationale": "Digital PACS radiologist alert integration and electronic clinician sign-off"
+      },
+      {
+        "source_activity": "Treatment",
+        "target_activity": "Discharge",
+        "percentage_reduction": 15.0,
+        "fixed_minutes_reduction": 0.0,
+        "min_floor_minutes": 15.0,
+        "rationale": "Streamlined bedside discharge administration, electronic pharmacy routing, and transport coordination"
+      },
+      {
+        "source_activity": "Registration",
+        "target_activity": "Triage",
+        "percentage_reduction": 0.0,
+        "fixed_minutes_reduction": 0.0,
+        "min_floor_minutes": 5.0,
+        "rationale": "Baseline intake maintained; optional self-service kiosk can be configured"
+      }
+    ]
+  },
+  "as_is_summary": {
+    "total_cases": 500,
+    "total_events": 3140,
+    "distinct_activities": 7,
+    "activity_frequencies": {
+      "Consultation": 765,
+      "Triage": 560,
+      "Registration": 500,
+      "Treatment": 500,
+      "Discharge": 500,
+      "Laboratory": 185,
+      "X-Ray": 130
+    },
+    "case_durations": {
+      "mean": 202.54,
+      "median": 211.0,
+      "min": 95.0,
+      "max": 354.0,
+      "std": 62.44,
+      "p25": 142.0,
+      "p75": 250.0,
+      "p90": 284.0
+    }
+  },
+  "to_be_summary": {
+    "total_cases": 500,
+    "total_events": 3080,
+    "distinct_activities": 7,
+    "activity_frequencies": {
+      "Consultation": 765,
+      "Registration": 500,
+      "Triage": 500,
+      "Treatment": 500,
+      "Discharge": 500,
+      "Laboratory": 185,
+      "X-Ray": 130
+    },
+    "case_durations": {
+      "mean": 181.77,
+      "median": 191.18,
+      "min": 90.05,
+      "max": 315.35,
+      "std": 55.77,
+      "p25": 129.1,
+      "p75": 227.25,
+      "p90": 255.18
+    }
+  },
+  "comparison_metrics": [
+    {
+      "category": "Cohort Overview",
+      "metric_name": "Total Evaluated Cases",
+      "baseline_value": 500,
+      "proposed_value": 500,
+      "absolute_difference": 0,
+      "percentage_difference": 0.0,
+      "unit": "cases",
+      "provenance": "OBSERVED_BASELINE",
+      "interpretation": "Patient encounter population preserved across baseline and scenario."
+    },
+    {
+      "category": "Cohort Overview",
+      "metric_name": "Total Recorded Events",
+      "baseline_value": 3140,
+      "proposed_value": 3080,
+      "absolute_difference": -60,
+      "percentage_difference": -1.91,
+      "unit": "events",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Reduction reflects elimination of redundant re-triage events in flagged cases."
+    },
+    {
+      "category": "Cohort Overview",
+      "metric_name": "Clinical Pathway Variants",
+      "baseline_value": 6,
+      "proposed_value": 4,
+      "absolute_difference": -2,
+      "percentage_difference": -33.33,
+      "unit": "variants",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Process standardization: non-conformant re-triage pathways consolidate into standard pathways."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "Mean Encounter Duration",
+      "baseline_value": 202.54,
+      "proposed_value": 181.77,
+      "absolute_difference": -20.77,
+      "percentage_difference": -10.25,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Average patient elapsed time from intake to discharge."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "Median Encounter Duration",
+      "baseline_value": 211.0,
+      "proposed_value": 191.18,
+      "absolute_difference": -19.82,
+      "percentage_difference": -9.39,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Typical patient encounter elapsed duration (50th percentile)."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "25th Percentile Duration (P25)",
+      "baseline_value": 142.0,
+      "proposed_value": 129.1,
+      "absolute_difference": -12.9,
+      "percentage_difference": -9.08,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Lower quartile of encounter durations."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "75th Percentile Duration (P75)",
+      "baseline_value": 250.0,
+      "proposed_value": 227.25,
+      "absolute_difference": -22.75,
+      "percentage_difference": -9.1,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Upper quartile of encounter durations."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "90th Percentile Duration (P90)",
+      "baseline_value": 284.0,
+      "proposed_value": 255.18,
+      "absolute_difference": -28.82,
+      "percentage_difference": -10.15,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Extended stay cohort threshold (90th percentile)."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "Minimum Encounter Duration",
+      "baseline_value": 95.0,
+      "proposed_value": 90.05,
+      "absolute_difference": -4.95,
+      "percentage_difference": -5.21,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Shortest recorded encounter in the cohort."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "Maximum Encounter Duration",
+      "baseline_value": 354.0,
+      "proposed_value": 315.35,
+      "absolute_difference": -38.65,
+      "percentage_difference": -10.92,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Longest recorded encounter in the cohort."
+    },
+    {
+      "category": "Case Duration (Minutes)",
+      "metric_name": "Standard Deviation",
+      "baseline_value": 62.44,
+      "proposed_value": 55.77,
+      "absolute_difference": -6.67,
+      "percentage_difference": -10.68,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Dispersion of encounter durations around the cohort mean."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Consultation -> Laboratory (N=185->185)",
+      "baseline_value": 37.26,
+      "proposed_value": 37.26,
+      "absolute_difference": 0.0,
+      "percentage_difference": 0.0,
+      "unit": "minutes",
+      "provenance": "OBSERVED_BASELINE",
+      "interpretation": "Benchmark transition: baseline operational duration maintained without alteration."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Consultation -> Treatment (N=500->500)",
+      "baseline_value": 37.84,
+      "proposed_value": 37.84,
+      "absolute_difference": 0.0,
+      "percentage_difference": 0.0,
+      "unit": "minutes",
+      "provenance": "OBSERVED_BASELINE",
+      "interpretation": "Benchmark transition: baseline operational duration maintained without alteration."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Consultation -> X-Ray (N=80->80)",
+      "baseline_value": 38.19,
+      "proposed_value": 38.19,
+      "absolute_difference": 0.0,
+      "percentage_difference": 0.0,
+      "unit": "minutes",
+      "provenance": "OBSERVED_BASELINE",
+      "interpretation": "Benchmark transition: baseline operational duration maintained without alteration."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Laboratory -> Consultation (N=135->135)",
+      "baseline_value": 67.44,
+      "proposed_value": 57.32,
+      "absolute_difference": -10.12,
+      "percentage_difference": -15.01,
+      "unit": "minutes",
+      "provenance": "ASSUMED_HYPOTHETICAL",
+      "interpretation": "Targeted operational streamlining: Automated electronic stat-lab alerts and dedicated physician review routing."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Laboratory -> X-Ray (N=50->50)",
+      "baseline_value": 53.5,
+      "proposed_value": 53.5,
+      "absolute_difference": 0.0,
+      "percentage_difference": 0.0,
+      "unit": "minutes",
+      "provenance": "OBSERVED_BASELINE",
+      "interpretation": "Benchmark transition: baseline operational duration maintained without alteration."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Registration -> Triage (N=500->500)",
+      "baseline_value": 20.58,
+      "proposed_value": 20.58,
+      "absolute_difference": 0.0,
+      "percentage_difference": 0.0,
+      "unit": "minutes",
+      "provenance": "OBSERVED_BASELINE",
+      "interpretation": "Benchmark transition: baseline operational duration maintained without alteration."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Treatment -> Discharge (N=500->500)",
+      "baseline_value": 52.01,
+      "proposed_value": 44.21,
+      "absolute_difference": -7.8,
+      "percentage_difference": -15.0,
+      "unit": "minutes",
+      "provenance": "ASSUMED_HYPOTHETICAL",
+      "interpretation": "Targeted operational streamlining: Streamlined bedside discharge administration, electronic pharmacy routing, and transport coordination."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Triage -> Consultation (N=500->500)",
+      "baseline_value": 25.09,
+      "proposed_value": 25.09,
+      "absolute_difference": 0.0,
+      "percentage_difference": 0.0,
+      "unit": "minutes",
+      "provenance": "OBSERVED_BASELINE",
+      "interpretation": "Benchmark transition: baseline operational duration maintained without alteration."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "Triage -> Triage (N=60->0)",
+      "baseline_value": 65.63,
+      "proposed_value": 0.0,
+      "absolute_difference": -65.63,
+      "percentage_difference": -100.0,
+      "unit": "minutes",
+      "provenance": "SIMULATED_ESTIMATE",
+      "interpretation": "Repeated triage queue loop eliminated; patients route directly from initial triage to consultation."
+    },
+    {
+      "category": "Transition Duration (Minutes)",
+      "metric_name": "X-Ray -> Consultation (N=130->130)",
+      "baseline_value": 60.36,
+      "proposed_value": 51.31,
+      "absolute_difference": -9.05,
+      "percentage_difference": -14.99,
+      "unit": "minutes",
+      "provenance": "ASSUMED_HYPOTHETICAL",
+      "interpretation": "Targeted operational streamlining: Digital PACS radiologist alert integration and electronic clinician sign-off."
+    }
+  ],
+  "as_is_variants": [
+    {
+      "variant_rank": 1,
+      "pathway": "Registration -> Triage -> Consultation -> Treatment -> Discharge",
+      "case_count": 200,
+      "percentage": 40.0
+    },
+    {
+      "variant_rank": 2,
+      "pathway": "Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge",
+      "case_count": 110,
+      "percentage": 22.0
+    },
+    {
+      "variant_rank": 3,
+      "pathway": "Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge",
+      "case_count": 80,
+      "percentage": 16.0
+    },
+    {
+      "variant_rank": 4,
+      "pathway": "Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge",
+      "case_count": 50,
+      "percentage": 10.0
+    },
+    {
+      "variant_rank": 5,
+      "pathway": "Registration -> Triage -> Triage -> Consultation -> Treatment -> Discharge",
+      "case_count": 35,
+      "percentage": 7.0
+    },
+    {
+      "variant_rank": 6,
+      "pathway": "Registration -> Triage -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge",
+      "case_count": 25,
+      "percentage": 5.0
+    }
+  ],
+  "to_be_variants": [
+    {
+      "variant_rank": 1,
+      "pathway": "Registration -> Triage -> Consultation -> Treatment -> Discharge",
+      "case_count": 235,
+      "percentage": 47.0
+    },
+    {
+      "variant_rank": 2,
+      "pathway": "Registration -> Triage -> Consultation -> Laboratory -> Consultation -> Treatment -> Discharge",
+      "case_count": 135,
+      "percentage": 27.0
+    },
+    {
+      "variant_rank": 3,
+      "pathway": "Registration -> Triage -> Consultation -> X-Ray -> Consultation -> Treatment -> Discharge",
+      "case_count": 80,
+      "percentage": 16.0
+    },
+    {
+      "variant_rank": 4,
+      "pathway": "Registration -> Triage -> Consultation -> Laboratory -> X-Ray -> Consultation -> Treatment -> Discharge",
+      "case_count": 50,
+      "percentage": 10.0
+    }
+  ],
+  "assumptions": [
+    "Proactive nursing queue management allows clinical consultation without requiring secondary re-triage.",
+    "Stat-lab electronic alerts reduce post-specimen analysis notification delay by an assumed 15%.",
+    "Digital radiology PACS alerts reduce image review notification lag by an assumed 15%.",
+    "Bedside discharge packaging and electronic prescription delivery reduce discharge coordination by an assumed 15%.",
+    "No core clinical assessment, medical evaluation, diagnostic procedure, or treatment was omitted."
+  ],
+  "limitations": [
+    "Baseline data represents discrete milestone completion timestamps rather than continuous clinical observations.",
+    "Observed duration includes patient transport, active clinical procedures, and queuing; elapsed time is not pure waiting time.",
+    "Findings reflect simulated synthetic parameters and must be validated against empirical hospital time-motion studies."
+  ]
+}

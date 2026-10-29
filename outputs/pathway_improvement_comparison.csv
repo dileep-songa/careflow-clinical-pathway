@@ -1,0 +1,22 @@
+category,metric_name,baseline_value,proposed_value,absolute_difference,percentage_difference,unit,provenance,interpretation
+Cohort Overview,Total Evaluated Cases,500,500,0,0.0,cases,OBSERVED_BASELINE,Patient encounter population preserved across baseline and scenario.
+Cohort Overview,Total Recorded Events,3140,3080,-60,-1.91,events,SIMULATED_ESTIMATE,Reduction reflects elimination of redundant re-triage events in flagged cases.
+Cohort Overview,Clinical Pathway Variants,6,4,-2,-33.33,variants,SIMULATED_ESTIMATE,Process standardization: non-conformant re-triage pathways consolidate into standard pathways.
+Case Duration (Minutes),Mean Encounter Duration,202.54,181.77,-20.77,-10.25,minutes,SIMULATED_ESTIMATE,Average patient elapsed time from intake to discharge.
+Case Duration (Minutes),Median Encounter Duration,211.0,191.18,-19.82,-9.39,minutes,SIMULATED_ESTIMATE,Typical patient encounter elapsed duration (50th percentile).
+Case Duration (Minutes),25th Percentile Duration (P25),142.0,129.1,-12.9,-9.08,minutes,SIMULATED_ESTIMATE,Lower quartile of encounter durations.
+Case Duration (Minutes),75th Percentile Duration (P75),250.0,227.25,-22.75,-9.1,minutes,SIMULATED_ESTIMATE,Upper quartile of encounter durations.
+Case Duration (Minutes),90th Percentile Duration (P90),284.0,255.18,-28.82,-10.15,minutes,SIMULATED_ESTIMATE,Extended stay cohort threshold (90th percentile).
+Case Duration (Minutes),Minimum Encounter Duration,95.0,90.05,-4.95,-5.21,minutes,SIMULATED_ESTIMATE,Shortest recorded encounter in the cohort.
+Case Duration (Minutes),Maximum Encounter Duration,354.0,315.35,-38.65,-10.92,minutes,SIMULATED_ESTIMATE,Longest recorded encounter in the cohort.
+Case Duration (Minutes),Standard Deviation,62.44,55.77,-6.67,-10.68,minutes,SIMULATED_ESTIMATE,Dispersion of encounter durations around the cohort mean.
+Transition Duration (Minutes),Consultation -> Laboratory (N=185->185),37.26,37.26,0.0,0.0,minutes,OBSERVED_BASELINE,Benchmark transition: baseline operational duration maintained without alteration.
+Transition Duration (Minutes),Consultation -> Treatment (N=500->500),37.84,37.84,0.0,0.0,minutes,OBSERVED_BASELINE,Benchmark transition: baseline operational duration maintained without alteration.
+Transition Duration (Minutes),Consultation -> X-Ray (N=80->80),38.19,38.19,0.0,0.0,minutes,OBSERVED_BASELINE,Benchmark transition: baseline operational duration maintained without alteration.
+Transition Duration (Minutes),Laboratory -> Consultation (N=135->135),67.44,57.32,-10.12,-15.01,minutes,ASSUMED_HYPOTHETICAL,Targeted operational streamlining: Automated electronic stat-lab alerts and dedicated physician review routing.
+Transition Duration (Minutes),Laboratory -> X-Ray (N=50->50),53.5,53.5,0.0,0.0,minutes,OBSERVED_BASELINE,Benchmark transition: baseline operational duration maintained without alteration.
+Transition Duration (Minutes),Registration -> Triage (N=500->500),20.58,20.58,0.0,0.0,minutes,OBSERVED_BASELINE,Benchmark transition: baseline operational duration maintained without alteration.
+Transition Duration (Minutes),Treatment -> Discharge (N=500->500),52.01,44.21,-7.8,-15.0,minutes,ASSUMED_HYPOTHETICAL,"Targeted operational streamlining: Streamlined bedside discharge administration, electronic pharmacy routing, and transport coordination."
+Transition Duration (Minutes),Triage -> Consultation (N=500->500),25.09,25.09,0.0,0.0,minutes,OBSERVED_BASELINE,Benchmark transition: baseline operational duration maintained without alteration.
+Transition Duration (Minutes),Triage -> Triage (N=60->0),65.63,0.0,-65.63,-100.0,minutes,SIMULATED_ESTIMATE,Repeated triage queue loop eliminated; patients route directly from initial triage to consultation.
+Transition Duration (Minutes),X-Ray -> Consultation (N=130->130),60.36,51.31,-9.05,-14.99,minutes,ASSUMED_HYPOTHETICAL,Targeted operational streamlining: Digital PACS radiologist alert integration and electronic clinician sign-off.
