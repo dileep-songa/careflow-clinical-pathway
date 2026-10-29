@@ -1,4 +1,4 @@
-﻿# CareFlow Clinical Pathway: As-Is vs. To-Be Improvement Report
+# CareFlow Clinical Pathway: As-Is vs. To-Be Improvement Report
 
 - **Project:** CareFlow Clinical Pathway Analytics
 - **Evaluation Date:** October 29, 2026
@@ -22,14 +22,15 @@ This report delivers a reproducible comparative analysis between the observed **
 ### Analytical & Clinical Boundaries
 - **100% Synthetic Event Data:** The dataset contains simulated hospital records (500 cases, 3,140 events) and **no real patient Electronic Health Records (EHR) or Protected Health Information (PHI)**.
 - **Operational Simulation, Not Clinical Claims:** Observed durations represent elapsed timestamps between recorded milestones, combining active clinical delivery, patient transport, administrative tasks, and waiting time. Reductions reflect hypothetical coordination improvements and do not guarantee or measure real-world clinical patient outcomes.
-- **Zero Clinical Activity Omission:** All core clinical assessments, doctor consultations, laboratory investigations, radiological examinations, treatments, and discharges are fully preserved.
+- **Clinical Safety Assumption:** The To-Be scenario removes repeated triage events as a hypothetical operational improvement. Simulated event data alone cannot determine whether reassessment is clinically necessary. Qualified hospital staff must validate this assumption before any real-world workflow change. Consultations, diagnostic activities, treatment, and discharge remain represented in the simulated pathways.
 
 ---
 
 ## 2. To-Be Scenario Design & Assumptions
 
 **Scenario Name:** `Operational Coordination & Queue Optimization`
-**Description:** Conservative illustrative scenario modeling: (1) elimination of avoidable re-triage wait time via queue coordination, (2) 15% reduction in laboratory and radiology review turnaround via automated stat-alerts, and (3) 15% reduction in discharge administrative processing.
+
+**Description:** Conservative illustrative scenario modeling: (1) hypothetical avoidance of repeated triage via queue coordination (an operational assumption subject to clinical validation), (2) an assumed 15% reduction in laboratory and radiology review turnaround parameters via automated stat-alerts, and (3) an assumed 15% reduction in discharge administration coordination. All reported improvements are simulated estimates, not measured real-world results.
 
 ### Operational Levers & Rationale
 | Improvement Lever | Target Workflow Milestone | Modeled Mechanism | Baseline Mean | Modeled Change | Provenance |
@@ -38,7 +39,7 @@ This report delivers a reproducible comparative analysis between the observed **
 | **X-Ray Coordination** | `X-Ray -> Consultation` | Digital PACS radiologist alert integration and electronic clinician sign-off | 60.36 min | -15% | `ASSUMED_HYPOTHETICAL` |
 | **Treatment Coordination** | `Treatment -> Discharge` | Streamlined bedside discharge administration, electronic pharmacy routing, and transport coordination | 52.01 min | -15% | `ASSUMED_HYPOTHETICAL` |
 | **Registration Coordination** | `Registration -> Triage` | Baseline intake maintained; optional self-service kiosk can be configured | 20.58 min | 0% | `ASSUMED_HYPOTHETICAL` |
-| **Queue Management** | `Triage -> Triage` | Proactive waiting room triage tracking eliminates redundant re-assessment; routes patients directly to physician consultation | 65.63 min | -100.0% (Eliminated) | `SIMULATED_ESTIMATE` |
+| **Queue Management** | `Triage -> Triage` | Hypothetical assumption: proactive queue tracking bypasses repeated triage by expediting physician consultation; requires clinical validation | 65.63 min | -100.0% (Eliminated) | `SIMULATED_ESTIMATE` |
 
 ---
 
@@ -74,7 +75,7 @@ This report delivers a reproducible comparative analysis between the observed **
 | `Registration -> Triage (N=500->500)` | 20.58 | 20.58 | +0.00 min | +0.00% | Benchmark transition: baseline operational duration maintained without alteration. |
 | `Treatment -> Discharge (N=500->500)` | 52.01 | 44.21 | -7.80 min | -15.00% | Targeted operational streamlining: Streamlined bedside discharge administration, electronic pharmacy routing, and transport coordination. |
 | `Triage -> Consultation (N=500->500)` | 25.09 | 25.09 | +0.00 min | +0.00% | Benchmark transition: baseline operational duration maintained without alteration. |
-| `Triage -> Triage (N=60->0)` | 65.63 | 0.00 | -65.63 min | -100.00% | Repeated triage queue loop eliminated; patients route directly from initial triage to consultation. |
+| `Triage -> Triage (N=60->0)` | 65.63 | 0.00 | -65.63 min | -100.00% | Hypothetical queue-management assumption: repeated triage bypassed as patients route directly to consultation; subject to clinical validation. |
 | `X-Ray -> Consultation (N=130->130)` | 60.36 | 51.31 | -9.05 min | -14.99% | Targeted operational streamlining: Digital PACS radiologist alert integration and electronic clinician sign-off. |
 
 ---
@@ -113,7 +114,7 @@ To maintain rigorous data integrity, the following limitations must be noted:
 2. **Fixed Parameter Simulation:**
    - Proposed percentage reductions (15%) are conservative operational estimates. Real clinical environments exhibit stochastic arrival spikes and dynamic staffing shortages.
 3. **Missing Clinical Variables:**
-   - The dataset lacks clinical acuity scores (ESI Levels 1â€“5), patient vital signs, lab panel complexities, and bed occupancy rates. Real-world implementation must stratify improvements across clinical urgency tiers.
+   - The dataset lacks clinical acuity scores (ESI Levels 1–5), patient vital signs, lab panel complexities, and bed occupancy rates. Real-world implementation must stratify improvements across clinical urgency tiers.
 
 ---
 

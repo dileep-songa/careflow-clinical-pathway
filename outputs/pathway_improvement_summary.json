@@ -1,14 +1,14 @@
 {
   "metadata": {
     "analysis_title": "CareFlow As-Is vs. To-Be Pathway Improvement Analysis",
-    "generated_at": "2026-10-29 13:10:15",
+    "generated_at": "2026-10-29 14:42:31",
     "data_provenance": "SIMULATED_DATASET",
     "is_synthetic": true,
     "disclaimer": "All baseline data originates from synthetic simulation models. The To-Be workflow is an illustrative operational scenario and does not claim to measure real-world clinical outcomes or replace institutional policy."
   },
   "scenario_configuration": {
     "scenario_name": "Operational Coordination & Queue Optimization",
-    "scenario_description": "Conservative illustrative scenario modeling: (1) elimination of avoidable re-triage wait time via queue coordination, (2) 15% reduction in laboratory and radiology review turnaround via automated stat-alerts, and (3) 15% reduction in discharge administrative processing.",
+    "scenario_description": "Conservative illustrative scenario modeling: (1) hypothetical avoidance of repeated triage via queue coordination (an operational assumption subject to clinical validation), (2) an assumed 15% reduction in laboratory and radiology review turnaround parameters via automated stat-alerts, and (3) an assumed 15% reduction in discharge administration coordination. All reported improvements are simulated estimates, not measured real-world results.",
     "resolve_repeated_triage": true,
     "transition_reductions": [
       {
@@ -114,7 +114,7 @@
       "percentage_difference": -1.91,
       "unit": "events",
       "provenance": "SIMULATED_ESTIMATE",
-      "interpretation": "Reduction reflects elimination of redundant re-triage events in flagged cases."
+      "interpretation": "Reduction reflects removal of repeated triage events under the hypothetical queue-management scenario."
     },
     {
       "category": "Cohort Overview",
@@ -125,7 +125,7 @@
       "percentage_difference": -33.33,
       "unit": "variants",
       "provenance": "SIMULATED_ESTIMATE",
-      "interpretation": "Process standardization: non-conformant re-triage pathways consolidate into standard pathways."
+      "interpretation": "Hypothetical pathway consolidation: repeated triage events are removed in the proposed scenario, subject to clinical validation."
     },
     {
       "category": "Case Duration (Minutes)",
@@ -312,7 +312,7 @@
       "percentage_difference": -100.0,
       "unit": "minutes",
       "provenance": "SIMULATED_ESTIMATE",
-      "interpretation": "Repeated triage queue loop eliminated; patients route directly from initial triage to consultation."
+      "interpretation": "Hypothetical queue-management assumption: repeated triage bypassed as patients route directly to consultation; subject to clinical validation."
     },
     {
       "category": "Transition Duration (Minutes)",
@@ -391,11 +391,12 @@
     }
   ],
   "assumptions": [
-    "Proactive nursing queue management allows clinical consultation without requiring secondary re-triage.",
-    "Stat-lab electronic alerts reduce post-specimen analysis notification delay by an assumed 15%.",
-    "Digital radiology PACS alerts reduce image review notification lag by an assumed 15%.",
-    "Bedside discharge packaging and electronic prescription delivery reduce discharge coordination by an assumed 15%.",
-    "No core clinical assessment, medical evaluation, diagnostic procedure, or treatment was omitted."
+    "Avoiding repeated triage is a hypothetical queue-management assumption subject to clinical validation by qualified hospital staff.",
+    "Simulated event data alone cannot determine whether patient reassessment was clinically necessary.",
+    "Stat-lab electronic alerts reduce post-specimen analysis notification delay by an assumed 15% scenario parameter.",
+    "Digital radiology PACS alerts reduce image review notification lag by an assumed 15% scenario parameter.",
+    "Bedside discharge packaging and electronic prescription delivery reduce discharge coordination by an assumed 15% scenario parameter.",
+    "Consultations, diagnostic activities, treatment, and discharge remain represented in the simulated pathways."
   ],
   "limitations": [
     "Baseline data represents discrete milestone completion timestamps rather than continuous clinical observations.",

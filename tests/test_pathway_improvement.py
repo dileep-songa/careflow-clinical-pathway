@@ -338,6 +338,12 @@ class TestAsIsVsToBeComparison(unittest.TestCase):
             )
             self.assertTrue(len(metric.interpretation.strip()) > 0)
 
+        variant_metric = next(m for m in result.comparison_table if m.metric_name == "Clinical Pathway Variants")
+        self.assertEqual(
+            variant_metric.interpretation,
+            "Hypothetical pathway consolidation: repeated triage events are removed in the proposed scenario, subject to clinical validation.",
+        )
+
 
 class TestCanonicalDatasetImprovement(unittest.TestCase):
     """Test suite evaluating the official canonical CareFlow simulated dataset."""
@@ -484,6 +490,26 @@ class TestArtifactExportAndCLI(unittest.TestCase):
         self.assertIn("Pathway Variant Distribution Shift", report_text)
         self.assertIn("Analytical Limitations", report_text)
         self.assertIn("Recommended Next Steps", report_text)
+        self.assertIn("Clinical Safety Assumption:", report_text)
+        self.assertIn(
+            "The To-Be scenario removes repeated triage events as a hypothetical operational improvement.",
+            report_text,
+        )
+        self.assertIn(
+            "Simulated event data alone cannot determine whether reassessment is clinically necessary.",
+            report_text,
+        )
+        self.assertIn(
+            "Qualified hospital staff must validate this assumption before any real-world workflow change.",
+            report_text,
+        )
+        self.assertIn(
+            "Consultations, diagnostic activities, treatment, and discharge remain represented in the simulated pathways.",
+            report_text,
+        )
+        self.assertNotIn("Zero Clinical Activity Omission", report_text)
+        self.assertNotIn("redundant re-assessment", report_text)
+        self.assertNotIn("non-conformant re-triage pathways", report_text)
         self.assertTrue(report_text.endswith("\n"))
 
         # Verify no garbled character encodings

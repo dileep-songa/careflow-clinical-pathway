@@ -96,9 +96,11 @@ class ToBeScenarioConfig:
 
     scenario_name: str = "Operational Coordination & Queue Optimization"
     scenario_description: str = (
-        "Conservative illustrative operational scenario modeling proactive queue-delay "
-        "elimination for repeated triage and administrative coordination streamlining for "
-        "diagnostic reviews and discharge."
+        "Conservative illustrative scenario modeling: (1) hypothetical avoidance of repeated "
+        "triage via queue coordination (an operational assumption subject to clinical validation), "
+        "(2) an assumed 15% reduction in laboratory and radiology review turnaround parameters via "
+        "automated stat-alerts, and (3) an assumed 15% reduction in discharge administration "
+        "coordination. All reported improvements are simulated estimates, not measured real-world results."
     )
     resolve_repeated_triage: bool = True
     transition_reductions: Dict[Tuple[str, str], TransitionReductionConfig] = field(default_factory=dict)
@@ -109,10 +111,12 @@ class ToBeScenarioConfig:
         config = cls(
             scenario_name="Operational Coordination & Queue Optimization",
             scenario_description=(
-                "Conservative illustrative scenario modeling: (1) elimination of avoidable "
-                "re-triage wait time via queue coordination, (2) 15% reduction in laboratory "
-                "and radiology review turnaround via automated stat-alerts, and (3) 15% reduction "
-                "in discharge administrative processing."
+                "Conservative illustrative scenario modeling: (1) hypothetical avoidance of "
+                "repeated triage via queue coordination (an operational assumption subject to "
+                "clinical validation), (2) an assumed 15% reduction in laboratory and radiology "
+                "review turnaround parameters via automated stat-alerts, and (3) an assumed 15% "
+                "reduction in discharge administration coordination. All reported improvements are "
+                "simulated estimates, not measured real-world results."
             ),
             resolve_repeated_triage=True,
         )
@@ -686,7 +690,7 @@ def compare_as_is_vs_to_be(
             percentage_difference=safe_percentage_change(total_events_base, total_events_prop),
             unit="events",
             provenance=MetricProvenance.SIMULATED_ESTIMATE.value,
-            interpretation="Reduction reflects elimination of redundant re-triage events in flagged cases.",
+            interpretation="Reduction reflects removal of repeated triage events under the hypothetical queue-management scenario.",
         )
     )
 
@@ -702,7 +706,7 @@ def compare_as_is_vs_to_be(
             percentage_difference=safe_percentage_change(variant_count_base, variant_count_prop),
             unit="variants",
             provenance=MetricProvenance.SIMULATED_ESTIMATE.value,
-            interpretation="Process standardization: non-conformant re-triage pathways consolidate into standard pathways.",
+            interpretation="Hypothetical pathway consolidation: repeated triage events are removed in the proposed scenario, subject to clinical validation.",
         )
     )
 
@@ -762,7 +766,7 @@ def compare_as_is_vs_to_be(
 
         red_cfg = config.transition_reductions.get((src, tgt))
         if (src, tgt) == ("Triage", "Triage") and config.resolve_repeated_triage:
-            interp = "Repeated triage queue loop eliminated; patients route directly from initial triage to consultation."
+            interp = "Hypothetical queue-management assumption: repeated triage bypassed as patients route directly to consultation; subject to clinical validation."
             prov = MetricProvenance.SIMULATED_ESTIMATE.value
         elif red_cfg and (red_cfg.percentage_reduction > 0 or red_cfg.fixed_minutes_reduction > 0):
             interp = f"Targeted operational streamlining: {red_cfg.rationale}."
@@ -868,11 +872,12 @@ def export_summary_json(
         "as_is_variants": result.as_is_variants,
         "to_be_variants": result.to_be_variants,
         "assumptions": [
-            "Proactive nursing queue management allows clinical consultation without requiring secondary re-triage.",
-            "Stat-lab electronic alerts reduce post-specimen analysis notification delay by an assumed 15%.",
-            "Digital radiology PACS alerts reduce image review notification lag by an assumed 15%.",
-            "Bedside discharge packaging and electronic prescription delivery reduce discharge coordination by an assumed 15%.",
-            "No core clinical assessment, medical evaluation, diagnostic procedure, or treatment was omitted.",
+            "Avoiding repeated triage is a hypothetical queue-management assumption subject to clinical validation by qualified hospital staff.",
+            "Simulated event data alone cannot determine whether patient reassessment was clinically necessary.",
+            "Stat-lab electronic alerts reduce post-specimen analysis notification delay by an assumed 15% scenario parameter.",
+            "Digital radiology PACS alerts reduce image review notification lag by an assumed 15% scenario parameter.",
+            "Bedside discharge packaging and electronic prescription delivery reduce discharge coordination by an assumed 15% scenario parameter.",
+            "Consultations, diagnostic activities, treatment, and discharge remain represented in the simulated pathways.",
         ],
         "limitations": [
             "Baseline data represents discrete milestone completion timestamps rather than continuous clinical observations.",
@@ -883,6 +888,7 @@ def export_summary_json(
 
     with open(out, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
+        f.write("\n")
 
     logger.info("Exported pathway improvement summary JSON to %s", out)
     return out
@@ -925,13 +931,14 @@ def generate_improvement_report(result: PathwayImprovementResult) -> str:
         "### Analytical & Clinical Boundaries",
         "- **100% Synthetic Event Data:** The dataset contains simulated hospital records (500 cases, 3,140 events) and **no real patient Electronic Health Records (EHR) or Protected Health Information (PHI)**.",
         "- **Operational Simulation, Not Clinical Claims:** Observed durations represent elapsed timestamps between recorded milestones, combining active clinical delivery, patient transport, administrative tasks, and waiting time. Reductions reflect hypothetical coordination improvements and do not guarantee or measure real-world clinical patient outcomes.",
-        "- **Zero Clinical Activity Omission:** All core clinical assessments, doctor consultations, laboratory investigations, radiological examinations, treatments, and discharges are fully preserved.",
+        "- **Clinical Safety Assumption:** The To-Be scenario removes repeated triage events as a hypothetical operational improvement. Simulated event data alone cannot determine whether reassessment is clinically necessary. Qualified hospital staff must validate this assumption before any real-world workflow change. Consultations, diagnostic activities, treatment, and discharge remain represented in the simulated pathways.",
         "",
         "---",
         "",
         "## 2. To-Be Scenario Design & Assumptions",
         "",
-        f"**Scenario Name:** `{result.config.scenario_name}`  ",
+        f"**Scenario Name:** `{result.config.scenario_name}`",
+        "",
         f"**Description:** {result.config.scenario_description}",
         "",
         "### Operational Levers & Rationale",
@@ -955,7 +962,7 @@ def generate_improvement_report(result: PathwayImprovementResult) -> str:
 
     if result.config.resolve_repeated_triage:
         lines.append(
-            "| **Queue Management** | `Triage -> Triage` | Proactive waiting room triage tracking eliminates redundant re-assessment; routes patients directly to physician consultation | 65.63 min | -100.0% (Eliminated) | `SIMULATED_ESTIMATE` |"
+            "| **Queue Management** | `Triage -> Triage` | Hypothetical assumption: proactive queue tracking bypasses repeated triage by expediting physician consultation; requires clinical validation | 65.63 min | -100.0% (Eliminated) | `SIMULATED_ESTIMATE` |"
         )
 
     lines.extend([
@@ -1321,7 +1328,7 @@ def run_pathway_improvement_pipeline(
         xray_reduction_pct: Assumed percentage reduction for X-Ray -> Consult.
         discharge_reduction_pct: Assumed percentage reduction for Treatment -> Discharge.
         registration_reduction_pct: Assumed percentage reduction for Registration -> Triage.
-        resolve_repeated_triage: Whether to resolve redundant repeated triage queue delays.
+        resolve_repeated_triage: Whether to model hypothetical avoidance of repeated triage queue delays.
         generate_chart: Whether to render and save the PNG comparison chart.
 
     Returns:
@@ -1438,7 +1445,7 @@ def parse_args(args: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "--keep-repeated-triage",
         action="store_true",
-        help="Do NOT resolve redundant repeated triage queue delays.",
+        help="Do NOT model avoidance of repeated triage queue delays.",
     )
     parser.add_argument(
         "--no-plot",
