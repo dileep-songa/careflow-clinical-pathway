@@ -1,0 +1,119 @@
+table 'stg_hospital_events (2)'
+	lineageTag: 27a25c1c-4740-4992-9301-d14ce0ac8fc7
+
+	column case_id
+		dataType: string
+		lineageTag: 38d6e019-3d53-466b-b56f-c40442dfbdb6
+		summarizeBy: none
+		sourceColumn: case_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_sequence
+		dataType: int64
+		formatString: 0
+		lineageTag: 96b9143c-75c8-4170-b444-05ced522ebed
+		summarizeBy: sum
+		sourceColumn: event_sequence
+
+		annotation SummarizationSetBy = Automatic
+
+	column raw_activity_name
+		dataType: string
+		lineageTag: d0fc58d0-5df5-4b27-aad3-3f6e0e575ba2
+		summarizeBy: none
+		sourceColumn: raw_activity_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column activity_name
+		dataType: string
+		lineageTag: c8eef5a4-53dc-4ad4-a610-357a2dfb4dc7
+		summarizeBy: none
+		sourceColumn: activity_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 359c276e-39cc-48a7-811c-7d2c495aa085
+		summarizeBy: none
+		sourceColumn: event_timestamp
+
+		variation Variation
+			isDefault
+			relationship: 0bef2581-4d0c-4bc5-8378-e1e0791fccd9
+			defaultHierarchy: LocalDateTable_49c443fd-4f20-4c85-89a4-93bf72969d08.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: e78034dd-87b6-43b8-b419-b9eb221d269e
+		summarizeBy: none
+		sourceColumn: event_date
+
+		variation Variation
+			isDefault
+			relationship: 7156ce9b-4d7e-4b77-8cd0-a942e984ca31
+			defaultHierarchy: LocalDateTable_e9b76cac-079d-4de9-acda-a06cd19308e8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column department
+		dataType: string
+		lineageTag: f26da655-4e2e-44c0-b6d3-4474c69023d8
+		summarizeBy: none
+		sourceColumn: department
+
+		annotation SummarizationSetBy = Automatic
+
+	column resource_id
+		dataType: string
+		lineageTag: a0bd9b77-b529-4aad-8a36-bc797bb6c8f7
+		summarizeBy: none
+		sourceColumn: resource_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_provenance
+		dataType: string
+		lineageTag: 2cae61d6-0f86-4acb-836a-9c347229f824
+		summarizeBy: none
+		sourceColumn: data_provenance
+
+		annotation SummarizationSetBy = Automatic
+
+	column previous_activity
+		dataType: string
+		lineageTag: 0223f275-fb3b-4a36-9f7a-157c89fd5aba
+		summarizeBy: none
+		sourceColumn: previous_activity
+
+		annotation SummarizationSetBy = Automatic
+
+	column transition_minutes_from_previous
+		dataType: int64
+		formatString: 0
+		lineageTag: a1fff7aa-5c4f-4877-bc03-816089e74d60
+		summarizeBy: sum
+		sourceColumn: transition_minutes_from_previous
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'stg_hospital_events (2)' = m
+		mode: import
+		source =
+				let
+				    Source = GoogleBigQuery.Database([Implementation="2.0"]),
+				    #"exalted-mode-467509-h1_Database" = Source{[Name="exalted-mode-467509-h1",Kind="Database"]}[Data],
+				    careflow_staging_Schema = #"exalted-mode-467509-h1_Database"{[Name="careflow_staging",Kind="Schema"]}[Data],
+				    stg_hospital_events_View = careflow_staging_Schema{[Name="stg_hospital_events",Kind="View"]}[Data]
+				in
+				    stg_hospital_events_View
+
+	annotation PBI_ResultType = Table

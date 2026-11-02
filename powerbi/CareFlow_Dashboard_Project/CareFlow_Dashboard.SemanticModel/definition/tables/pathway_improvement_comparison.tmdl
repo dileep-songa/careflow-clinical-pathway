@@ -1,0 +1,78 @@
+table pathway_improvement_comparison
+	lineageTag: c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f
+
+	column category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: category
+
+	column metric_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: metric_name
+
+	column baseline_value
+		dataType: double
+		formatString: #,##0.0
+		summarizeBy: none
+		sourceColumn: baseline_value
+
+	column proposed_value
+		dataType: double
+		formatString: #,##0.0
+		summarizeBy: none
+		sourceColumn: proposed_value
+
+	column absolute_difference
+		dataType: double
+		formatString: #,##0.0
+		summarizeBy: none
+		sourceColumn: absolute_difference
+
+	column percentage_difference
+		dataType: double
+		formatString: +0.0%;-0.0%;0.0%
+		summarizeBy: none
+		sourceColumn: percentage_difference
+
+	column unit
+		dataType: string
+		summarizeBy: none
+		sourceColumn: unit
+
+	column provenance
+		dataType: string
+		summarizeBy: none
+		sourceColumn: provenance
+
+	column interpretation
+		dataType: string
+		summarizeBy: none
+		sourceColumn: interpretation
+
+	measure 'Relative % Difference' =
+			VAR Baseline = SELECTEDVALUE('pathway_improvement_comparison'[baseline_value])
+			VAR Proposed = SELECTEDVALUE('pathway_improvement_comparison'[proposed_value])
+			RETURN
+				IF(
+					ISBLANK(Baseline) || Baseline = 0,
+					IF(Proposed = 0, 0, BLANK()),
+					DIVIDE(Proposed - Baseline, Baseline)
+				)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f
+
+	partition pathway_improvement_comparison = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\project\careflow-clinical-pathway\outputs\pathway_improvement_comparison.csv"),[Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Removed Precalculated Pct" = Table.RemoveColumns(#"Promoted Headers",{"percentage_difference"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Precalculated Pct",{{"category", type text}, {"metric_name", type text}, {"baseline_value", type number}, {"proposed_value", type number}, {"absolute_difference", type number}, {"unit", type text}, {"provenance", type text}, {"interpretation", type text}}),
+				    #"Calculated Relative Difference" = Table.AddColumn(#"Changed Type", "percentage_difference", each if [baseline_value] = null or [baseline_value] = 0 then (if [proposed_value] = 0 then 0.0 else null) else ([proposed_value] - [baseline_value]) / [baseline_value], type number),
+				    #"Reordered Columns" = Table.SelectColumns(#"Calculated Relative Difference", {"category", "metric_name", "baseline_value", "proposed_value", "absolute_difference", "percentage_difference", "unit", "provenance", "interpretation"})
+				in
+				    #"Reordered Columns"
+
+	annotation PBI_ResultType = Table

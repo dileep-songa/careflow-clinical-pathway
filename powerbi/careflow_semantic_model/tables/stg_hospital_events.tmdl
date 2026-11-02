@@ -1,0 +1,175 @@
+table stg_hospital_events
+	lineageTag: 16005fff-e9ff-454a-9d9b-826c68590aeb
+
+	measure 'Total Cases' = DISTINCTCOUNT('stg_hospital_events'[case_id])
+		formatString: 0
+		lineageTag: 268e0df6-b01e-4525-b852-f217108b0841
+
+	measure Measure
+		lineageTag: ff9ebe99-74a1-4a49-aee2-85fdfb1b0667
+
+		annotation 43dbc3e8-3a1c-4b6f-9923-b49ff7d6691c = True
+
+	measure 'Total Events' = COUNTROWS('stg_hospital_events')
+		formatString: 0
+		lineageTag: c6b88a5b-b73d-459c-85bc-a50867f9cd39
+
+	measure 'Avg Case Cycle Time (Mins)' =
+
+			VAR CaseDurations =
+			    SUMMARIZE(
+			        'stg_hospital_events',
+			        'stg_hospital_events'[case_id],
+			        "CaseTotalMinutes",
+			        SUM('stg_hospital_events'[transition_minutes_from_previous])
+			    )
+			RETURN
+			    AVERAGEX(CaseDurations, [CaseTotalMinutes])
+		lineageTag: 1138ea12-042b-4c0d-a572-4c546277a8c3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Median Case Cycle Time (Mins)' =
+
+			VAR CaseDurations =
+			    SUMMARIZE(
+			        'stg_hospital_events',
+			        'stg_hospital_events'[case_id],
+			        "CaseTotalMinutes",
+			        SUM('stg_hospital_events'[transition_minutes_from_previous])
+			    )
+			RETURN
+			    MEDIANX(CaseDurations, [CaseTotalMinutes])
+		lineageTag: d4cfb71f-b7e6-4dba-a4d8-85abd6c80396
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Re-Triage Rate %' =
+
+			VAR ReTriageCases =
+			    CALCULATE(
+			        DISTINCTCOUNT('stg_hospital_events'[case_id]),
+			        'stg_hospital_events'[raw_activity_name] = "Triage",
+			        'stg_hospital_events'[previous_activity] = "Triage"
+			    )
+			RETURN
+			    DIVIDE(ReTriageCases, [Total Cases], 0)
+		lineageTag: 345f49c1-6dcd-4120-b092-0a7484ca557d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column case_id
+		dataType: string
+		lineageTag: 5fc73f6b-6446-40e1-82ca-4d62a6bb976b
+		summarizeBy: none
+		sourceColumn: case_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_sequence
+		dataType: int64
+		formatString: 0
+		lineageTag: a98ce6da-eec7-4078-a9e9-8ba9b5c9c0c7
+		summarizeBy: sum
+		sourceColumn: event_sequence
+
+		annotation SummarizationSetBy = Automatic
+
+	column raw_activity_name
+		dataType: string
+		lineageTag: 00699417-93a7-4f31-8715-c6542db98daf
+		summarizeBy: none
+		sourceColumn: raw_activity_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column activity_name
+		dataType: string
+		lineageTag: fa5edfef-fade-4f4c-81ae-aa74be0a6480
+		summarizeBy: none
+		sourceColumn: activity_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ac4e4b62-3f53-48be-a508-33c432c697ac
+		summarizeBy: none
+		sourceColumn: event_timestamp
+
+		variation Variation
+			isDefault
+			relationship: c9df3b01-cbdd-4034-81de-32c5ade92f52
+			defaultHierarchy: LocalDateTable_b02213a0-917d-4fce-9237-50aa9100f0ee.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a0ebe4da-1926-4023-9b39-03c48088a3ba
+		summarizeBy: none
+		sourceColumn: event_date
+
+		variation Variation
+			isDefault
+			relationship: 3cb3b656-e3b2-41e5-a4c5-3cf909fce244
+			defaultHierarchy: LocalDateTable_b77ddfa2-054a-4d91-af85-e6383c65e7b3.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column department
+		dataType: string
+		lineageTag: 033d8cff-9001-4c2a-941f-7191cba91fe8
+		summarizeBy: none
+		sourceColumn: department
+
+		annotation SummarizationSetBy = Automatic
+
+	column resource_id
+		dataType: string
+		lineageTag: ab01f686-c089-46d8-81ce-9e4579c09602
+		summarizeBy: none
+		sourceColumn: resource_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_provenance
+		dataType: string
+		lineageTag: c4102fe4-f430-4426-98d6-90a98c204561
+		summarizeBy: none
+		sourceColumn: data_provenance
+
+		annotation SummarizationSetBy = Automatic
+
+	column previous_activity
+		dataType: string
+		lineageTag: 1e6b40bd-3513-4b11-a01c-eca169bafe53
+		summarizeBy: none
+		sourceColumn: previous_activity
+
+		annotation SummarizationSetBy = Automatic
+
+	column transition_minutes_from_previous
+		dataType: int64
+		formatString: 0
+		lineageTag: 95f45a92-2f4c-4fda-9a91-adb891070be8
+		summarizeBy: sum
+		sourceColumn: transition_minutes_from_previous
+
+		annotation SummarizationSetBy = Automatic
+
+	partition stg_hospital_events = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\project\careflow-clinical-pathway\data\cleaned\stg_hospital_events.csv"),[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"case_id", type text}, {"event_sequence", Int64.Type}, {"raw_activity_name", type text}, {"activity_name", type text}, {"event_timestamp", type datetime}, {"event_date", type date}, {"department", type text}, {"resource_id", type text}, {"data_provenance", type text}, {"previous_activity", type text}, {"transition_minutes_from_previous", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table

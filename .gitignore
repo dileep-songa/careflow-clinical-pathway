@@ -70,3 +70,10 @@ dbt_packages/
 
 # OS
 Thumbs.db
+
+# Power BI binary files (developer projects track plain-text PBIP)
+*.pbix
+*.pbit
+
+# Power BI local application state
+powerbi/CareFlow_Dashboard_Project/**/.pbi/
