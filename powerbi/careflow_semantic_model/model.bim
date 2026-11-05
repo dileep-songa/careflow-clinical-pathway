@@ -152,31 +152,23 @@
           {
             "name": "Avg Case Cycle Time (Mins)",
             "expression": [
-              "VAR CaseDurations =",
-              "    ADDCOLUMNS(",
-              "        VALUES('stg_hospital_events'[case_id]),",
-              "        \"CaseTotalMinutes\",",
-              "        CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
-              "    )",
-              "RETURN",
-              "AVERAGEX(CaseDurations, [CaseTotalMinutes])"
+              "AVERAGEX(",
+              "    VALUES('stg_hospital_events'[case_id]),",
+              "    CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
+              ")"
             ],
-            "formatString": "0.0 \"Mins\"",
+            "formatString": "0.0 \"mins\"",
             "lineageTag": "1138ea12-042b-4c0d-a572-4c546277a8c3"
           },
           {
             "name": "Median Case Cycle Time (Mins)",
             "expression": [
-              "VAR CaseDurations =",
-              "    ADDCOLUMNS(",
-              "        VALUES('stg_hospital_events'[case_id]),",
-              "        \"CaseTotalMinutes\",",
-              "        CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
-              "    )",
-              "RETURN",
-              "MEDIANX(CaseDurations, [CaseTotalMinutes])"
+              "MEDIANX(",
+              "    VALUES('stg_hospital_events'[case_id]),",
+              "    CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
+              ")"
             ],
-            "formatString": "0.0 \"Mins\"",
+            "formatString": "0.0 \"mins\"",
             "lineageTag": "d4cfb71f-b7e6-4dba-a4d8-85abd6c80396"
           },
           {
@@ -202,6 +194,36 @@
             "expression": "DIVIDE([Conformant Cases Count], [Total Cases], 0)",
             "formatString": "0.0%",
             "lineageTag": "9c0d1e2f-3a4b-5c6d-7e8f-9a0b1c2d3e4f"
+          },
+          {
+            "name": "Average Cycle Time",
+            "expression": "[Avg Case Cycle Time (Mins)]",
+            "formatString": "0.0 \"mins\""
+          },
+          {
+            "name": "Median Cycle Time",
+            "expression": "[Median Case Cycle Time (Mins)]",
+            "formatString": "0.0 \"mins\""
+          },
+          {
+            "name": "Repeat-Triage Rate",
+            "expression": "[Re-Triage Rate %]",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Conformant Cases",
+            "expression": "[Conformant Cases Count]",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Repeat-Triage Cases",
+            "expression": "[Repeat Triage Cases Count]",
+            "formatString": "#,##0"
+          },
+          {
+            "name": "Conformance Rate",
+            "expression": "[Conformance Rate %]",
+            "formatString": "0.0%"
           }
         ],
         "annotations": [
@@ -1019,9 +1041,12 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = stg_hospital_events",
+                "    Source = Csv.Document(File.Contents(\"C:\\project\\careflow-clinical-pathway\\data\\cleaned\\stg_hospital_events.csv\"),[Delimiter=\",\", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
+                "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    #\"Replaced Empty Strings\" = Table.ReplaceValue(#\"Promoted Headers\", \"\", null, Replacer.ReplaceValue, {\"previous_activity\", \"transition_minutes_from_previous\"}),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Replaced Empty Strings\",{{\"case_id\", type text}, {\"event_sequence\", Int64.Type}, {\"raw_activity_name\", type text}, {\"activity_name\", type text}, {\"event_timestamp\", type datetime}, {\"event_date\", type date}, {\"department\", type text}, {\"resource_id\", type text}, {\"data_provenance\", type text}, {\"previous_activity\", type text}, {\"transition_minutes_from_previous\", Int64.Type}})",
                 "in",
-                "    Source"
+                "    #\"Changed Type\""
               ]
             }
           }
@@ -1476,6 +1501,11 @@
             "dataType": "string",
             "sourceColumn": "pathway",
             "summarizeBy": "none"
+          },
+          {
+            "name": "variant_label",
+            "dataType": "string",
+            "sourceColumn": "variant_label"
           }
         ],
         "partitions": [
@@ -1488,9 +1518,10 @@
                 "let",
                 "    Source = Csv.Document(File.Contents(\"C:\\project\\careflow-clinical-pathway\\outputs\\pathway_variants_summary.csv\"),[Delimiter=\",\", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
                 "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
-                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"variant_rank\", Int64.Type}, {\"case_count\", Int64.Type}, {\"percentage\", type number}, {\"pathway\", type text}})",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"variant_rank\", Int64.Type}, {\"case_count\", Int64.Type}, {\"percentage\", type number}, {\"pathway\", type text}}),",
+                "    #\"Added Variant Label\" = Table.AddColumn(#\"Changed Type\", \"variant_label\", each (if [variant_rank] = 1 then \"Standard Flow (40%)\" else if [variant_rank] = 2 then \"Lab Diagnostic (22%)\" else if [variant_rank] = 3 then \"X-Ray Diagnostic (16%)\" else if [variant_rank] = 4 then \"Lab + X-Ray (10%)\" else if [variant_rank] = 5 then \"Re-Triage Loop (7%)\" else \"Re-Triage + Lab (5%)\"), type text)",
                 "in",
-                "    #\"Changed Type\""
+                "    #\"Added Variant Label\""
               ]
             }
           }
@@ -1506,6 +1537,16 @@
             "name": "Total Variant Cases",
             "expression": "SUM('pathway_variants_summary'[case_count])",
             "formatString": "#,##0"
+          },
+          {
+            "name": "Total Pathway Variants",
+            "expression": "COUNTROWS('pathway_variants_summary')",
+            "formatString": "0"
+          },
+          {
+            "name": "Pathway Variants",
+            "expression": "COUNTROWS('pathway_variants_summary')",
+            "formatString": "0"
           }
         ]
       },
@@ -1572,6 +1613,11 @@
             "sourceColumn": "max_observed_transition_minutes",
             "formatString": "0.0",
             "summarizeBy": "none"
+          },
+          {
+            "name": "transition_display",
+            "dataType": "string",
+            "sourceColumn": "transition_display"
           }
         ],
         "partitions": [
@@ -1585,9 +1631,12 @@
                 "    Source = Csv.Document(File.Contents(\"C:\\project\\careflow-clinical-pathway\\outputs\\bottleneck_analysis_summary.csv\"),[Delimiter=\",\", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),",
                 "    #\"Promoted Headers\" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
                 "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted Headers\",{{\"rank\", Int64.Type}, {\"source_activity\", type text}, {\"target_activity\", type text}, {\"transition_count\", Int64.Type}, {\"mean_observed_transition_minutes\", type number}, {\"median_observed_transition_minutes\", type number}, {\"min_observed_transition_minutes\", type number}, {\"max_observed_transition_minutes\", type number}}),",
-                "    #\"Added Transition Label\" = Table.AddColumn(#\"Changed Type\", \"transition_label\", each [source_activity] & \" -> \" & [target_activity], type text)",
+                "    #\"Added Transition\" = Table.AddColumn(#\"Changed Type\", \"transition\", each [source_activity] & \" -> \" & [target_activity], type text),",
+                "    #\"Added Transition Label\" = Table.AddColumn(#\"Added Transition\", \"transition_label\", each [source_activity] & \" -> \" & [target_activity], type text),",
+                "    #\"Added Avg Duration Mins\" = Table.AddColumn(#\"Added Transition Label\", \"avg_duration_mins\", each [mean_observed_transition_minutes], type number),",
+                "    #\"Added Transition Display\" = Table.AddColumn(#\"Added Avg Duration Mins\", \"transition_display\", each (if [source_activity] = \"Triage\" and [target_activity] = \"Triage\" then \"Triage \u2192#(lf)Re-Triage\" else [source_activity] & \" \u2192#(lf)\" & [target_activity]), type text)",
                 "in",
-                "    #\"Added Transition Label\""
+                "    #\"Added Transition Display\""
               ]
             }
           }

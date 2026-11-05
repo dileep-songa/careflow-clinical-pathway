@@ -77,3 +77,18 @@ Thumbs.db
 
 # Power BI local application state
 powerbi/CareFlow_Dashboard_Project/**/.pbi/
+
+# CareFlow temporary working files
+powerbi/backup/
+powerbi/_careflow_diagnostic/
+powerbi/_careflow_style_test/
+scratch_match_reference.py
+
+# Power BI local state and cache
+**/localSettings.json
+**/editorSettings.json
+**/cache.abf
+
+# Local review backup and unused Power BI theme
+powerbi/*.before_cleanup.bak
+powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/StaticResources/SharedResources/BuiltInThemes/

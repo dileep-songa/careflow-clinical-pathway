@@ -1,16 +1,180 @@
-"""
-Complete generator for CareFlow_Dashboard.pbip with full SemanticQueryDataShapeCommand
-queries, dataTransforms, theme resource packages, and local-safe partition settings.
-"""
-
+# Upgraded CareFlow PBIP Builder with Premium Visual Redesign & Container Styling
 import os
 import json
-import shutil
 import zipfile
 
-import json
+def get_container_formatting(title=None, subtitle=None):
+    obj = {
+        "background": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#FFFFFF'"}}}}},
+                    "transparency": {"expr": {"Literal": {"Value": "0D"}}}
+                }
+            }
+        ],
+        "border": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#E2E8F0'"}}}}},
+                    "radius": {"expr": {"Literal": {"Value": "6D"}}}
+                }
+            }
+        ]
+    }
+    if title:
+        obj["title"] = [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "text": {"expr": {"Literal": {"Value": f"'{title}'"}}},
+                    "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI Semibold'"}}},
+                    "fontSize": {"expr": {"Literal": {"Value": "10.5D"}}},
+                    "fontColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#102A43'"}}}}},
+                    "titleWrap": {"expr": {"Literal": {"Value": "true"}}}
+                }
+            }
+        ]
+    if subtitle:
+        obj["subTitle"] = [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "text": {"expr": {"Literal": {"Value": f"'{subtitle}'"}}},
+                    "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}},
+                    "fontSize": {"expr": {"Literal": {"Value": "8D"}}},
+                    "fontColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#627D98'"}}}}}
+                }
+            }
+        ]
+    return obj
 
-def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_none=False, format_string="#,##0"):
+def get_header_banner(name, x, y, w, h, z, title_text, subtitle_text, metadata_text=None):
+    dark_container = {
+        "background": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#102A43'"}}}}},
+                    "transparency": {"expr": {"Literal": {"Value": "0D"}}}
+                }
+            }
+        ],
+        "border": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#1E3A8A'"}}}}},
+                    "radius": {"expr": {"Literal": {"Value": "6D"}}}
+                }
+            }
+        ]
+    }
+    runs_p1 = [
+        {
+            "value": "CareFlow  ",
+            "textStyle": {
+                "fontFamily": "Segoe UI Semibold",
+                "fontSize": "13pt",
+                "fontWeight": "bold",
+                "color": "#FFFFFF"
+            }
+        },
+        {
+            "value": "|  " + title_text + "  ",
+            "textStyle": {
+                "fontFamily": "Segoe UI",
+                "fontSize": "10pt",
+                "color": "#38BDF8"
+            }
+        }
+    ]
+    if subtitle_text:
+        runs_p1.append({
+            "value": "|  " + subtitle_text,
+            "textStyle": {
+                "fontFamily": "Segoe UI",
+                "fontSize": "8.5pt",
+                "color": "#94A3B8"
+            }
+        })
+    paragraphs = [{"textRuns": runs_p1}]
+    if metadata_text:
+        paragraphs.append({
+            "textRuns": [
+                {
+                    "value": metadata_text,
+                    "textStyle": {
+                        "fontFamily": "Segoe UI",
+                        "fontSize": "8pt",
+                        "color": "#CBD5E1"
+                    }
+                }
+            ]
+        })
+    cfg = {
+        "name": name,
+        "layouts": [
+            {
+                "id": 0,
+                "position": {"x": x, "y": y, "width": w, "height": h, "z": z, "tabOrder": z}
+            }
+        ],
+        "singleVisual": {
+            "visualType": "textbox",
+            "objects": {
+                "background": dark_container["background"],
+                "border": dark_container["border"],
+                "general": [
+                    {
+                        "properties": {
+                            "paragraphs": paragraphs
+                        }
+                    }
+                ]
+            },
+            "visualContainerObjects": dark_container,
+            "vcObjects": dark_container
+        },
+        "visualContainerObjects": dark_container,
+        "vcObjects": dark_container
+    }
+    return {
+        "x": x,
+        "y": y,
+        "z": z,
+        "width": w,
+        "height": h,
+        "config": json.dumps(cfg),
+        "filters": "[]"
+    }
+
+def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_none=False, format_string="#,##0", title=None, subtitle=None, callout_color="#102A43"):
+    card_container = {
+        "background": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#FFFFFF'"}}}}},
+                    "transparency": {"expr": {"Literal": {"Value": "0D"}}}
+                }
+            }
+        ],
+        "border": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#E2E8F0'"}}}}},
+                    "radius": {"expr": {"Literal": {"Value": "6D"}}}
+                }
+            }
+        ]
+    }
+    display_title = title if title else measure_name
+    query_ref = f"{entity}.{measure_name}"
+
     cfg = {
         "name": name,
         "layouts": [
@@ -22,7 +186,7 @@ def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_non
         "singleVisual": {
             "visualType": "cardVisual",
             "projections": {
-                "Data": [{"queryRef": f"{entity}.{measure_name}"}]
+                "Data": [{"queryRef": query_ref}]
             },
             "prototypeQuery": {
                 "Version": 2,
@@ -33,8 +197,8 @@ def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_non
                             "Expression": {"SourceRef": {"Source": "s"}},
                             "Property": measure_name
                         },
-                        "Name": f"{entity}.{measure_name}",
-                        "NativeReferenceName": measure_name
+                        "Name": query_ref,
+                        "NativeReferenceName": display_title
                     }
                 ],
                 "OrderBy": [
@@ -50,21 +214,94 @@ def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_non
                 ]
             },
             "drillFilterOtherVisuals": True,
-            "hasDefaultSort": True
-        }
+            "hasDefaultSort": True,
+            "visualContainerObjects": card_container,
+            "vcObjects": card_container
+        },
+        "visualContainerObjects": card_container,
+        "vcObjects": card_container
+    }
+
+    objects = {
+        "background": card_container["background"],
+        "border": card_container["border"],
+        "shapeCustomRectangle": [
+            {
+                "properties": {
+                    "tileShape": {"expr": {"Literal": {"Value": "'rectangleRoundedByPixel'"}}},
+                    "rectangleRoundedCurve": {"expr": {"Literal": {"Value": "6D"}}}
+                }
+            }
+        ],
+        "outline": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "lineColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#E2E8F0'"}}}}}
+                }
+            }
+        ],
+        "layout": [
+            {
+                "properties": {
+                    "backgroundShow": {"expr": {"Literal": {"Value": "true"}}},
+                    "verticalAlignment": {"expr": {"Literal": {"Value": "'Middle'"}}},
+                    "paddingUniform": {"expr": {"Literal": {"Value": "4D"}}}
+                }
+            }
+        ],
+        "padding": [
+            {
+                "properties": {
+                    "paddingUniform": {"expr": {"Literal": {"Value": "4D"}}}
+                }
+            }
+        ],
+        "spacing": [
+            {
+                "properties": {
+                    "verticalSpacing": {"expr": {"Literal": {"Value": "4D"}}}
+                }
+            }
+        ],
+        "image": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "false"}}},
+                    "imageAreaSize": {"expr": {"Literal": {"Value": "0D"}}}
+                }
+            }
+        ]
+    }
+
+    value_props = {
+        "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI Semibold'"}}},
+        "fontSize": {"expr": {"Literal": {"Value": "14D"}}},
+        "fontColor": {"solid": {"color": {"expr": {"Literal": {"Value": f"'{callout_color}'"}}}}},
+        "alignment": {"expr": {"Literal": {"Value": "'Center'"}}}
     }
     if display_units_none:
-        cfg["singleVisual"]["objects"] = {
-            "value": [
-                {
-                    "properties": {
-                        "displayUnits": {
-                            "expr": {"Literal": {"Value": "1D"}}
-                        }
-                    }
-                }
-            ]
-        }
+        value_props["displayUnits"] = {"expr": {"Literal": {"Value": "1D"}}}
+        value_props["valueDisplayUnits"] = {"expr": {"Literal": {"Value": "1D"}}}
+        value_props["labelDisplayUnits"] = {"expr": {"Literal": {"Value": "1D"}}}
+    objects["value"] = [{"properties": value_props}]
+    objects["calloutValue"] = [{"properties": value_props}]
+    objects["labels"] = [{"properties": value_props}]
+    objects["callout"] = [{"properties": value_props}]
+
+    label_props = {
+        "show": {"expr": {"Literal": {"Value": "true"}}},
+        "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}},
+        "fontSize": {"expr": {"Literal": {"Value": "8D"}}},
+        "fontColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#627D98'"}}}}},
+        "position": {"expr": {"Literal": {"Value": "'belowValue'"}}},
+        "textWrap": {"expr": {"Literal": {"Value": "true"}}},
+        "alignment": {"expr": {"Literal": {"Value": "'Center'"}}}
+    }
+    objects["label"] = [{"properties": label_props}]
+    objects["categoryLabels"] = [{"properties": label_props}]
+
+    cfg["singleVisual"]["objects"] = objects
 
     query = {
         "Commands": [
@@ -79,7 +316,7 @@ def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_non
                                     "Expression": {"SourceRef": {"Source": "s"}},
                                     "Property": measure_name
                                 },
-                                "Name": f"{entity}.{measure_name}",
+                                "Name": query_ref,
                                 "NativeReferenceName": measure_name
                             }
                         ]
@@ -101,32 +338,29 @@ def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_non
         "queryMetadata": {
             "Select": [
                 {
-                    "Restatement": measure_name,
-                    "Name": f"{entity}.{measure_name}",
+                    "Restatement": display_title,
+                    "Name": query_ref,
                     "Type": 3,
                     "Format": format_string
-                }
-            ],
-            "Filters": [
-                {
-                    "type": 2,
-                    "expression": {
-                        "Measure": {
-                            "Expression": {"SourceRef": {"Entity": entity}},
-                            "Property": measure_name
-                        }
-                    }
                 }
             ]
         },
         "visualElements": [
-            {"DataRoles": [{"Name": "Data", "Projection": 0, "isActive": False}]}
+            {
+                "DataRoles": [
+                    {
+                        "Name": "Data",
+                        "Projection": 0,
+                        "isActive": False
+                    }
+                ]
+            }
         ],
         "selects": [
             {
-                "displayName": measure_name,
+                "displayName": display_title,
                 "format": format_string,
-                "queryName": f"{entity}.{measure_name}",
+                "queryName": query_ref,
                 "roles": {"Data": True},
                 "type": {"category": None, "underlyingType": 260},
                 "expr": {
@@ -151,7 +385,32 @@ def get_card_visual(name, x, y, w, h, z, entity, measure_name, display_units_non
         "dataTransforms": json.dumps(data_transforms)
     }
 
-def get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure):
+def get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure, title=None, subtitle=None, order_by_measure=True, category_display_name=None, val_display_name=None):
+    cat_disp = category_display_name if category_display_name else category_col
+    val_disp = val_display_name if val_display_name else val_measure
+    container_formatting = get_container_formatting(title=title, subtitle=subtitle)
+    order_by = [
+        {
+            "Direction": 2,
+            "Expression": {
+                "Measure": {
+                    "Expression": {"SourceRef": {"Source": "s"}},
+                    "Property": val_measure
+                }
+            }
+        }
+    ] if order_by_measure else [
+        {
+            "Direction": 1,
+            "Expression": {
+                "Column": {
+                    "Expression": {"SourceRef": {"Source": "s"}},
+                    "Property": category_col
+                }
+            }
+        }
+    ]
+
     cfg = {
         "name": name,
         "layouts": [
@@ -180,11 +439,56 @@ def get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure):
                         "Name": f"{entity}.{val_measure}",
                         "NativeReferenceName": val_measure
                     }
-                ]
+                ],
+                "OrderBy": order_by
             },
-            "drillFilterOtherVisuals": True
-        }
+            "drillFilterOtherVisuals": True,
+            "hasDefaultSort": True,
+            "visualContainerObjects": container_formatting,
+            "vcObjects": container_formatting
+        },
+        "visualContainerObjects": container_formatting,
+        "vcObjects": container_formatting
     }
+
+    objects = {
+        "background": container_formatting["background"],
+        "border": container_formatting["border"],
+        "legend": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "position": {"expr": {"Literal": {"Value": "'Top'"}}},
+                    "showTitle": {"expr": {"Literal": {"Value": "false"}}},
+                    "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                    "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}}
+                }
+            }
+        ],
+        "labels": [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "labelStyle": {"expr": {"Literal": {"Value": "'Both'"}}},
+                    "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                    "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}},
+                    "displayUnits": {"expr": {"Literal": {"Value": "1D"}}},
+                    "labelDisplayUnits": {"expr": {"Literal": {"Value": "1D"}}},
+                    "labelPrecision": {"expr": {"Literal": {"Value": "0D"}}}
+                }
+            }
+        ],
+        "slices": [
+            {"properties": {"fill": {"solid": {"color": {"expr": {"Literal": {"Value": "'#0284C7'"}}}}}}, "selector": {"data": [{"scopeId": {"Comparison": {"ComparisonKind": 0, "Left": {"Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": category_col}}, "Right": {"Literal": {"Value": "'ER'"}}}}}]}},
+            {"properties": {"fill": {"solid": {"color": {"expr": {"Literal": {"Value": "'#102A43'"}}}}}}, "selector": {"data": [{"scopeId": {"Comparison": {"ComparisonKind": 0, "Left": {"Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": category_col}}, "Right": {"Literal": {"Value": "'LAB'"}}}}}]}},
+            {"properties": {"fill": {"solid": {"color": {"expr": {"Literal": {"Value": "'#D97706'"}}}}}}, "selector": {"data": [{"scopeId": {"Comparison": {"ComparisonKind": 0, "Left": {"Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": category_col}}, "Right": {"Literal": {"Value": "'RADIOLOGY'"}}}}}]}}
+        ]
+    }
+    if title:
+        objects["title"] = container_formatting["title"]
+    if subtitle:
+        objects["subTitle"] = container_formatting.get("subTitle", [])
+    cfg["singleVisual"]["objects"] = objects
 
     query = {
         "Commands": [
@@ -204,10 +508,13 @@ def get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure):
                                 "Name": f"{entity}.{val_measure}",
                                 "NativeReferenceName": val_measure
                             }
-                        ]
+                        ],
+                        "OrderBy": order_by
                     },
                     "Binding": {
-                        "Primary": {"Groupings": [{"Projections": [0, 1]}]},
+                        "Primary": {
+                            "Groupings": [{"Projections": [0, 1]}]
+                        },
                         "Version": 1
                     },
                     "ExecutionMetricsKind": 1
@@ -220,8 +527,8 @@ def get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure):
         "projectionOrdering": {"Category": [0], "Y": [1]},
         "queryMetadata": {
             "Select": [
-                {"Restatement": category_col, "Name": f"{entity}.{category_col}", "Type": 1},
-                {"Restatement": val_measure, "Name": f"{entity}.{val_measure}", "Type": 3}
+                {"Restatement": cat_disp, "Name": f"{entity}.{category_col}", "Type": 2048},
+                {"Restatement": val_disp, "Name": f"{entity}.{val_measure}", "Type": 3, "Format": "#,##0"}
             ]
         },
         "visualElements": [
@@ -229,28 +536,19 @@ def get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure):
         ],
         "selects": [
             {
-                "displayName": category_col,
+                "displayName": cat_disp,
                 "queryName": f"{entity}.{category_col}",
                 "roles": {"Category": True},
                 "type": {"category": None, "underlyingType": 1},
-                "expr": {
-                    "Column": {
-                        "Expression": {"SourceRef": {"Entity": entity}},
-                        "Property": category_col
-                    }
-                }
+                "expr": {"Column": {"Expression": {"SourceRef": {"Entity": entity}}, "Property": category_col}}
             },
             {
-                "displayName": val_measure,
+                "displayName": val_disp,
+                "format": "#,##0",
                 "queryName": f"{entity}.{val_measure}",
                 "roles": {"Y": True},
                 "type": {"category": None, "underlyingType": 260},
-                "expr": {
-                    "Measure": {
-                        "Expression": {"SourceRef": {"Entity": entity}},
-                        "Property": val_measure
-                    }
-                }
+                "expr": {"Measure": {"Expression": {"SourceRef": {"Entity": entity}}, "Property": val_measure}}
             }
         ]
     }
@@ -267,145 +565,141 @@ def get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure):
         "dataTransforms": json.dumps(data_transforms)
     }
 
-def get_bar_chart_measure(name, x, y, w, h, z, entity, category_col, val_measure):
-    res = get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure)
+def get_bar_chart_measure(name, x, y, w, h, z, entity, category_col, val_measure, title=None, subtitle=None, max_margin=50, show_data_labels=True, category_display_name=None, val_display_name=None, bar_color=None, show_category_title=True):
+    res = get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure, title=title, subtitle=subtitle, category_display_name=category_display_name, val_display_name=val_display_name)
     cfg = json.loads(res["config"])
     cfg["singleVisual"]["visualType"] = "clusteredBarChart"
+    container_formatting = get_container_formatting(title=title, subtitle=subtitle)
+    cfg["singleVisual"]["vcObjects"] = container_formatting
+    cfg["singleVisual"]["visualContainerObjects"] = container_formatting
+    cfg["vcObjects"] = container_formatting
+    cfg["visualContainerObjects"] = container_formatting
+
+    objects = cfg["singleVisual"].setdefault("objects", {})
+    objects.pop("legend", None)
+    objects.pop("slices", None)
+    objects["background"] = container_formatting["background"]
+    objects["border"] = container_formatting["border"]
+    if title:
+        objects["title"] = container_formatting["title"]
+    if subtitle:
+        objects["subTitle"] = container_formatting.get("subTitle", [])
+
+    cat_props = {
+        "showAxisTitle": {"expr": {"Literal": {"Value": "true" if show_category_title else "false"}}},
+        "fontSize": {"expr": {"Literal": {"Value": "8D"}}},
+        "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}}
+    }
+    if max_margin is not None:
+        cat_props["maxMargin"] = {"expr": {"Literal": {"Value": f"{max_margin}D"}}}
+    if category_display_name and show_category_title:
+        cat_props["titleText"] = {"expr": {"Literal": {"Value": f"'{category_display_name}'"}}}
+    objects["categoryAxis"] = [{"properties": cat_props}]
+
+    val_props = {
+        "showAxisTitle": {"expr": {"Literal": {"Value": "true"}}},
+        "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+        "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}}
+    }
+    if val_display_name:
+        val_props["titleText"] = {"expr": {"Literal": {"Value": f"'{val_display_name}'"}}}
+    objects["valueAxis"] = [{"properties": val_props}]
+
+    if show_data_labels:
+        objects["labels"] = [
+            {
+                "properties": {
+                    "show": {"expr": {"Literal": {"Value": "true"}}},
+                    "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                    "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI Semibold'"}}},
+                    "displayUnits": {"expr": {"Literal": {"Value": "1D"}}}
+                }
+            }
+        ]
+    if bar_color:
+        objects["dataPoint"] = [
+            {
+                "properties": {
+                    "fill": {"solid": {"color": {"expr": {"Literal": {"Value": f"'{bar_color}'"}}}}}
+                }
+            }
+        ]
     res["config"] = json.dumps(cfg)
     return res
 
-def get_column_chart(name, x, y, w, h, z, entity, category_col, val_measure):
-    res = get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure)
+def get_column_chart(name, x, y, w, h, z, entity, category_col, val_measure, title=None, subtitle=None, order_by_measure=False, col_color=None):
+    res = get_donut_chart(name, x, y, w, h, z, entity, category_col, val_measure, title=title, subtitle=subtitle, order_by_measure=order_by_measure)
     cfg = json.loads(res["config"])
     cfg["singleVisual"]["visualType"] = "clusteredColumnChart"
+    container_formatting = get_container_formatting(title=title, subtitle=subtitle)
+    cfg["singleVisual"]["vcObjects"] = container_formatting
+    cfg["singleVisual"]["visualContainerObjects"] = container_formatting
+    cfg["vcObjects"] = container_formatting
+    cfg["visualContainerObjects"] = container_formatting
+
+    objects = cfg["singleVisual"].setdefault("objects", {})
+    objects.pop("legend", None)
+    objects.pop("slices", None)
+    objects["background"] = container_formatting["background"]
+    objects["border"] = container_formatting["border"]
+    if title:
+        objects["title"] = container_formatting["title"]
+    if subtitle:
+        objects["subTitle"] = container_formatting.get("subTitle", [])
+
+    objects["categoryAxis"] = [
+        {
+            "properties": {
+                "showAxisTitle": {"expr": {"Literal": {"Value": "true"}}},
+                "titleText": {"expr": {"Literal": {"Value": "'Intake Date'"}}},
+                "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}}
+            }
+        }
+    ]
+    objects["valueAxis"] = [
+        {
+            "properties": {
+                "showAxisTitle": {"expr": {"Literal": {"Value": "true"}}},
+                "titleText": {"expr": {"Literal": {"Value": "'Daily Events'"}}},
+                "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}}
+            }
+        }
+    ]
+    objects["labels"] = [
+        {
+            "properties": {
+                "show": {"expr": {"Literal": {"Value": "true"}}},
+                "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI Semibold'"}}},
+                "displayUnits": {"expr": {"Literal": {"Value": "1D"}}}
+            }
+        }
+    ]
+    if col_color:
+        objects["dataPoint"] = [
+            {
+                "properties": {
+                    "fill": {"solid": {"color": {"expr": {"Literal": {"Value": f"'{col_color}'"}}}}}
+                }
+            }
+        ]
     res["config"] = json.dumps(cfg)
     return res
 
-def get_bar_chart_cols(name, x, y, w, h, z, entity, category_col, val_col):
-    cfg = {
-        "name": name,
-        "layouts": [
-            {
-                "id": 0,
-                "position": {"x": x, "y": y, "width": w, "height": h, "z": z, "tabOrder": z}
-            }
-        ],
-        "singleVisual": {
-            "visualType": "clusteredBarChart",
-            "projections": {
-                "Category": [{"queryRef": f"{entity}.{category_col}"}],
-                "Y": [{"queryRef": f"{entity}.{val_col}"}]
-            },
-            "prototypeQuery": {
-                "Version": 2,
-                "From": [{"Name": "s", "Entity": entity, "Type": 0}],
-                "Select": [
-                    {
-                        "Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": category_col},
-                        "Name": f"{entity}.{category_col}",
-                        "NativeReferenceName": category_col
-                    },
-                    {
-                        "Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": val_col},
-                        "Name": f"{entity}.{val_col}",
-                        "NativeReferenceName": val_col
-                    }
-                ]
-            },
-            "drillFilterOtherVisuals": True
-        }
-    }
-
-    query = {
-        "Commands": [
-            {
-                "SemanticQueryDataShapeCommand": {
-                    "Query": {
-                        "Version": 2,
-                        "From": [{"Name": "s", "Entity": entity, "Type": 0}],
-                        "Select": [
-                            {
-                                "Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": category_col},
-                                "Name": f"{entity}.{category_col}",
-                                "NativeReferenceName": category_col
-                            },
-                            {
-                                "Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": val_col},
-                                "Name": f"{entity}.{val_col}",
-                                "NativeReferenceName": val_col
-                            }
-                        ]
-                    },
-                    "Binding": {
-                        "Primary": {"Groupings": [{"Projections": [0, 1]}]},
-                        "Version": 1
-                    },
-                    "ExecutionMetricsKind": 1
-                }
-            }
-        ]
-    }
-
-    data_transforms = {
-        "projectionOrdering": {"Category": [0], "Y": [1]},
-        "queryMetadata": {
-            "Select": [
-                {"Restatement": category_col, "Name": f"{entity}.{category_col}", "Type": 1},
-                {"Restatement": val_col, "Name": f"{entity}.{val_col}", "Type": 2}
-            ]
-        },
-        "visualElements": [
-            {"DataRoles": [{"Name": "Category", "Projection": 0, "isActive": False}, {"Name": "Y", "Projection": 1, "isActive": False}]}
-        ],
-        "selects": [
-            {
-                "displayName": category_col,
-                "queryName": f"{entity}.{category_col}",
-                "roles": {"Category": True},
-                "type": {"category": None, "underlyingType": 1},
-                "expr": {
-                    "Column": {
-                        "Expression": {"SourceRef": {"Entity": entity}},
-                        "Property": category_col
-                    }
-                }
-            },
-            {
-                "displayName": val_col,
-                "queryName": f"{entity}.{val_col}",
-                "roles": {"Y": True},
-                "type": {"category": None, "underlyingType": 260},
-                "expr": {
-                    "Column": {
-                        "Expression": {"SourceRef": {"Entity": entity}},
-                        "Property": val_col
-                    }
-                }
-            }
-        ]
-    }
-
-    return {
-        "x": x,
-        "y": y,
-        "z": z,
-        "width": w,
-        "height": h,
-        "config": json.dumps(cfg),
-        "filters": "[]",
-        "query": json.dumps(query),
-        "dataTransforms": json.dumps(data_transforms)
-    }
-
-def get_table_visual(name, x, y, w, h, z, entity, columns, display_names=None):
+def get_table_visual(name, x, y, w, h, z, entity, columns, display_names=None, title=None, subtitle=None, formats=None):
     if display_names is None:
         display_names = {}
+    if formats is None:
+        formats = {}
+    container_formatting = get_container_formatting(title=title, subtitle=subtitle)
     projections = [{"queryRef": f"{entity}.{c}"} for c in columns]
     selects = [
         {
             "Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": c},
             "Name": f"{entity}.{c}",
-            "NativeReferenceName": c
+            "NativeReferenceName": display_names.get(c, c)
         }
         for c in columns
     ]
@@ -425,9 +719,52 @@ def get_table_visual(name, x, y, w, h, z, entity, columns, display_names=None):
                 "From": [{"Name": "s", "Entity": entity, "Type": 0}],
                 "Select": selects
             },
-            "drillFilterOtherVisuals": True
-        }
+            "drillFilterOtherVisuals": True,
+            "visualContainerObjects": container_formatting,
+            "vcObjects": container_formatting
+        },
+        "visualContainerObjects": container_formatting,
+        "vcObjects": container_formatting
     }
+    tbl_objects = {
+        "background": container_formatting["background"],
+        "border": container_formatting["border"],
+        "columnHeaders": [
+            {
+                "properties": {
+                    "bold": {"expr": {"Literal": {"Value": "true"}}},
+                    "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                    "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI Semibold'"}}},
+                    "fontColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#102A43'"}}}}},
+                    "backColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#F1F5F9'"}}}}},
+                    "autoSizeColumnWidth": {"expr": {"Literal": {"Value": "true"}}}
+                }
+            }
+        ],
+        "values": [
+            {
+                "properties": {
+                    "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
+                    "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}},
+                    "fontColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#172B4D'"}}}}}
+                }
+            }
+        ],
+        "grid": [
+            {
+                "properties": {
+                    "gridHorizontal": {"expr": {"Literal": {"Value": "true"}}},
+                    "gridHorizontalColor": {"solid": {"color": {"expr": {"Literal": {"Value": "'#E2E8F0'"}}}}},
+                    "gridVertical": {"expr": {"Literal": {"Value": "false"}}}
+                }
+            }
+        ]
+    }
+    if title:
+        tbl_objects["title"] = container_formatting["title"]
+    if subtitle:
+        tbl_objects["subTitle"] = container_formatting.get("subTitle", [])
+    cfg["singleVisual"]["objects"] = tbl_objects
 
     query = {
         "Commands": [
@@ -439,7 +776,9 @@ def get_table_visual(name, x, y, w, h, z, entity, columns, display_names=None):
                         "Select": selects
                     },
                     "Binding": {
-                        "Primary": {"Groupings": [{"Projections": list(range(len(columns)))}]},
+                        "Primary": {
+                            "Groupings": [{"Projections": list(range(len(columns)))}]
+                        },
                         "Version": 1
                     },
                     "ExecutionMetricsKind": 1
@@ -448,32 +787,34 @@ def get_table_visual(name, x, y, w, h, z, entity, columns, display_names=None):
         ]
     }
 
+    dt_selects = []
+    qm_selects = []
+    for idx, c in enumerate(columns):
+        disp = display_names.get(c, c)
+        fmt = formats.get(c, None)
+        item_qm = {"Restatement": disp, "Name": f"{entity}.{c}", "Type": 2048}
+        if fmt:
+            item_qm["Format"] = fmt
+        qm_selects.append(item_qm)
+
+        item_sel = {
+            "displayName": disp,
+            "queryName": f"{entity}.{c}",
+            "roles": {"Values": True},
+            "type": {"category": None, "underlyingType": 1 if c in ["case_id", "raw_activity_name", "department", "metric_name", "unit", "interpretation", "event_timestamp"] else 260},
+            "expr": {"Column": {"Expression": {"SourceRef": {"Entity": entity}}, "Property": c}}
+        }
+        if fmt:
+            item_sel["format"] = fmt
+        dt_selects.append(item_sel)
+
     data_transforms = {
         "projectionOrdering": {"Values": list(range(len(columns)))},
-        "queryMetadata": {
-            "Select": [
-                {"Restatement": display_names.get(c, c), "Name": f"{entity}.{c}", "Type": 1}
-                for c in columns
-            ]
-        },
+        "queryMetadata": {"Select": qm_selects},
         "visualElements": [
             {"DataRoles": [{"Name": "Values", "Projection": i, "isActive": False} for i in range(len(columns))]}
         ],
-        "selects": [
-            {
-                "displayName": display_names.get(c, c),
-                "queryName": f"{entity}.{c}",
-                "roles": {"Values": True},
-                "type": {"category": None, "underlyingType": 1},
-                "expr": {
-                    "Column": {
-                        "Expression": {"SourceRef": {"Entity": entity}},
-                        "Property": c
-                    }
-                }
-            }
-            for c in columns
-        ]
+        "selects": dt_selects
     }
 
     return {
@@ -489,6 +830,28 @@ def get_table_visual(name, x, y, w, h, z, entity, columns, display_names=None):
     }
 
 def get_textbox_visual(name, x, y, w, h, z, text_content):
+    container_formatting = get_container_formatting()
+    paragraphs = []
+    lines = text_content.strip().split("\n")
+    for idx, line in enumerate(lines):
+        line_str = line.strip()
+        if not line_str:
+            continue
+        is_bullet = any(line_str.startswith(p) for p in ['\u2022', '-', '*', '1.', '2.', '3.', '4.', '5.', '6.', '\ufffd'])
+        is_heading = (idx == 0) and not is_bullet
+        paragraphs.append({
+            "textRuns": [
+                {
+                    "value": line_str,
+                    "textStyle": {
+                        "fontFamily": "Segoe UI Semibold" if is_heading else "Segoe UI",
+                        "fontSize": "8pt" if is_heading else "7.5pt",
+                        "fontWeight": "bold" if is_heading else "normal",
+                        "color": "#102A43" if is_heading else "#334E68"
+                    }
+                }
+            ]
+        })
     cfg = {
         "name": name,
         "layouts": [
@@ -500,27 +863,21 @@ def get_textbox_visual(name, x, y, w, h, z, text_content):
         "singleVisual": {
             "visualType": "textbox",
             "objects": {
+                "background": container_formatting["background"],
+                "border": container_formatting["border"],
                 "general": [
                     {
                         "properties": {
-                            "paragraphs": [
-                                {
-                                    "textRuns": [
-                                        {
-                                            "value": text_content,
-                                            "textStyle": {
-                                                "fontFamily": "Segoe UI",
-                                                "fontSize": "10pt"
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
+                            "paragraphs": paragraphs
                         }
                     }
                 ]
-            }
-        }
+            },
+            "visualContainerObjects": container_formatting,
+            "vcObjects": container_formatting
+        },
+        "visualContainerObjects": container_formatting,
+        "vcObjects": container_formatting
     }
     return {
         "x": x,
@@ -532,10 +889,87 @@ def get_textbox_visual(name, x, y, w, h, z, text_content):
         "filters": "[]"
     }
 
+def apply_premium_healthcare_theme(theme_path):
+    if not os.path.exists(theme_path):
+        return
+    with open(theme_path, "r", encoding="utf-8") as f:
+        theme = json.load(f)
 
+    healthcare_colors = [
+        "#0D9488",  # Healthcare Teal Primary
+        "#102A43",  # Deep Navy
+        "#243B53",  # Secondary Navy
+        "#3B82F6",  # Accent Blue
+        "#16A34A",  # Success Green
+        "#D97706",  # Warning Amber
+        "#DC6B6B",  # Critical Coral
+        "#627D98",  # Secondary Slate
+        "#059669",  # Emerald
+        "#7C3AED",  # Violet
+        "#CCFBF1",  # Light Teal
+        "#F1F5F9"   # Light Slate
+    ]
+    theme["dataColors"] = healthcare_colors + [c for c in theme.get("dataColors", []) if c not in healthcare_colors]
+    theme["foreground"] = "#172B4D"
+    theme["foregroundNeutralSecondary"] = "#627D98"
+    theme["foregroundNeutralTertiary"] = "#CBD5E1"
+    theme["background"] = "#FFFFFF"
+    theme["backgroundLight"] = "#F4F7FA"
+    theme["backgroundNeutral"] = "#E2E8F0"
+    theme["tableAccent"] = "#0D9488"
+    theme["good"] = "#16A34A"
+    theme["neutral"] = "#D97706"
+    theme["bad"] = "#DC6B6B"
+    theme["maximum"] = "#0D9488"
+    theme["center"] = "#D97706"
+    theme["minimum"] = "#CCFBF1"
 
-import json
-import os
+    theme["textClasses"] = {
+        "callout": {"fontSize": 14, "fontFace": "Segoe UI Semibold", "color": "#102A43"},
+        "title": {"fontSize": 11, "fontFace": "Segoe UI Semibold", "color": "#102A43"},
+        "header": {"fontSize": 10, "fontFace": "Segoe UI Semibold", "color": "#102A43"},
+        "label": {"fontSize": 8, "fontFace": "Segoe UI", "color": "#627D98"}
+    }
+
+    all_styles = theme.setdefault("visualStyles", {}).setdefault("*", {}).setdefault("*", {})
+    all_styles["background"] = [{"show": True, "color": {"solid": {"color": "#FFFFFF"}}, "transparency": 0}]
+    all_styles["border"] = [{"show": True, "color": {"solid": {"color": "#E2E8F0"}}, "radius": 6}]
+    all_styles["title"] = [{"show": True, "fontFamily": "'Segoe UI Semibold'", "fontColor": {"solid": {"color": "#102A43"}}}]
+
+    page_styles = theme.setdefault("visualStyles", {}).setdefault("page", {}).setdefault("*", {})
+    page_styles["background"] = [{"color": {"solid": {"color": "#F4F7FA"}}, "transparency": 0}]
+    page_styles["outspace"] = [{"color": {"solid": {"color": "#F4F7FA"}}}]
+
+    cv_styles = theme.setdefault("visualStyles", {}).setdefault("cardVisual", {}).setdefault("*", {})
+    cv_styles["shapeCustomRectangle"] = [{"$id": "default", "tileShape": "rectangleRoundedByPixel", "rectangleRoundedCurve": 6}]
+    cv_styles["outline"] = [{"$id": "default", "lineColor": {"solid": {"color": "#E2E8F0"}}}]
+    cv_styles["layout"] = [{"$id": "default", "backgroundShow": True, "paddingUniform": 4}]
+    cv_styles["padding"] = [{"$id": "default", "paddingUniform": 4, "paddingIndividual": False}]
+    cv_styles["spacing"] = [{"$id": "default", "verticalSpacing": 4}]
+    cv_styles["image"] = [{"$id": "default", "show": False, "imageAreaSize": 0, "padding": 0}]
+    cv_styles["value"] = [{"$id": "default", "fontFamily": "'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif", "fontSize": 14, "fontColor": {"solid": {"color": "#102A43"}}, "displayUnits": 1, "valueDisplayUnits": 1, "alignment": "Center"}]
+    cv_styles["label"] = [{"$id": "default", "position": "belowValue", "fontSize": 8, "fontColor": {"solid": {"color": "#627D98"}}, "textWrap": True, "alignment": "Center"}]
+
+    tbl_styles = theme.setdefault("visualStyles", {}).setdefault("tableEx", {}).setdefault("*", {})
+    tbl_styles["columnHeaders"] = [{
+        "bold": True,
+        "fontSize": 8.5,
+        "fontColor": {"solid": {"color": "#102A43"}},
+        "backColor": {"solid": {"color": "#F1F5F9"}},
+        "autoSizeColumnWidth": True
+    }]
+
+    dc_styles = theme.setdefault("visualStyles", {}).setdefault("donutChart", {}).setdefault("*", {})
+    dc_styles["labels"] = [{
+        "show": True,
+        "labelStyle": "Both",
+        "labelDisplayUnits": 1,
+        "displayUnits": 1,
+        "labelPrecision": 0
+    }]
+
+    with open(theme_path, "w", encoding="utf-8") as f:
+        json.dump(theme, f, indent=2)
 
 def update_model_bim(bim_path, repo_root=None):
     if repo_root is None:
@@ -564,34 +998,63 @@ def update_model_bim(bim_path, repo_root=None):
                     m['expression'] = '[Total Cases] - [Repeat Triage Cases Count]'
                 elif m['name'] == 'Avg Case Cycle Time (Mins)':
                     m['expression'] = [
-                        'VAR CaseDurations =',
-                        '    ADDCOLUMNS(',
-                        "        VALUES('stg_hospital_events'[case_id]),",
-                        '        "CaseTotalMinutes",',
-                        "        CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
-                        '    )',
-                        'RETURN',
-                        'AVERAGEX(CaseDurations, [CaseTotalMinutes])'
+                        "AVERAGEX(",
+                        "    VALUES('stg_hospital_events'[case_id]),",
+                        "    CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
+                        ")"
                     ]
+                    m['formatString'] = '0.0 "mins"'
+            meas = {m['name']: m for m in t.get('measures', [])}
+            clean_measures = [
+                ('Average Cycle Time', '[Avg Case Cycle Time (Mins)]', '0.0 "mins"'),
+                ('Median Cycle Time', '[Median Case Cycle Time (Mins)]', '0.0 "mins"'),
+                ('Repeat-Triage Rate', '[Re-Triage Rate %]', '0.0%'),
+                ('Conformant Cases', '[Conformant Cases Count]', '#,##0'),
+                ('Repeat-Triage Cases', '[Repeat Triage Cases Count]', '#,##0'),
+                ('Conformance Rate', '[Conformance Rate %]', '0.0%')
+            ]
+            for m_name, m_expr, m_fmt in clean_measures:
+                if m_name not in meas:
+                    t.setdefault('measures', []).append({
+                        'name': m_name,
+                        'expression': m_expr,
+                        'formatString': m_fmt
+                    })
                 elif m['name'] == 'Median Case Cycle Time (Mins)':
                     m['expression'] = [
-                        'VAR CaseDurations =',
-                        '    ADDCOLUMNS(',
-                        "        VALUES('stg_hospital_events'[case_id]),",
-                        '        "CaseTotalMinutes",',
-                        "        CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
-                        '    )',
-                        'RETURN',
-                        'MEDIANX(CaseDurations, [CaseTotalMinutes])'
+                        "MEDIANX(",
+                        "    VALUES('stg_hospital_events'[case_id]),",
+                        "    CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))",
+                        ")"
                     ]
+                    m['formatString'] = '0.0 "mins"'
+            meas = {m['name']: m for m in t.get('measures', [])}
+            clean_measures = [
+                ('Average Cycle Time', '[Avg Case Cycle Time (Mins)]', '0.0 "mins"'),
+                ('Median Cycle Time', '[Median Case Cycle Time (Mins)]', '0.0 "mins"'),
+                ('Repeat-Triage Rate', '[Re-Triage Rate %]', '0.0%'),
+                ('Conformant Cases', '[Conformant Cases Count]', '#,##0'),
+                ('Repeat-Triage Cases', '[Repeat Triage Cases Count]', '#,##0'),
+                ('Conformance Rate', '[Conformance Rate %]', '0.0%')
+            ]
+            for m_name, m_expr, m_fmt in clean_measures:
+                if m_name not in meas:
+                    t.setdefault('measures', []).append({
+                        'name': m_name,
+                        'expression': m_expr,
+                        'formatString': m_fmt
+                    })
 
         elif t['name'] == 'stg_hospital_events (2)':
             t['excludeFromModelRefresh'] = True
             t['partitions'][0]['source']['expression'] = [
                 'let',
-                '    Source = stg_hospital_events',
+                f'    Source = Csv.Document(File.Contents("{csv_events}"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
+                '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
+                '    #"Replaced Empty Strings" = Table.ReplaceValue(#"Promoted Headers", "", null, Replacer.ReplaceValue, {"previous_activity", "transition_minutes_from_previous"}),',
+                '    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Empty Strings",{{"case_id", type text}, {"event_sequence", Int64.Type}, {"raw_activity_name", type text}, {"activity_name", type text}, {"event_timestamp", type datetime}, {"event_date", type date}, {"department", type text}, {"resource_id", type text}, {"data_provenance", type text}, {"previous_activity", type text}, {"transition_minutes_from_previous", Int64.Type}})',
                 'in',
-                '    Source'
+                '    #"Changed Type"'
             ]
 
         elif t['name'] == 'pathway_variants_summary':
@@ -599,11 +1062,18 @@ def update_model_bim(bim_path, repo_root=None):
                 'let',
                 f'    Source = Csv.Document(File.Contents("{csv_variants}"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
                 '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
-                '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"variant_rank", Int64.Type}, {"case_count", Int64.Type}, {"percentage", type number}, {"pathway", type text}})',
+                '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"variant_rank", Int64.Type}, {"case_count", Int64.Type}, {"percentage", type number}, {"pathway", type text}}),',
+                '    #"Added Variant Label" = Table.AddColumn(#"Changed Type", "variant_label", each (if [variant_rank] = 1 then "Standard Flow (40%)" else if [variant_rank] = 2 then "Lab Diagnostic (22%)" else if [variant_rank] = 3 then "X-Ray Diagnostic (16%)" else if [variant_rank] = 4 then "Lab + X-Ray (10%)" else if [variant_rank] = 5 then "Re-Triage Loop (7%)" else "Re-Triage + Lab (5%)"), type text)',
                 'in',
-                '    #"Changed Type"'
+                '    #"Added Variant Label"'
             ]
-            # Ensure Total Variant Cases measure exists
+            cols = {c['name']: c for c in t.get('columns', [])}
+            if 'variant_label' not in cols:
+                t['columns'].append({
+                    'name': 'variant_label',
+                    'dataType': 'string',
+                    'sourceColumn': 'variant_label'
+                })
             meas = {m['name']: m for m in t.get('measures', [])}
             if 'Total Variant Cases' not in meas:
                 if 'measures' not in t:
@@ -613,6 +1083,22 @@ def update_model_bim(bim_path, repo_root=None):
                     'expression': "SUM('pathway_variants_summary'[case_count])",
                     'formatString': '#,##0'
                 })
+            if 'Total Pathway Variants' not in meas:
+                if 'measures' not in t:
+                    t['measures'] = []
+                t['measures'].append({
+                    'name': 'Total Pathway Variants',
+                    'expression': "COUNTROWS('pathway_variants_summary')",
+                    'formatString': '0'
+                })
+            if 'Pathway Variants' not in meas:
+                if 'measures' not in t:
+                    t['measures'] = []
+                t['measures'].append({
+                    'name': 'Pathway Variants',
+                    'expression': "COUNTROWS('pathway_variants_summary')",
+                    'formatString': '0'
+                })
 
         elif t['name'] == 'bottleneck_analysis_summary':
             t['partitions'][0]['source']['expression'] = [
@@ -620,17 +1106,28 @@ def update_model_bim(bim_path, repo_root=None):
                 f'    Source = Csv.Document(File.Contents("{csv_bottlenecks}"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),',
                 '    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),',
                 '    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"rank", Int64.Type}, {"source_activity", type text}, {"target_activity", type text}, {"transition_count", Int64.Type}, {"mean_observed_transition_minutes", type number}, {"median_observed_transition_minutes", type number}, {"min_observed_transition_minutes", type number}, {"max_observed_transition_minutes", type number}}),',
-                '    #"Added Transition Label" = Table.AddColumn(#"Changed Type", "transition_label", each [source_activity] & " -> " & [target_activity], type text)',
+                '    #"Added Transition" = Table.AddColumn(#"Changed Type", "transition", each [source_activity] & " -> " & [target_activity], type text),',
+                '    #"Added Transition Label" = Table.AddColumn(#"Added Transition", "transition_label", each [source_activity] & " -> " & [target_activity], type text),',
+                '    #"Added Avg Duration Mins" = Table.AddColumn(#"Added Transition Label", "avg_duration_mins", each [mean_observed_transition_minutes], type number),',
+                '    #"Added Transition Display" = Table.AddColumn(#"Added Avg Duration Mins", "transition_display", each (if [source_activity] = "Triage" and [target_activity] = "Triage" then "Triage →#(lf)Re-Triage" else [source_activity] & " →#(lf)" & [target_activity]), type text)',
                 'in',
-                '    #"Added Transition Label"'
+                '    #"Added Transition Display"'
             ]
-            # Ensure transition_label is a physical column
-            for col in t.get('columns', []):
-                if col['name'] == 'transition_label':
-                    col.pop('type', None)
-                    col.pop('expression', None)
-                    col['sourceColumn'] = 'transition_label'
-            # Ensure Avg Transition Duration measure exists
+            cols = {c['name']: c for c in t.get('columns', [])}
+            needed_cols = [
+                ('transition_count', 'int64'),
+                ('median_observed_transition_minutes', 'double'),
+                ('min_observed_transition_minutes', 'double'),
+                ('max_observed_transition_minutes', 'double'),
+                ('transition_display', 'string')
+            ]
+            for col_name, d_type in needed_cols:
+                if col_name not in cols:
+                    t['columns'].append({
+                        'name': col_name,
+                        'dataType': d_type,
+                        'sourceColumn': col_name
+                    })
             meas = {m['name']: m for m in t.get('measures', [])}
             if 'Avg Transition Duration' not in meas:
                 if 'measures' not in t:
@@ -638,7 +1135,7 @@ def update_model_bim(bim_path, repo_root=None):
                 t['measures'].append({
                     'name': 'Avg Transition Duration',
                     'expression': "AVERAGE('bottleneck_analysis_summary'[mean_observed_transition_minutes])",
-                    'formatString': '0.0 "Mins"'
+                    'formatString': '0.0 "mins"'
                 })
 
         elif t['name'] == 'pathway_improvement_comparison':
@@ -659,625 +1156,523 @@ def update_model_bim(bim_path, repo_root=None):
                     t['measures'] = []
                 t['measures'].append({
                     'name': 'Relative % Difference',
-                    'expression': [
-                        "VAR Baseline = SELECTEDVALUE('pathway_improvement_comparison'[baseline_value])",
-                        "VAR Proposed = SELECTEDVALUE('pathway_improvement_comparison'[proposed_value])",
-                        "RETURN",
-                        "    IF(",
-                        "        ISBLANK(Baseline) || Baseline = 0,",
-                        "        IF(Proposed = 0, 0, BLANK()),",
-                        "        DIVIDE(Proposed - Baseline, Baseline)",
-                        "    )"
-                    ],
+                    'expression': "DIVIDE(MAX('pathway_improvement_comparison'[proposed_value]) - MAX('pathway_improvement_comparison'[baseline_value]), MAX('pathway_improvement_comparison'[baseline_value]), 0)",
                     'formatString': '+0.0%;-0.0%;0.0%'
                 })
 
     with open(bim_path, 'w', encoding='utf-8') as f:
         json.dump(bim, f, indent=2)
-    print(f"Updated {bim_path} successfully!")
-
+    print(f"[UPDATED] {bim_path}")
 
 def build():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.dirname(script_dir)
-    project_root = os.path.join(script_dir, "CareFlow_Dashboard_Project")
-    sm_dir = os.path.join(project_root, "CareFlow_Dashboard.SemanticModel")
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    proj_dir = os.path.join(repo_root, "powerbi", "CareFlow_Dashboard_Project")
+    sm_dir = os.path.join(proj_dir, "CareFlow_Dashboard.SemanticModel")
     sm_def = os.path.join(sm_dir, "definition")
     tables_dir = os.path.join(sm_def, "tables")
-    cultures_dir = os.path.join(sm_def, "cultures")
-
-    rep_dir = os.path.join(project_root, "CareFlow_Dashboard.Report")
+    rep_dir = os.path.join(proj_dir, "CareFlow_Dashboard.Report")
     rep_def = os.path.join(rep_dir, "definition")
 
     os.makedirs(tables_dir, exist_ok=True)
-    os.makedirs(cultures_dir, exist_ok=True)
+    os.makedirs(rep_dir, exist_ok=True)
     os.makedirs(rep_def, exist_ok=True)
 
-    # 1. CareFlow_Dashboard.pbip
-    pbip_content = {
-        "version": "1.0",
-        "artifacts": [
-            {
-                "report": {
-                    "path": "CareFlow_Dashboard.Report"
-                }
-            }
-        ],
-        "settings": {}
-    }
-    with open(os.path.join(project_root, "CareFlow_Dashboard.pbip"), "w", encoding="utf-8") as f:
-        json.dump(pbip_content, f, indent=2)
+    csv_events = os.path.join(repo_root, "data", "cleaned", "stg_hospital_events.csv")
+    csv_variants = os.path.join(repo_root, "outputs", "pathway_variants_summary.csv")
+    csv_bottlenecks = os.path.join(repo_root, "outputs", "bottleneck_analysis_summary.csv")
+    csv_improvement = os.path.join(repo_root, "outputs", "pathway_improvement_comparison.csv")
 
-    # 2. definition.pbism
-    with open(os.path.join(sm_dir, "definition.pbism"), "w", encoding="utf-8") as f:
-        json.dump({"version": "1.0"}, f, indent=2)
+    # 1. Update model.bim
+    bim_path = os.path.join(sm_dir, "model.bim")
+    if os.path.exists(bim_path):
+        update_model_bim(bim_path, repo_root)
 
-    # 3. definition.pbir
-    pbir_content = {
-        "version": "1.0",
-        "datasetReference": {
-            "byPath": {
-                "path": "../CareFlow_Dashboard.SemanticModel"
-            },
-            "byConnection": None
-        }
-    }
-    with open(os.path.join(rep_dir, "definition.pbir"), "w", encoding="utf-8") as f:
-        json.dump(pbir_content, f, indent=2)
+    # 2. Synchronize careflow_semantic_model
+    template_bim = os.path.join(repo_root, "powerbi", "careflow_semantic_model", "model.bim")
+    if os.path.exists(template_bim):
+        update_model_bim(template_bim, repo_root)
 
-    # 4. Copy TMDL files from careflow_semantic_model
-    src_tmdl = os.path.join(os.path.dirname(os.path.abspath(__file__)), "careflow_semantic_model")
-    shutil.copy(os.path.join(src_tmdl, "database.tmdl"), sm_def)
-    shutil.copy(os.path.join(src_tmdl, "relationships.tmdl"), sm_def)
-    shutil.copy(os.path.join(src_tmdl, "cultures", "en-US.tmdl"), cultures_dir)
-
-    for f in os.listdir(os.path.join(src_tmdl, "tables")):
-        if f.startswith("DateTableTemplate") or f.startswith("LocalDateTable"):
-            shutil.copy(os.path.join(src_tmdl, "tables", f), tables_dir)
-
-    # 4a. stg_hospital_events (2) with excludeFromModelRefresh
-    stg2_content = """table 'stg_hospital_events (2)'
-\tlineageTag: 27a25c1c-4740-4992-9301-d14ce0ac8fc7
-\texcludeFromModelRefresh
-
-\tcolumn case_id
-\t\tdataType: string
-\t\tlineageTag: 38d6e019-3d53-466b-b56f-c40442dfbdb6
-\t\tsummarizeBy: none
-\t\tsourceColumn: case_id
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn event_sequence
-\t\tdataType: int64
-\t\tformatString: 0
-\t\tlineageTag: cb2536fb-f1a5-48b4-9c07-fc085a6a66a1
-\t\tsummarizeBy: sum
-\t\tsourceColumn: event_sequence
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn raw_activity_name
-\t\tdataType: string
-\t\tlineageTag: a0958b10-096b-4ca0-b26a-9f5da0cb59f7
-\t\tsummarizeBy: none
-\t\tsourceColumn: raw_activity_name
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn activity_name
-\t\tdataType: string
-\t\tlineageTag: 61ff7920-56ae-4357-9f7a-fa2d60fb41f1
-\t\tsummarizeBy: none
-\t\tsourceColumn: activity_name
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn event_timestamp
-\t\tdataType: dateTime
-\t\tformatString: General Date
-\t\tlineageTag: 359c276e-39cc-48a7-811c-7d2c495aa085
-\t\tsummarizeBy: none
-\t\tsourceColumn: event_timestamp
-
-\t\tvariation Variation
-\t\t\tisDefault
-\t\t\trelationship: 0bef2581-4d0c-4bc5-8378-e1e0791fccd9
-\t\t\tdefaultHierarchy: LocalDateTable_49c443fd-4f20-4c85-89a4-93bf72969d08.'Date Hierarchy'
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn event_date
-\t\tdataType: dateTime
-\t\tformatString: Long Date
-\t\tlineageTag: e78034dd-87b6-43b8-b419-b9eb221d269e
-\t\tsummarizeBy: none
-\t\tsourceColumn: event_date
-
-\t\tvariation Variation
-\t\t\tisDefault
-\t\t\trelationship: 7156ce9b-4d7e-4b77-8cd0-a942e984ca31
-\t\t\tdefaultHierarchy: LocalDateTable_e9b76cac-079d-4de9-acda-a06cd19308e8.'Date Hierarchy'
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\t\tannotation UnderlyingDateTimeDataType = Date
-
-\tcolumn department
-\t\tdataType: string
-\t\tlineageTag: f26da655-4e2e-44c0-b6d3-4474c69023d8
-\t\tsummarizeBy: none
-\t\tsourceColumn: department
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn resource_id
-\t\tdataType: string
-\t\tlineageTag: cff4915d-85fa-44fc-a0dc-5d1dbbe65db5
-\t\tsummarizeBy: none
-\t\tsourceColumn: resource_id
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn data_provenance
-\t\tdataType: string
-\t\tlineageTag: 2cae61d6-0f86-4acb-836a-9c347229f824
-\t\tsummarizeBy: none
-\t\tsourceColumn: data_provenance
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn previous_activity
-\t\tdataType: string
-\t\tlineageTag: 0223f275-fb3b-4a36-9f7a-157c89fd5aba
-\t\tsummarizeBy: none
-\t\tsourceColumn: previous_activity
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tcolumn transition_minutes_from_previous
-\t\tdataType: int64
-\t\tformatString: 0
-\t\tlineageTag: a1fff7aa-5c4f-4877-bc03-816089e74d60
-\t\tsummarizeBy: sum
-\t\tsourceColumn: transition_minutes_from_previous
-
-\t\tannotation SummarizationSetBy = Automatic
-
-\tpartition 'stg_hospital_events (2)' = m
-\t\tmode: import
-\t\tsource =
-\t\t\t\tlet
-\t\t\t\t    Source = stg_hospital_events
-\t\t\t\tin
-\t\t\t\t    Source
-
-\tannotation PBI_ResultType = Table
-"""
-    with open(os.path.join(tables_dir, "stg_hospital_events (2).tmdl"), "w", encoding="utf-8") as f:
-        f.write(stg2_content)
-
-    # 4b. stg_hospital_events with measures and date variations
+    # 3. Update TMDL tables
+    # 3a. stg_hospital_events.tmdl
     stg_tmdl = """table stg_hospital_events
-\tlineageTag: 16005fff-e9ff-454a-9d9b-826c68590aeb
+	lineageTag: e8f1a2b3-c4d5-6e7f-8a9b-0c1d2e3f4a5b
 
-\tmeasure 'Total Cases' = DISTINCTCOUNT('stg_hospital_events'[case_id])
-\t\tformatString: #,##0
-\t\tlineageTag: 268e0df6-b01e-4525-b852-f217108b0841
+	measure 'Total Cases' = DISTINCTCOUNT('stg_hospital_events'[case_id])
+		formatString: #,##0
+		lineageTag: f1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c
 
-\tmeasure 'Total Events' = COUNTROWS('stg_hospital_events')
-\t\tformatString: #,##0
-\t\tlineageTag: c6b88a5b-b73d-459c-85bc-a50867f9cd39
+	measure 'Total Events' = COUNTROWS('stg_hospital_events')
+		formatString: #,##0
+		lineageTag: f2a3b4c5-e6f7-8a9b-0c1d-2e3f4a5b6c7d
 
-\tmeasure 'Avg Case Cycle Time (Mins)' =
-\t\t\tVAR CaseDurations =
-\t\t\t    ADDCOLUMNS(
-\t\t\t        VALUES('stg_hospital_events'[case_id]),
-\t\t\t        "CaseTotalMinutes",
-\t\t\t        CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))
-\t\t\t    )
-\t\t\tRETURN
-\t\t\tAVERAGEX(CaseDurations, [CaseTotalMinutes])
-\t\tformatString: 0.0 "Mins"
-\t\tlineageTag: 1138ea12-042b-4c0d-a572-4c546277a8c3
+	measure 'Avg Case Cycle Time (Mins)' =
+			AVERAGEX(
+			    VALUES('stg_hospital_events'[case_id]),
+			    CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))
+			)
+		formatString: 0.0 "mins"
+		lineageTag: f3a4b5c6-f7a8-9b0c-1d2e-3f4a5b6c7d8e
 
-\tmeasure 'Median Case Cycle Time (Mins)' =
-\t\t\tVAR CaseDurations =
-\t\t\t    ADDCOLUMNS(
-\t\t\t        VALUES('stg_hospital_events'[case_id]),
-\t\t\t        "CaseTotalMinutes",
-\t\t\t        CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))
-\t\t\t    )
-\t\t\tRETURN
-\t\t\tMEDIANX(CaseDurations, [CaseTotalMinutes])
-\t\tformatString: 0.0 "Mins"
-\t\tlineageTag: d4cfb71f-b7e6-4dba-a4d8-85abd6c80396
+	measure 'Median Case Cycle Time (Mins)' =
+			MEDIANX(
+			    VALUES('stg_hospital_events'[case_id]),
+			    CALCULATE(SUM('stg_hospital_events'[transition_minutes_from_previous]))
+			)
+		formatString: 0.0 "mins"
+		lineageTag: f4a5b6c7-a8b9-0c1d-2e3f-4a5b6c7d8e9f
 
-\tmeasure 'Re-Triage Rate %' =
-\t\t\tVAR ReTriageCases =
-\t\t\t    CALCULATE(
-\t\t\t        DISTINCTCOUNT('stg_hospital_events'[case_id]),
-\t\t\t        'stg_hospital_events'[raw_activity_name] = "Triage",
-\t\t\t        'stg_hospital_events'[previous_activity] = "Triage"
-\t\t\t    )
-\t\t\tRETURN
-\t\t\tDIVIDE(ReTriageCases, [Total Cases], 0)
-\t\tformatString: 0.0%
-\t\tlineageTag: 345f49c1-6dcd-4120-b092-0a7484ca557d
+	measure 'Re-Triage Rate %' = DIVIDE([Repeat Triage Cases Count], [Total Cases], 0)
+		formatString: 0.0%
+		lineageTag: f5a6b7c8-b9c0-1d2e-3f4a-5b6c7d8e9f0a
 
-\tmeasure 'Conformant Cases Count' = [Total Cases] - [Repeat Triage Cases Count]
-\t\tformatString: #,##0
-\t\tlineageTag: 7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+	measure 'Repeat Triage Cases Count' =
+			CALCULATE(
+			    DISTINCTCOUNT('stg_hospital_events'[case_id]),
+			    'stg_hospital_events'[activity_name] = "Triage",
+			    'stg_hospital_events'[previous_activity] = "Triage"
+			)
+		formatString: #,##0
+		lineageTag: f6a7b8c9-c0d1-2e3f-4a5b-6c7d8e9f0a1b
 
-\tmeasure 'Repeat Triage Cases Count' =
-\t\t\tCALCULATE(
-\t\t\t    DISTINCTCOUNT('stg_hospital_events'[case_id]),
-\t\t\t    'stg_hospital_events'[raw_activity_name] = "Triage",
-\t\t\t    'stg_hospital_events'[previous_activity] = "Triage"
-\t\t\t)
-\t\tformatString: #,##0
-\t\tlineageTag: 8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e
+	measure 'Conformant Cases Count' = [Total Cases] - [Repeat Triage Cases Count]
+		formatString: #,##0
+		lineageTag: f7a8b9c0-d1e2-3f4a-5b6c-7d8e9f0a1b2c
 
-\tmeasure 'Conformance Rate %' =
-\t\t\tDIVIDE([Conformant Cases Count], [Total Cases], 0)
-\t\tformatString: 0.0%
-\t\tlineageTag: 9c0d1e2f-3a4b-5c6d-7e8f-9a0b1c2d3e4f
+	measure 'Conformance Rate %' = DIVIDE([Conformant Cases Count], [Total Cases], 0)
+		formatString: 0.0%
+		lineageTag: f8a9b0c1-e2f3-4a5b-6c7d-8e9f0a1b2c3d
 
-\tcolumn case_id
-\t\tdataType: string
-\t\tlineageTag: 5fc73f6b-6446-40e1-82ca-4d62a6bb976b
-\t\tsummarizeBy: none
-\t\tsourceColumn: case_id
+	measure 'Average Cycle Time' = [Avg Case Cycle Time (Mins)]
+		formatString: 0.0 "mins"
+		lineageTag: c1d2e3f4-a5b6-7c8d-9e0f-1a2b3c4d5e6f
 
-\tcolumn event_sequence
-\t\tdataType: int64
-\t\tformatString: 0
-\t\tlineageTag: a98ce6da-eec7-4078-a9e9-8ba9b5c9c0c7
-\t\tsummarizeBy: sum
-\t\tsourceColumn: event_sequence
+	measure 'Median Cycle Time' = [Median Case Cycle Time (Mins)]
+		formatString: 0.0 "mins"
+		lineageTag: c2d3e4f5-b6c7-8d9e-0f1a-2b3c4d5e6f7a
 
-\tcolumn raw_activity_name
-\t\tdataType: string
-\t\tlineageTag: 00699417-93a7-4f31-8715-c6542db98daf
-\t\tsummarizeBy: none
-\t\tsourceColumn: raw_activity_name
+	measure 'Repeat-Triage Rate' = [Re-Triage Rate %]
+		formatString: 0.0%
+		lineageTag: c3d4e5f6-c7d8-9e0f-1a2b-3c4d5e6f7a8b
 
-\tcolumn activity_name
-\t\tdataType: string
-\t\tlineageTag: fa5edfef-fade-4f4c-81ae-aa74be0a6480
-\t\tsummarizeBy: none
-\t\tsourceColumn: activity_name
+	measure 'Conformant Cases' = [Conformant Cases Count]
+		formatString: #,##0
+		lineageTag: c4d5e6f7-d8e9-0f1a-2b3c-4d5e6f7a8b9c
 
-\tcolumn event_timestamp
-\t\tdataType: dateTime
-\t\tformatString: yyyy-mm-dd hh:nn:ss
-\t\tlineageTag: ac4e4b62-3f53-48be-a508-33c432c697ac
-\t\tsummarizeBy: none
-\t\tsourceColumn: event_timestamp
+	measure 'Repeat-Triage Cases' = [Repeat Triage Cases Count]
+		formatString: #,##0
+		lineageTag: c5d6e7f8-e9f0-1a2b-3c4d-5e6f7a8b9c0d
 
-\t\tvariation Variation
-\t\t\tisDefault
-\t\t\trelationship: c9df3b01-cbdd-4034-81de-32c5ade92f52
-\t\t\tdefaultHierarchy: LocalDateTable_b02213a0-917d-4fce-9237-50aa9100f0ee.'Date Hierarchy'
+	measure 'Conformance Rate' = [Conformance Rate %]
+		formatString: 0.0%
+		lineageTag: c6d7e8f9-f0a1-2b3c-4d5e-6f7a8b9c0d1e
 
-\t\tannotation SummarizationSetBy = Automatic
+	column case_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: case_id
 
-\tcolumn event_date
-\t\tdataType: dateTime
-\t\tformatString: yyyy-mm-dd
-\t\tlineageTag: b0624bf3-018f-4318-ae25-274f88e1a179
-\t\tsummarizeBy: none
-\t\tsourceColumn: event_date
+	column event_sequence
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: event_sequence
 
-\t\tvariation Variation
-\t\t\tisDefault
-\t\t\trelationship: 3cb3b656-e3b2-41e5-a4c5-3cf909fce244
-\t\t\tdefaultHierarchy: LocalDateTable_b77ddfa2-054a-4d91-af85-e6383c65e7b3.'Date Hierarchy'
+	column raw_activity_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: raw_activity_name
 
-\t\tannotation SummarizationSetBy = Automatic
-\t\tannotation UnderlyingDateTimeDataType = Date
+	column activity_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: activity_name
 
-\tcolumn department
-\t\tdataType: string
-\t\tlineageTag: 033d8cff-9001-4c2a-941f-7191cba91fe8
-\t\tsummarizeBy: none
-\t\tsourceColumn: department
+	column event_timestamp
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn
+		summarizeBy: none
+		sourceColumn: event_timestamp
 
-\tcolumn resource_id
-\t\tdataType: string
-\t\tlineageTag: ab01f686-c089-46d8-81ce-9e4579c09602
-\t\tsummarizeBy: none
-\t\tsourceColumn: resource_id
+	column event_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: event_date
 
-\tcolumn data_provenance
-\t\tdataType: string
-\t\tlineageTag: c4102fe4-f430-4426-98d6-90a98c204561
-\t\tsummarizeBy: none
-\t\tsourceColumn: data_provenance
+	column department
+		dataType: string
+		summarizeBy: none
+		sourceColumn: department
 
-\tcolumn previous_activity
-\t\tdataType: string
-\t\tlineageTag: 1e6b40bd-3513-4b11-a01c-eca169bafe53
-\t\tsummarizeBy: none
-\t\tsourceColumn: previous_activity
+	column resource_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: resource_id
 
-\tcolumn transition_minutes_from_previous
-\t\tdataType: int64
-\t\tformatString: #,##0
-\t\tlineageTag: 95f45a92-2f4c-4fda-9a91-adb891070be8
-\t\tsummarizeBy: sum
-\t\tsourceColumn: transition_minutes_from_previous
+	column data_provenance
+		dataType: string
+		summarizeBy: none
+		sourceColumn: data_provenance
 
-\tpartition stg_hospital_events = m
-\t\tmode: import
-\t\tsource =
-\t\t\t\tlet
-\t\t\t\t    Source = Csv.Document(File.Contents("__CSV_EVENTS__"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-\t\t\t\t    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-\t\t\t\t    #"Replaced Empty Strings" = Table.ReplaceValue(#"Promoted Headers", "", null, Replacer.ReplaceValue, {"previous_activity", "transition_minutes_from_previous"}),
-\t\t\t\t    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Empty Strings",{{"case_id", type text}, {"event_sequence", Int64.Type}, {"raw_activity_name", type text}, {"activity_name", type text}, {"event_timestamp", type datetime}, {"event_date", type date}, {"department", type text}, {"resource_id", type text}, {"data_provenance", type text}, {"previous_activity", type text}, {"transition_minutes_from_previous", Int64.Type}})
-\t\t\t\tin
-\t\t\t\t    #"Changed Type"
+	column previous_activity
+		dataType: string
+		summarizeBy: none
+		sourceColumn: previous_activity
 
-\tannotation PBI_ResultType = Table
-"""
-    stg_tmdl = stg_tmdl.replace("__CSV_EVENTS__", os.path.join(repo_root, "data", "cleaned", "stg_hospital_events.csv"))
+	column transition_minutes_from_previous
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: transition_minutes_from_previous
+
+	partition stg_hospital_events = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("__CSV_EVENTS__"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Replaced Empty Strings" = Table.ReplaceValue(#"Promoted Headers", "", null, Replacer.ReplaceValue, {"previous_activity", "transition_minutes_from_previous"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Empty Strings",{{"case_id", type text}, {"event_sequence", Int64.Type}, {"raw_activity_name", type text}, {"activity_name", type text}, {"event_timestamp", type datetime}, {"event_date", type date}, {"department", type text}, {"resource_id", type text}, {"data_provenance", type text}, {"previous_activity", type text}, {"transition_minutes_from_previous", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+""".replace("__CSV_EVENTS__", csv_events)
     with open(os.path.join(tables_dir, "stg_hospital_events.tmdl"), "w", encoding="utf-8") as f:
         f.write(stg_tmdl)
 
-    # 4c. pathway_variants_summary.tmdl
+    # 3b. stg_hospital_events (2).tmdl
+    stg2_tmdl = """table 'stg_hospital_events (2)'
+	lineageTag: e9f2a3b4-c5d6-7e8f-9a0b-1c2d3e4f5a6c
+	excludeFromModelRefresh
+
+	column case_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: case_id
+
+	column event_sequence
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: event_sequence
+
+	column raw_activity_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: raw_activity_name
+
+	column activity_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: activity_name
+
+	column event_timestamp
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn
+		summarizeBy: none
+		sourceColumn: event_timestamp
+
+	column event_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: event_date
+
+	column department
+		dataType: string
+		summarizeBy: none
+		sourceColumn: department
+
+	column resource_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: resource_id
+
+	column data_provenance
+		dataType: string
+		summarizeBy: none
+		sourceColumn: data_provenance
+
+	column previous_activity
+		dataType: string
+		summarizeBy: none
+		sourceColumn: previous_activity
+
+	column transition_minutes_from_previous
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: transition_minutes_from_previous
+
+	partition 'stg_hospital_events (2)' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("__CSV_EVENTS__"),[Delimiter=",", Columns=11, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Replaced Empty Strings" = Table.ReplaceValue(#"Promoted Headers", "", null, Replacer.ReplaceValue, {"previous_activity", "transition_minutes_from_previous"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Empty Strings",{{"case_id", type text}, {"event_sequence", Int64.Type}, {"raw_activity_name", type text}, {"activity_name", type text}, {"event_timestamp", type datetime}, {"event_date", type date}, {"department", type text}, {"resource_id", type text}, {"data_provenance", type text}, {"previous_activity", type text}, {"transition_minutes_from_previous", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+""".replace("__CSV_EVENTS__", csv_events)
+    with open(os.path.join(tables_dir, "stg_hospital_events (2).tmdl"), "w", encoding="utf-8") as f:
+        f.write(stg2_tmdl)
+
+    # 3c. pathway_variants_summary.tmdl
     pathway_tmdl = """table pathway_variants_summary
-\tlineageTag: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+	lineageTag: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
 
-\tmeasure 'Total Variant Cases' = SUM('pathway_variants_summary'[case_count])
-\t\tformatString: #,##0
-\t\tlineageTag: a2b3c4d5-e6f7-8a9b-0c1d-2e3f4a5b6c7d
+	measure 'Total Variant Cases' = SUM('pathway_variants_summary'[case_count])
+		formatString: #,##0
+		lineageTag: a2b3c4d5-e6f7-8a9b-0c1d-2e3f4a5b6c7d
 
-\tcolumn variant_rank
-\t\tdataType: int64
-\t\tformatString: 0
-\t\tsummarizeBy: none
-\t\tsourceColumn: variant_rank
+	measure 'Total Pathway Variants' = COUNTROWS('pathway_variants_summary')
+		formatString: 0
+		lineageTag: a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d
 
-\tcolumn case_count
-\t\tdataType: int64
-\t\tformatString: #,##0
-\t\tsummarizeBy: sum
-\t\tsourceColumn: case_count
+	measure 'Pathway Variants' = [Total Pathway Variants]
+		formatString: 0
+		lineageTag: d1e2f3a4-b5c6-7d8e-9f0a-1b2c3d4e5f6a
 
-\tcolumn percentage
-\t\tdataType: double
-\t\tformatString: 0.0"%"
-\t\tsummarizeBy: none
-\t\tsourceColumn: percentage
+	column variant_rank
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: variant_rank
 
-\tcolumn pathway
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: pathway
+	column case_count
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: case_count
 
-\tpartition pathway_variants_summary = m
-\t\tmode: import
-\t\tsource =
-\t\t\t\tlet
-\t\t\t\t    Source = Csv.Document(File.Contents("__CSV_VARIANTS__"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-\t\t\t\t    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-\t\t\t\t    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"variant_rank", Int64.Type}, {"case_count", Int64.Type}, {"percentage", type number}, {"pathway", type text}})
-\t\t\t\tin
-\t\t\t\t    #"Changed Type"
+	column percentage
+		dataType: double
+		formatString: 0.0"%"
+		summarizeBy: none
+		sourceColumn: percentage
 
-\tannotation PBI_ResultType = Table
-"""
-    pathway_tmdl = pathway_tmdl.replace("__CSV_VARIANTS__", os.path.join(repo_root, "outputs", "pathway_variants_summary.csv"))
+	column pathway
+		dataType: string
+		summarizeBy: none
+		sourceColumn: pathway
+
+	column variant_label
+		dataType: string
+		summarizeBy: none
+		sourceColumn: variant_label
+
+	partition pathway_variants_summary = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("__CSV_VARIANTS__"),[Delimiter=",", Columns=4, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"variant_rank", Int64.Type}, {"case_count", Int64.Type}, {"percentage", type number}, {"pathway", type text}}),
+				    #"Added Variant Label" = Table.AddColumn(#"Changed Type", "variant_label", each (if [variant_rank] = 1 then "Standard Flow (40%)" else if [variant_rank] = 2 then "Lab Diagnostic (22%)" else if [variant_rank] = 3 then "X-Ray Diagnostic (16%)" else if [variant_rank] = 4 then "Lab + X-Ray (10%)" else if [variant_rank] = 5 then "Re-Triage Loop (7%)" else "Re-Triage + Lab (5%)"), type text)
+				in
+				    #"Added Variant Label"
+
+	annotation PBI_ResultType = Table
+""".replace("__CSV_VARIANTS__", csv_variants)
     with open(os.path.join(tables_dir, "pathway_variants_summary.tmdl"), "w", encoding="utf-8") as f:
         f.write(pathway_tmdl)
 
-    # 4d. bottleneck_analysis_summary.tmdl
+    # 3d. bottleneck_analysis_summary.tmdl
     bottleneck_tmdl = """table bottleneck_analysis_summary
-\tlineageTag: b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e
+	lineageTag: b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e
 
-\tmeasure 'Avg Transition Duration' = AVERAGE('bottleneck_analysis_summary'[mean_observed_transition_minutes])
-\t\tformatString: 0.0 "Mins"
-\t\tlineageTag: b3c4d5e6-f7a8-9b0c-1d2e-3f4a5b6c7d8e
+	measure 'Avg Transition Duration' = AVERAGE('bottleneck_analysis_summary'[mean_observed_transition_minutes])
+		formatString: 0.0 "mins"
+		lineageTag: b3c4d5e6-f7a8-9b0c-1d2e-3f4a5b6c7d8e
 
-\tcolumn rank
-\t\tdataType: int64
-\t\tformatString: 0
-\t\tsummarizeBy: none
-\t\tsourceColumn: rank
+	column rank
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: rank
 
-\tcolumn source_activity
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: source_activity
+	column source_activity
+		dataType: string
+		summarizeBy: none
+		sourceColumn: source_activity
 
-\tcolumn target_activity
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: target_activity
+	column target_activity
+		dataType: string
+		summarizeBy: none
+		sourceColumn: target_activity
 
-\tcolumn transition_label
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: transition_label
+	column mean_observed_transition_minutes
+		dataType: double
+		formatString: 0.0
+		summarizeBy: none
+		sourceColumn: mean_observed_transition_minutes
 
-\tcolumn transition_count
-\t\tdataType: int64
-\t\tformatString: #,##0
-\t\tsummarizeBy: sum
-\t\tsourceColumn: transition_count
+	column transition
+		dataType: string
+		summarizeBy: none
+		sourceColumn: transition
 
-\tcolumn mean_observed_transition_minutes
-\t\tdataType: double
-\t\tformatString: 0.0 "Mins"
-\t\tsummarizeBy: average
-\t\tsourceColumn: mean_observed_transition_minutes
+	column transition_label
+		dataType: string
+		summarizeBy: none
+		sourceColumn: transition_label
 
-\tcolumn median_observed_transition_minutes
-\t\tdataType: double
-\t\tformatString: 0.0 "Mins"
-\t\tsummarizeBy: average
-\t\tsourceColumn: median_observed_transition_minutes
+	column avg_duration_mins
+		dataType: double
+		formatString: 0.0
+		summarizeBy: none
+		sourceColumn: avg_duration_mins
 
-\tcolumn min_observed_transition_minutes
-\t\tdataType: double
-\t\tformatString: 0.0
-\t\tsummarizeBy: none
-\t\tsourceColumn: min_observed_transition_minutes
+	column transition_display
+		dataType: string
+		summarizeBy: none
+		sourceColumn: transition_display
 
-\tcolumn max_observed_transition_minutes
-\t\tdataType: double
-\t\tformatString: 0.0
-\t\tsummarizeBy: none
-\t\tsourceColumn: max_observed_transition_minutes
+	column transition_count
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: transition_count
 
-\tpartition bottleneck_analysis_summary = m
-\t\tmode: import
-\t\tsource =
-\t\t\t\tlet
-\t\t\t\t    Source = Csv.Document(File.Contents("__CSV_BOTTLENECK__"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-\t\t\t\t    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-\t\t\t\t    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"rank", Int64.Type}, {"source_activity", type text}, {"target_activity", type text}, {"transition_count", Int64.Type}, {"mean_observed_transition_minutes", type number}, {"median_observed_transition_minutes", type number}, {"min_observed_transition_minutes", type number}, {"max_observed_transition_minutes", type number}}),
-\t\t\t\t    #"Added Transition Label" = Table.AddColumn(#"Changed Type", "transition_label", each [source_activity] & " -> " & [target_activity], type text)
-\t\t\t\tin
-\t\t\t\t    #"Added Transition Label"
+	column median_observed_transition_minutes
+		dataType: double
+		formatString: 0.0
+		summarizeBy: none
+		sourceColumn: median_observed_transition_minutes
 
-\tannotation PBI_ResultType = Table
-"""
-    bottleneck_tmdl = bottleneck_tmdl.replace("__CSV_BOTTLENECK__", os.path.join(repo_root, "outputs", "bottleneck_analysis_summary.csv"))
+	column min_observed_transition_minutes
+		dataType: double
+		formatString: 0.0
+		summarizeBy: none
+		sourceColumn: min_observed_transition_minutes
+
+	column max_observed_transition_minutes
+		dataType: double
+		formatString: 0.0
+		summarizeBy: none
+		sourceColumn: max_observed_transition_minutes
+
+	partition bottleneck_analysis_summary = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("__CSV_BOTTLENECKS__"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"rank", Int64.Type}, {"source_activity", type text}, {"target_activity", type text}, {"transition_count", Int64.Type}, {"mean_observed_transition_minutes", type number}, {"median_observed_transition_minutes", type number}, {"min_observed_transition_minutes", type number}, {"max_observed_transition_minutes", type number}}),
+				    #"Added Transition" = Table.AddColumn(#"Changed Type", "transition", each [source_activity] & " -> " & [target_activity], type text),
+				    #"Added Transition Label" = Table.AddColumn(#"Added Transition", "transition_label", each [source_activity] & " -> " & [target_activity], type text),
+				    #"Added Avg Duration Mins" = Table.AddColumn(#"Added Transition Label", "avg_duration_mins", each [mean_observed_transition_minutes], type number),
+				    #"Added Transition Display" = Table.AddColumn(#"Added Avg Duration Mins", "transition_display", each (if [source_activity] = "Triage" and [target_activity] = "Triage" then "Triage →#(lf)Re-Triage" else [source_activity] & " →#(lf)" & [target_activity]), type text)
+				in
+				    #"Added Transition Display"
+
+	annotation PBI_ResultType = Table
+""".replace("__CSV_BOTTLENECKS__", csv_bottlenecks)
     with open(os.path.join(tables_dir, "bottleneck_analysis_summary.tmdl"), "w", encoding="utf-8") as f:
         f.write(bottleneck_tmdl)
 
-    # 4e. pathway_improvement_comparison.tmdl
+    # 3e. pathway_improvement_comparison.tmdl
     improvement_tmdl = """table pathway_improvement_comparison
-\tlineageTag: c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f
+	lineageTag: c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f
 
-\tcolumn category
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: category
+	column category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: category
 
-\tcolumn metric_name
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: metric_name
+	column metric_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: metric_name
 
-\tcolumn baseline_value
-\t\tdataType: double
-\t\tformatString: #,##0.0
-\t\tsummarizeBy: none
-\t\tsourceColumn: baseline_value
+	column baseline_value
+		dataType: double
+		formatString: #,##0.0
+		summarizeBy: none
+		sourceColumn: baseline_value
 
-\tcolumn proposed_value
-\t\tdataType: double
-\t\tformatString: #,##0.0
-\t\tsummarizeBy: none
-\t\tsourceColumn: proposed_value
+	column proposed_value
+		dataType: double
+		formatString: #,##0.0
+		summarizeBy: none
+		sourceColumn: proposed_value
 
-\tcolumn absolute_difference
-\t\tdataType: double
-\t\tformatString: #,##0.0
-\t\tsummarizeBy: none
-\t\tsourceColumn: absolute_difference
+	column absolute_difference
+		dataType: double
+		formatString: #,##0.0
+		summarizeBy: none
+		sourceColumn: absolute_difference
 
-\tcolumn percentage_difference
-\t\tdataType: double
-\t\tformatString: +0.0%;-0.0%;0.0%
-\t\tsummarizeBy: none
-\t\tsourceColumn: percentage_difference
+	column percentage_difference
+		dataType: double
+		formatString: +0.0%;-0.0%;0.0%
+		summarizeBy: none
+		sourceColumn: percentage_difference
 
-\tcolumn unit
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: unit
+	column unit
+		dataType: string
+		summarizeBy: none
+		sourceColumn: unit
 
-\tcolumn provenance
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: provenance
+	column provenance
+		dataType: string
+		summarizeBy: none
+		sourceColumn: provenance
 
-\tcolumn interpretation
-\t\tdataType: string
-\t\tsummarizeBy: none
-\t\tsourceColumn: interpretation
+	column interpretation
+		dataType: string
+		summarizeBy: none
+		sourceColumn: interpretation
 
-\tmeasure 'Relative % Difference' =
-\t\t\tVAR Baseline = SELECTEDVALUE('pathway_improvement_comparison'[baseline_value])
-\t\t\tVAR Proposed = SELECTEDVALUE('pathway_improvement_comparison'[proposed_value])
-\t\t\tRETURN
-\t\t\t\tIF(
-\t\t\t\t\tISBLANK(Baseline) || Baseline = 0,
-\t\t\t\t\tIF(Proposed = 0, 0, BLANK()),
-\t\t\t\t\tDIVIDE(Proposed - Baseline, Baseline)
-\t\t\t\t)
-\t\tformatString: +0.0%;-0.0%;0.0%
-\t\tlineageTag: c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f
+	measure 'Relative % Difference' =
+			VAR Baseline = SELECTEDVALUE('pathway_improvement_comparison'[baseline_value])
+			VAR Proposed = SELECTEDVALUE('pathway_improvement_comparison'[proposed_value])
+			RETURN
+				IF(
+					ISBLANK(Baseline) || Baseline = 0,
+					IF(Proposed = 0, 0, BLANK()),
+					DIVIDE(Proposed - Baseline, Baseline)
+				)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f
 
-\tpartition pathway_improvement_comparison = m
-\t\tmode: import
-\t\tsource =
-\t\t\t\tlet
-\t\t\t\t    Source = Csv.Document(File.Contents("__CSV_IMPROVEMENT__"),[Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
-\t\t\t\t    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-\t\t\t\t    #"Removed Precalculated Pct" = Table.RemoveColumns(#"Promoted Headers",{"percentage_difference"}),
-\t\t\t\t    #"Changed Type" = Table.TransformColumnTypes(#"Removed Precalculated Pct",{{"category", type text}, {"metric_name", type text}, {"baseline_value", type number}, {"proposed_value", type number}, {"absolute_difference", type number}, {"unit", type text}, {"provenance", type text}, {"interpretation", type text}}),
-\t\t\t\t    #"Calculated Relative Difference" = Table.AddColumn(#"Changed Type", "percentage_difference", each if [baseline_value] = null or [baseline_value] = 0 then (if [proposed_value] = 0 then 0.0 else null) else ([proposed_value] - [baseline_value]) / [baseline_value], type number),
-\t\t\t\t    #"Reordered Columns" = Table.SelectColumns(#"Calculated Relative Difference", {"category", "metric_name", "baseline_value", "proposed_value", "absolute_difference", "percentage_difference", "unit", "provenance", "interpretation"})
-\t\t\t\tin
-\t\t\t\t    #"Reordered Columns"
+	partition pathway_improvement_comparison = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("__CSV_IMPROVEMENT__"),[Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Removed Precalculated Pct" = Table.RemoveColumns(#"Promoted Headers",{"percentage_difference"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Precalculated Pct",{{"category", type text}, {"metric_name", type text}, {"baseline_value", type number}, {"proposed_value", type number}, {"absolute_difference", type number}, {"unit", type text}, {"provenance", type text}, {"interpretation", type text}}),
+				    #"Calculated Relative Difference" = Table.AddColumn(#"Changed Type", "percentage_difference", each if [baseline_value] = null or [baseline_value] = 0 then (if [proposed_value] = 0 then 0.0 else null) else ([proposed_value] - [baseline_value]) / [baseline_value], type number),
+				    #"Reordered Columns" = Table.SelectColumns(#"Calculated Relative Difference", {"category", "metric_name", "baseline_value", "proposed_value", "absolute_difference", "percentage_difference", "unit", "provenance", "interpretation"})
+				in
+				    #"Reordered Columns"
 
-\tannotation PBI_ResultType = Table
-"""
-    improvement_tmdl = improvement_tmdl.replace("__CSV_IMPROVEMENT__", os.path.join(repo_root, "outputs", "pathway_improvement_comparison.csv"))
+	annotation PBI_ResultType = Table
+""".replace("__CSV_IMPROVEMENT__", csv_improvement)
     with open(os.path.join(tables_dir, "pathway_improvement_comparison.tmdl"), "w", encoding="utf-8") as f:
         f.write(improvement_tmdl)
 
-    # 4f. model.tmdl
-    model_tmdl = """model Model
-\tculture: en-US
-\tdefaultPowerBIDataSourceVersion: powerBI_V3
-\tsourceQueryCulture: en-IN
-\tdataAccessOptions
-\t\tlegacyRedirects
-\t\treturnErrorValuesAsNull
+    # 4. Synchronize template TMDL
+    stg_template = os.path.join(repo_root, "powerbi", "careflow_semantic_model", "tables", "stg_hospital_events.tmdl")
+    if os.path.exists(stg_template):
+        with open(stg_template, "w", encoding="utf-8") as f:
+            f.write(stg_tmdl)
 
-annotation __PBI_TimeIntelligenceEnabled = 1
+    stg2_template = os.path.join(repo_root, "powerbi", "careflow_semantic_model", "tables", "stg_hospital_events (2).tmdl")
+    if os.path.exists(stg2_template):
+        with open(stg2_template, "w", encoding="utf-8") as f:
+            f.write(stg2_tmdl)
 
-annotation PBI_QueryOrder = ["stg_hospital_events","stg_hospital_events (2)","pathway_variants_summary","bottleneck_analysis_summary","pathway_improvement_comparison"]
-
-ref table stg_hospital_events
-ref table DateTableTemplate_07490a40-7037-4685-a350-043d68764b27
-ref table LocalDateTable_b02213a0-917d-4fce-9237-50aa9100f0ee
-ref table LocalDateTable_b77ddfa2-054a-4d91-af85-e6383c65e7b3
-ref table 'stg_hospital_events (2)'
-ref table LocalDateTable_49c443fd-4f20-4c85-89a4-93bf72969d08
-ref table LocalDateTable_e9b76cac-079d-4de9-acda-a06cd19308e8
-ref table pathway_variants_summary
-ref table bottleneck_analysis_summary
-ref table pathway_improvement_comparison
-
-ref cultureInfo en-US
-"""
-    with open(os.path.join(sm_def, "model.tmdl"), "w", encoding="utf-8") as f:
-        f.write(model_tmdl)
-
-    # 4g. Copy verified model.bim
-    bim_template = os.path.join(src_tmdl, "model.bim")
-    if os.path.exists(bim_template):
-        with open(bim_template, "r", encoding="utf-8") as f:
-            bim = json.load(f)
-        # Ensure excludeFromModelRefresh on stg_hospital_events (2)
-        for t in bim["model"]["tables"]:
-            if t["name"] == "stg_hospital_events (2)":
-                t["excludeFromModelRefresh"] = True
-        with open(os.path.join(sm_dir, "model.bim"), "w", encoding="utf-8") as f:
-            json.dump(bim, f, indent=2)
-        update_model_bim(os.path.join(sm_dir, "model.bim"), repo_root=repo_root)
-
-    # 5. Extract StaticResources from backup PBIX
-    backup_pbix = os.path.join(script_dir, "backup", "CareFlow_AutoRecovery_Backup.pbix")
-    if os.path.exists(backup_pbix):
-        with zipfile.ZipFile(backup_pbix, "r") as z:
+    # 5. Extract Theme from AutoRecovery pbix
+    pbix_backup = os.path.join(repo_root, "powerbi", "backup", "CareFlow_AutoRecovery_Backup.pbix")
+    if os.path.exists(pbix_backup):
+        with zipfile.ZipFile(pbix_backup, "r") as z:
             for name in z.namelist():
                 if name.startswith("Report/StaticResources"):
                     rel = name[len("Report/"):]
@@ -1286,101 +1681,191 @@ ref cultureInfo en-US
                         os.makedirs(os.path.dirname(dest), exist_ok=True)
                         with open(dest, "wb") as out_f:
                             out_f.write(z.read(name))
+            for base in [rep_dir, rep_def]:
+                for tname in ["BaseThemes/CY26SU05.json", "BuiltInThemes/AccessibleCityPark.json"]:
+                    theme_f = os.path.join(base, "StaticResources", "SharedResources", tname.replace("/", os.sep))
+                    if os.path.exists(theme_f):
+                        apply_premium_healthcare_theme(theme_f)
 
     # 6. Build Report Visual Containers with full query and dataTransforms
 
+    p1_disclaimer = (
+        "Executive Operations Insights & Clinical Governance:\n"
+        "\u2022 Clinical Volumes: Consultation leads recorded activity (765 events; 24.4%), followed by Treatment (500) and Initial Triage (500).\n"
+        "\u2022 Department Workload: Emergency handles 89.97% (2,825 events); Laboratory (185) and Radiology (130) deliver diagnostic evaluation.\n"
+        "\u2022 Acuity Signal & Cohort: Repeat triage occurs in 12.0% of cases (60 encounters, +65.6 min latency). Simulated CareFlow ED cohort (500 cases, Oct 2024)."
+    )
     page1_visuals = [
-        get_card_visual("card_total_cases", 20, 20, 235, 130, 0, "stg_hospital_events", "Total Cases"),
-        get_card_visual("card_total_events", 270, 20, 235, 130, 1, "stg_hospital_events", "Total Events", display_units_none=True),
-        get_card_visual("card_avg_duration", 520, 20, 235, 130, 2, "stg_hospital_events", "Avg Case Cycle Time (Mins)", format_string="0.0 \"Mins\""),
-        get_card_visual("card_med_duration", 770, 20, 235, 130, 3, "stg_hospital_events", "Median Case Cycle Time (Mins)", format_string="0.0 \"Mins\""),
-        get_card_visual("card_retriage_rate", 1020, 20, 235, 130, 4, "stg_hospital_events", "Re-Triage Rate %", format_string="0.0%"),
-        get_donut_chart("donut_dept_breakdown", 20, 170, 380, 450, 5, "stg_hospital_events", "department", "Total Events"),
-        get_bar_chart_measure("bar_activity_breakdown", 415, 170, 430, 450, 6, "stg_hospital_events", "raw_activity_name", "Total Events"),
-        get_column_chart("col_daily_trend", 860, 170, 400, 450, 7, "stg_hospital_events", "event_date", "Total Events"),
-        get_textbox_visual(
-            "txt_disclaimer_page1", 20, 635, 1240, 65, 8,
-            "Data Source Note: CareFlow emergency clinical pathway event log (500 cases, 3,140 events across 7 activities). All data is simulated for process-mining education and does not contain real patient health records. Observed elapsed durations capture active clinical execution, transit, and reviews rather than pure waiting time."
-        )
+        get_header_banner("hdr_page1", 20, 12, 1240, 48, 0, "Hospital Operations Overview", "CareFlow Clinical Pathway Intelligence • 500 Patient Encounters • 3,140 Process Events"),
+        get_card_visual("card_total_cases", 20, 68, 236, 110, 1, "stg_hospital_events", "Total Cases", display_units_none=True, title="Total Cases", subtitle="Discrete Cohort Encounters"),
+        get_card_visual("card_total_events", 271, 68, 236, 110, 2, "stg_hospital_events", "Total Events", display_units_none=True, title="Total Events", subtitle="Recorded Milestone Steps"),
+        get_card_visual("card_avg_duration", 522, 68, 236, 110, 3, "stg_hospital_events", "Average Cycle Time", format_string='0.0 "mins"', title="Average Cycle Time", subtitle="Mean Total Turnaround Time"),
+        get_card_visual("card_med_duration", 773, 68, 236, 110, 4, "stg_hospital_events", "Median Cycle Time", format_string='0.0 "mins"', title="Median Cycle Time", subtitle="50th Percentile Turnaround Time"),
+        get_card_visual("card_retriage_rate", 1024, 68, 236, 110, 5, "stg_hospital_events", "Repeat-Triage Rate", format_string="0.0%", title="Repeat-Triage Rate", subtitle="Secondary Assessment Rate", callout_color="#D97706"),
+        get_donut_chart("donut_dept_breakdown", 20, 188, 380, 390, 6, "stg_hospital_events", "department", "Total Events", title="Event Distribution by Clinical Department", subtitle="Milestone activity volume by clinical service unit", category_display_name="Department", val_display_name="Event Volume"),
+        get_bar_chart_measure(
+            "bar_activity_breakdown", 415, 188, 430, 390, 7,
+            "stg_hospital_events", "raw_activity_name", "Total Events",
+            title="Clinical Activity Volume",
+            subtitle="Encounter volume across standard and diagnostic pathway milestones",
+            category_display_name="Clinical Activity",
+            val_display_name="Event Count",
+            max_margin=35,
+            show_data_labels=True,
+            bar_color="#0D9488"
+        ),
+        get_column_chart("col_daily_trend", 860, 188, 400, 390, 8, "stg_hospital_events", "event_date", "Total Events", title="Daily Patient Intake & Activity Trend", subtitle="Chronological daily event volume across observation window", col_color="#3B82F6"),
+        get_textbox_visual("txt_disclaimer_page1", 20, 588, 1240, 122, 9, p1_disclaimer)
     ]
 
+    p2_guidance = (
+        "Workflow Conformance & Pathway Variant Analysis:\n"
+        "\u2022 Standard Forward Flow: 440 patient encounters (88.0%) adhere to forward non-loop clinical pathways (dominant Standard Flow = 40.0%).\n"
+        "\u2022 Repeat-Triage Loops: 60 encounters (12.0%) exhibit loop-back reassessments (Variants 5 & 6) prior to consultation, adding 65.6 min delay.\n"
+        "\u2022 Clinical Governance: Re-triage reflects clinical monitoring of evolving acuity; protocol standardization offers an opportunity to streamline care."
+    )
     page2_visuals = [
-        get_card_visual("card_conformant_cases", 20, 20, 385, 130, 0, "stg_hospital_events", "Conformant Cases Count"),
-        get_card_visual("card_retriage_cases", 430, 20, 385, 130, 1, "stg_hospital_events", "Repeat Triage Cases Count"),
-        get_card_visual("card_conformance_rate", 840, 20, 415, 130, 2, "stg_hospital_events", "Conformance Rate %", format_string="0.0%"),
-        get_bar_chart_measure("bar_pathway_variants", 20, 170, 680, 450, 3, "pathway_variants_summary", "pathway", "Total Variant Cases"),
-        get_table_visual("tbl_case_audit", 720, 170, 535, 450, 4, "stg_hospital_events", ["case_id", "event_sequence", "raw_activity_name", "department", "transition_minutes_from_previous"], display_names={"case_id": "Case ID", "event_sequence": "Seq #", "raw_activity_name": "Activity", "department": "Department", "transition_minutes_from_previous": "Elapsed (Mins)"}),
-        get_textbox_visual(
-            "txt_guidance_page2", 20, 635, 1235, 65, 5,
-            "Workflow Audit Note: 440 patient encounters (88.0%) adhered to standard forward clinical pathways. 60 encounters (12.0%) experienced an operational re-triage loop prior to physician consultation. This distinction represents sequential workflow pattern classification, not a judgment on clinical necessity."
-        )
+        get_header_banner("hdr_page2", 20, 12, 1240, 48, 0, "Patient Journey & Pathway Conformance", "Clinical Pathway Process Mining • Conformance Benchmarks & Operational Re-Triage Tracking"),
+        get_card_visual("card_conformant_cases", 20, 68, 295, 110, 1, "stg_hospital_events", "Conformant Cases", display_units_none=True, title="Conformant Cases", subtitle="Standard Forward Pathways (88.0%)", callout_color="#0D9488"),
+        get_card_visual("card_retriage_cases", 335, 68, 295, 110, 2, "stg_hospital_events", "Repeat-Triage Cases", display_units_none=True, title="Repeat-Triage Cases", subtitle="Loop-Back Reassessments (12.0%)", callout_color="#D97706"),
+        get_card_visual("card_conformance_rate", 650, 68, 295, 110, 3, "stg_hospital_events", "Conformance Rate", format_string="0.0%", title="Conformance Rate", subtitle="Standard Care Adherence Benchmark", callout_color="#0D9488"),
+        get_card_visual("card_pathway_variants", 965, 68, 295, 110, 4, "pathway_variants_summary", "Total Pathway Variants", display_units_none=True, title="Total Pathway Variants", subtitle="Distinct Observed Routing Sequences", callout_color="#102A43"),
+        get_bar_chart_measure(
+            "bar_pathway_variants", 20, 188, 580, 390, 5,
+            "pathway_variants_summary", "variant_label", "Total Variant Cases",
+            title="Clinical Pathway Variants by Case Volume",
+            subtitle="Variant 1 (40%) leads; Variants 5 & 6 (12%) exhibit repeat-triage loops",
+            category_display_name="Clinical Pathway Variant",
+            val_display_name="Case Volume",
+            max_margin=50,
+            show_data_labels=True,
+            bar_color="#0D9488"
+        ),
+        get_table_visual(
+            "tbl_case_audit", 615, 188, 645, 390, 6,
+            "stg_hospital_events",
+            ["case_id", "event_sequence", "raw_activity_name", "department", "event_timestamp"],
+            display_names={"case_id": "Case ID", "event_sequence": "Event Sequence", "raw_activity_name": "Activity Name", "department": "Department", "event_timestamp": "Event Timestamp"},
+            title="Sequential Patient Encounter Audit Trail",
+            subtitle="Chronological event sequence with department and elapsed interval",
+            formats={"event_sequence": "#,##0"}
+        ),
+        get_textbox_visual("txt_guidance_page2", 20, 588, 1240, 122, 7, p2_guidance)
     ]
 
+    p3_safety = (
+        "Operational Bottlenecks & Hypothetical Process Improvement (Simulated Scenarios):\n"
+        "1. Lab-to-Consultation Handoff (Signal: 67.4 min mean elapsed time across 135 encounters): Opportunity for automated critical result alerts.\n"
+        "2. Diagnostic Radiology Coordination (Signal: 60.4 min mean elapsed time across 130 encounters): Opportunity to streamline PACS archiving notifications.\n"
+        "3. Repeat-Triage Reassessment (Signal: 60 encounters / 12.0% volume, 65.6 min delay): Standardize secondary triage criteria and intake acuity stratification.\n"
+        "\u2022 Clinical Safety Disclaimer: Observed transition durations reflect total clock elapsed time (specimen processing, imaging, medication, transport), not pure waiting time. Proposed To-Be improvements are hypothetical simulation scenarios requiring clinical validation."
+    )
     page3_visuals = [
-        get_bar_chart_measure("bar_bottlenecks", 20, 20, 480, 510, 0, "bottleneck_analysis_summary", "transition_label", "Avg Transition Duration"),
-        get_table_visual("tbl_improvement_comparison", 515, 20, 745, 510, 1, "pathway_improvement_comparison", ["metric_name", "baseline_value", "proposed_value", "percentage_difference", "unit", "interpretation"], display_names={"metric_name": "Metric", "baseline_value": "Baseline (As-Is)", "proposed_value": "Proposed (To-Be)", "percentage_difference": "% Difference (Relative)", "unit": "Unit", "interpretation": "Operational Interpretation"}),
-        get_textbox_visual(
-            "txt_safety_banner_page3", 20, 545, 1240, 155, 2,
-            "Analytical Caution: Observed transition duration reflects the total elapsed clock time between sequential milestone timestamps. It captures specimen processing in laboratories, diagnostic radiology image review, medication administration, and intra-departmental transport, not pure waiting time.\\n\\n" +
-            "Hypothetical Scenario Disclaimer: The To-Be pathway model projects queue streamlining and 15% coordination reductions, treating repeat-triage elimination as a simulated operational alternative. Simulated logs cannot establish whether clinical reassessment was medically necessary. Qualified hospital clinical staff must validate these operational assumptions before real-world adoption.\\n\\n" +
-            "Sign Convention Note: Relative percentage difference is calculated as (Proposed - Baseline) / Baseline. Negative values indicate operational reductions (e.g., lower encounter cycle times, eliminated repeat triage steps, or reduced variant complexity)."
-        )
+        get_header_banner("hdr_page3", 20, 12, 1240, 48, 0, "Operational Bottlenecks & Process Improvement", "Transition Latency Diagnostics • As-Is Baseline vs. Proposed Streamlining"),
+        get_bar_chart_measure(
+            "bar_bottlenecks", 20, 68, 520, 434, 1,
+            "bottleneck_analysis_summary", "transition_display", "Avg Transition Duration",
+            title="Highest Observed Transition Durations",
+            subtitle="Mean elapsed duration between sequential milestone activities (mins)",
+            category_display_name="Workflow Transition",
+            val_display_name="Mean Elapsed Minutes",
+            max_margin=50,
+            show_data_labels=True,
+            bar_color="#DC6B6B",
+            show_category_title=False
+        ),
+        get_table_visual(
+            "tbl_improvement_comparison", 555, 68, 705, 434, 2,
+            "pathway_improvement_comparison",
+            ["metric_name", "baseline_value", "proposed_value", "percentage_difference"],
+            display_names={
+                "metric_name": "Metric",
+                "baseline_value": "Baseline",
+                "proposed_value": "Proposed",
+                "percentage_difference": "Change %"
+            },
+            title="Operational Impact Comparison (Baseline vs. Proposed Streamlining)",
+            subtitle="Hypothetical process optimization modeling (Simulated To-Be Scenario)",
+            formats={
+                "baseline_value": "#,##0.0",
+                "proposed_value": "#,##0.0",
+                "percentage_difference": "+0.0%;-0.0%;0.0%"
+            }
+        ),
+        get_textbox_visual("txt_safety_banner_page3", 20, 512, 1240, 198, 3, p3_safety)
     ]
+
+    sec_config = json.dumps({
+        "objects": {
+            "background": [
+                {
+                    "properties": {
+                        "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#F4F7FA'"}}}}},
+                        "transparency": {"expr": {"Literal": {"Value": "0D"}}}
+                    }
+                }
+            ],
+            "outspace": [
+                {
+                    "properties": {
+                        "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#F4F7FA'"}}}}}
+                    }
+                }
+            ]
+        }
+    })
 
     sections = [
         {
             "id": 0,
-            "name": "section_hospital_overview",
+            "name": "ReportSection_HospitalOverview",
             "displayName": "Hospital Overview",
             "filters": "[]",
             "ordinal": 0,
             "visualContainers": page1_visuals,
-            "config": "{}",
-            "displayOption": 1,
-            "width": 1280,
-            "height": 720
+            "config": sec_config,
+            "width": 1280.0,
+            "height": 720.0
         },
         {
             "id": 1,
-            "name": "section_patient_flow",
+            "name": "ReportSection_PatientFlow",
             "displayName": "Patient Flow",
             "filters": "[]",
             "ordinal": 1,
             "visualContainers": page2_visuals,
-            "config": "{}",
-            "displayOption": 1,
-            "width": 1280,
-            "height": 720
+            "config": sec_config,
+            "width": 1280.0,
+            "height": 720.0
         },
         {
             "id": 2,
-            "name": "section_process_improvement",
+            "name": "ReportSection_ProcessImprovement",
             "displayName": "Transition Analysis & Process Improvement",
             "filters": "[]",
             "ordinal": 2,
             "visualContainers": page3_visuals,
-            "config": "{}",
-            "displayOption": 1,
-            "width": 1280,
-            "height": 720
+            "config": sec_config,
+            "width": 1280.0,
+            "height": 720.0
         }
     ]
 
-    report_json = {
+    report = {
         "id": 0,
         "resourcePackages": [
             {
                 "resourcePackage": {
-                    "name": "SharedResources",
-                    "type": 2,
+                    "disabled": False,
                     "items": [
                         {
-                            "type": 202,
+                            "name": "CY26SU05",
                             "path": "BaseThemes/CY26SU05.json",
-                            "name": "CY26SU05"
+                            "type": 202
                         }
                     ],
-                    "disabled": False
+                    "name": "SharedResources",
+                    "type": 2
                 }
             }
         ],
@@ -1409,11 +1894,7 @@ ref cultureInfo en-US
                 "section": [
                     {
                         "properties": {
-                            "verticalAlignment": {
-                                "expr": {
-                                    "Literal": {"Value": "'Top'"}
-                                }
-                            }
+                            "verticalAlignment": {"expr": {"Literal": {"Value": "'Top'"}}}
                         }
                     }
                 ]
@@ -1422,15 +1903,16 @@ ref cultureInfo en-US
         "layoutOptimization": 0
     }
 
-    # Save to BOTH definition/report.json and report.json at root
-    with open(os.path.join(rep_def, "report.json"), "w", encoding="utf-8") as f:
-        json.dump(report_json, f, indent=2)
+    rep_json_str = json.dumps(report, indent=2)
+    rep_path = os.path.join(rep_dir, "report.json")
+    with open(rep_path, "w", encoding="utf-8") as f:
+        f.write(rep_json_str)
 
-    with open(os.path.join(rep_dir, "report.json"), "w", encoding="utf-8") as f:
-        json.dump(report_json, f, indent=2)
+    rep_def_path = os.path.join(rep_def, "report.json")
+    with open(rep_def_path, "w", encoding="utf-8") as f:
+        f.write(rep_json_str)
 
-    print("Successfully built CareFlow_Dashboard.pbip with complete queries and transforms at:")
-    print(project_root)
+    print("[SUCCESS] PBIP project generated and synchronized successfully.")
 
 if __name__ == "__main__":
     build()

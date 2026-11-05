@@ -8,7 +8,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["stg_hospital_events","stg_hospital_events (2)"]
+annotation PBI_QueryOrder = ["stg_hospital_events","stg_hospital_events (2)","pathway_variants_summary","bottleneck_analysis_summary","pathway_improvement_comparison"]
 
 ref table stg_hospital_events
 ref table DateTableTemplate_07490a40-7037-4685-a350-043d68764b27
@@ -17,5 +17,8 @@ ref table LocalDateTable_b77ddfa2-054a-4d91-af85-e6383c65e7b3
 ref table 'stg_hospital_events (2)'
 ref table LocalDateTable_49c443fd-4f20-4c85-89a4-93bf72969d08
 ref table LocalDateTable_e9b76cac-079d-4de9-acda-a06cd19308e8
+ref table pathway_variants_summary
+ref table bottleneck_analysis_summary
+ref table pathway_improvement_comparison
 
 ref cultureInfo en-US
