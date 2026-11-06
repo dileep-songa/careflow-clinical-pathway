@@ -92,3 +92,12 @@ scratch_match_reference.py
 # Local review backup and unused Power BI theme
 powerbi/*.before_cleanup.bak
 powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/StaticResources/SharedResources/BuiltInThemes/
+
+# Temporary dashboard render crops and local baselines (preserve final after_page renders in outputs/dashboard_renders/)
+outputs/dashboard_renders/before_page*.png
+outputs/dashboard_renders/*_crop.png
+outputs/dashboard_renders/ref_card*.png
+
+# Local dashboard export and temporary renders
+outputs/CareFlow_Final_Dashboard.pdf
+outputs/dashboard_renders_new/
