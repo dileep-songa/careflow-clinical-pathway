@@ -5,6 +5,9 @@
 **Time Spent:** 3 hours
 **Status:** ✅ Complete
 
+> [!NOTE]
+> **Preliminary Scoping Note:** Day 1 records initial exploratory scoping concepts and preliminary reading estimates (such as an initial theoretical brainstorm of 13 potential event types, 11 departments, and a hypothetical 40% re-triage rate from early project readings). On Day 2, following clinical pathway formalization, the implementation scope was deliberately standardized to 7 core clinical activities, 3 operational departments (`Emergency`, `Radiology`, `Laboratory`), and an empirically modeled 12% re-triage rate across 500 simulated patient cases.
+
 ### Objectives for Day 1
 - [x] Understand the project requirements and business context
 - [x] Learn about process mining concepts

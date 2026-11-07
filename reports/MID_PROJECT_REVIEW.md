@@ -7,6 +7,9 @@
 - **Scope:** Weeks 1-2 Results & Weeks 3-4 Roadmap
 - **Status:** Complete (Weeks 1-2 Verified in BigQuery & PM4Py) / Weeks 3-4 Pending
 
+> [!NOTE]
+> **Historical Milestone Notice:** This document represents the historical Mid-Project milestone report authored at the conclusion of Week 2. It documents the verified state of Weeks 1–2 (synthetic data generation, BigQuery staging, dbt transformations, and initial PM4Py process discovery). The Week 3 deliverables (bottleneck detection, transition duration ranking, conformance checking, and As-Is vs. To-Be simulation) and Week 4 deliverables (3-page Power BI PBIP dashboard) described herein as forward-looking roadmap items were subsequently implemented, verified, and delivered in full.
+
 ---
 
 ## 1. Executive Summary

@@ -8,6 +8,9 @@
 - **Date:** October 29, 2026
 - **Status:** Complete & Verified
 
+> [!NOTE]
+> **Historical Milestone Notice:** This document captures the Week 3 progress milestone report authored at the completion of process mining discovery, bottleneck detection, conformance checking, and scenario simulation. The Week 4 deliverables described in Section 10 (Star-Schema dimensional modeling, interactive 3-page Power BI dashboard with DAX measures, and final presentation synthesis) were subsequently delivered in full as the standalone Microsoft Power BI Project (`CareFlow_Dashboard.pbip`).
+
 ---
 
 ## 1. Project Objective

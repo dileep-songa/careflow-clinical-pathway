@@ -1,0 +1,80 @@
+name: CareFlow CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-validate:
+    name: Build, Test & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for Git diff whitespace errors
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Checking PR whitespace against origin/${{ github.base_ref }}..."
+            git diff --check origin/${{ github.base_ref }}...HEAD
+          else
+            BEFORE="${{ github.event.before }}"
+            if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+              echo "Checking push whitespace between $BEFORE and ${{ github.sha }}..."
+              git diff --check "$BEFORE" "${{ github.sha }}"
+            elif git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+              echo "Checking push whitespace against HEAD~1..."
+              git diff --check HEAD~1 HEAD
+            else
+              echo "Single commit repository; checking working tree whitespace..."
+              git diff --check
+            fi
+          fi
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate deterministic simulated data (500 cases, seed 42)
+        run: python -m src.data_generator --cases 500 --seed 42
+
+      - name: Run event log normalization
+        run: python -m src.normalize_event_log
+
+      - name: Run process discovery (PM4Py)
+        run: python -m src.process_miner
+
+      - name: Run bottleneck analysis
+        run: python -m src.bottleneck_analyzer
+
+      - name: Run bottleneck visualization
+        run: python -m src.bottleneck_visualizer
+
+      - name: Run pathway conformance checking
+        run: python -m src.conformance_checker
+
+      - name: Run scenario simulation (As-Is vs To-Be)
+        run: python -m src.pathway_improvement
+
+      - name: Run automated test suite
+        run: python -m pytest -q --tb=short
+
+      - name: Validate Power BI project structure
+        run: python powerbi/test_validate_pbip.py
