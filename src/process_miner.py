@@ -27,6 +27,7 @@ from pathlib import Path
 import shutil
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 import pm4py
 
@@ -560,8 +561,8 @@ def compute_event_log_summary(
         total_events=len(df),
         total_cases=int(df["Case_ID"].nunique()),
         distinct_activities=int(df["Activity_Name"].nunique()),
-        start_activities=start_acts,
-        end_activities=end_acts,
+        start_activities={str(k): int(v) for k, v in start_acts.items()},
+        end_activities={str(k): int(v) for k, v in end_acts.items()},
         activity_frequencies=act_frequencies,
         min_duration_minutes=duration_stats["min_minutes"],
         max_duration_minutes=duration_stats["max_minutes"],
@@ -571,6 +572,15 @@ def compute_event_log_summary(
         total_variants=len(variants),
         top_variants=variants[:5],
     )
+
+
+def _json_serial_default(obj: Any) -> Any:
+    """JSON serialization fallback for NumPy scalars and arrays."""
+    if isinstance(obj, np.generic):
+        return obj.item()
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
 
 def run_process_mining_pipeline(
@@ -651,7 +661,7 @@ def run_process_mining_pipeline(
         ]
         summary_file = out_path / "process_mining_summary.json"
         with open(summary_file, "w", encoding="utf-8") as f:
-            json.dump(summary_dict, f, indent=2)
+            json.dump(summary_dict, f, indent=2, default=_json_serial_default)
         exported_files["summary_json"] = str(summary_file)
 
         # D. Optional DFG diagram
