@@ -20,10 +20,12 @@ Validates:
 
 import csv
 from datetime import datetime
+import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 from typing import Any, Dict, List, Optional
 import unittest
 import yaml
@@ -360,25 +362,59 @@ class TestDbtConfiguration(unittest.TestCase):
         if not dbt_bin:
             self.skipTest("dbt executable not available in current environment")
 
-        cmd = [
-            dbt_bin,
-            "parse",
-            "--project-dir",
-            str(DBT_DIR),
-            "--profiles-dir",
-            str(DBT_DIR),
-        ]
-        proc = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            cwd=str(PROJECT_ROOT),
-        )
-        self.assertEqual(
-            proc.returncode,
-            0,
-            f"dbt parse failed with returncode {proc.returncode}.\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}",
-        )
+        orig_profiles_dir = os.environ.get("DBT_PROFILES_DIR")
+        try:
+            with tempfile.TemporaryDirectory() as tmp_profiles_dir:
+                tmp_path = Path(tmp_profiles_dir)
+                dummy_profile = {
+                    "careflow_bigquery": {
+                        "target": "dev",
+                        "outputs": {
+                            "dev": {
+                                "type": "bigquery",
+                                "method": "oauth",
+                                "project": "dummy-careflow-project",
+                                "dataset": "careflow_staging",
+                                "threads": 1,
+                                "timeout_seconds": 300,
+                                "location": "US",
+                                "priority": "interactive",
+                            }
+                        },
+                    }
+                }
+                profiles_file = tmp_path / "profiles.yml"
+                with open(profiles_file, "w", encoding="utf-8") as f:
+                    yaml.dump(dummy_profile, f)
+
+                os.environ["DBT_PROFILES_DIR"] = str(tmp_path)
+                env = os.environ.copy()
+
+                cmd = [
+                    dbt_bin,
+                    "parse",
+                    "--project-dir",
+                    str(DBT_DIR),
+                    "--profiles-dir",
+                    str(tmp_path),
+                ]
+                proc = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(PROJECT_ROOT),
+                    env=env,
+                )
+                self.assertEqual(
+                    proc.returncode,
+                    0,
+                    f"dbt parse failed with returncode {proc.returncode}.\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}",
+                )
+        finally:
+            if orig_profiles_dir is not None:
+                os.environ["DBT_PROFILES_DIR"] = orig_profiles_dir
+            else:
+                os.environ.pop("DBT_PROFILES_DIR", None)
 
 
 if __name__ == "__main__":
