@@ -138,9 +138,26 @@ def test_pbip_validation():
     if os.path.exists(bim_path):
         with open(bim_path, "r", encoding="utf-8") as f:
             bim = json.load(f)
-        bim_tables = {t["name"]: t for t in bim["model"]["tables"]}
+        bim_tables_list = bim["model"]["tables"]
+        assert len(bim_tables_list) == 10, f"Expected 10 total tables in model.bim, found {len(bim_tables_list)}"
+        bim_tables = {t["name"]: t for t in bim_tables_list}
         for tbl_ref in expected_table_refs:
             assert tbl_ref in bim_tables, f"Table {tbl_ref} missing from model.bim"
+
+        # Verify date tables in model.bim (1 template + 4 local date tables)
+        date_template_bim = [t for t in bim_tables_list if t["name"].startswith("DateTableTemplate")]
+        assert len(date_template_bim) > 0, "Missing DateTableTemplate in model.bim"
+        local_date_tables_bim = [t for t in bim_tables_list if t["name"].startswith("LocalDateTable")]
+        assert len(local_date_tables_bim) >= 4, f"Expected at least 4 LocalDateTable in model.bim, found {len(local_date_tables_bim)}"
+
+        # Verify 19 DAX measures and their exact distribution across tables
+        total_bim_measures = sum(len(t.get("measures", [])) for t in bim_tables_list)
+        assert total_bim_measures == 19, f"Expected 19 DAX measures in model.bim, found {total_bim_measures}"
+        assert len(bim_tables["stg_hospital_events"].get("measures", [])) == 14, "Expected 14 measures in stg_hospital_events"
+        assert len(bim_tables["pathway_variants_summary"].get("measures", [])) == 3, "Expected 3 measures in pathway_variants_summary"
+        assert len(bim_tables["bottleneck_analysis_summary"].get("measures", [])) == 1, "Expected 1 measure in bottleneck_analysis_summary"
+        assert len(bim_tables["pathway_improvement_comparison"].get("measures", [])) == 1, "Expected 1 measure in pathway_improvement_comparison"
+
         stg_meas = {m["name"] for m in bim_tables["stg_hospital_events"].get("measures", [])}
         for meas in expected_measures:
             assert meas in stg_meas, f"Measure {meas} missing from model.bim stg_hospital_events"
@@ -149,7 +166,7 @@ def test_pbip_validation():
         stg2_expr = "".join(stg2_bim["partitions"][0]["source"]["expression"])
         assert "Source = stg_hospital_events" not in stg2_expr, "Chained/circular query reference must not be in model.bim stg_hospital_events (2)"
         assert "Csv.Document(File.Contents(" in stg2_expr, "Direct CSV source missing from model.bim stg_hospital_events (2)"
-        print(f"[VERIFIED BIM] model.bim verified with all {len(expected_table_refs)} tables and measures (no circular reference).")
+        print(f"[VERIFIED BIM] model.bim verified with all {len(bim_tables_list)} tables (5 data + {len(date_template_bim) + len(local_date_tables_bim)} date) and {total_bim_measures} DAX measures (no circular reference).")
 
     # 3. Inspect report.json structure
     rep_path = os.path.join(proj, "CareFlow_Dashboard.Report", "report.json")

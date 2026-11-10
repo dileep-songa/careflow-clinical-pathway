@@ -106,18 +106,39 @@
 - [x] Build `src/pathway_improvement.py` modeling queue coordination and administrative streamlining
 - [x] Recalculate duration percentiles and variant distributions from simulated traces
 - [x] Export comparison CSV, JSON summary, Markdown report, and PNG chart (`outputs/pathway_improvement_*`)
-- [x] Add 28 unit tests in `tests/test_pathway_improvement.py` (total project suite: 171 passed, 8 subtests passed)
-- [x] Complete comprehensive Week 3 Progress Report (`reports/WEEK_3_PROGRESS_REPORT.md`)
+- [x] Add 28 unit tests in `tests/test_pathway_improvement.py` (interim Week 3 baseline: 171 passed, 8 subtests passed; finalized at 175 passed, 8 subtests passed in Week 4)
+- [x] Complete Week 3 Progress Report (`reports/WEEK_3_PROGRESS_REPORT.md`)
 
 ---
 
 ## Week 4: Dashboard & Final Submission
 
 ### Objectives
-- Build final dashboard
-- Prepare presentation
-- Write final report
-- Final demo
+- [x] Build final dashboard (3-page standalone PBIP with TMSL semantic model: 10 total tables, 19 DAX measures, 16 data visuals, 6 textboxes, custom CY26SU05 theme)
+- [x] Prepare presentation (`reports/FINAL_PRESENTATION.md` covering 12 slides with speaker notes and visual references)
+- [x] Write final report (`reports/FINAL_INTERNSHIP_REPORT.md` covering all project phases)
+- [x] Final demo and presentation walkthrough preparation
+- [ ] Official internship sign-off and mentor final approval (pending external review)
+
+### Day 16–17: Power BI Project (PBIP) Architecture & Visual Overhaul
+- [x] Resolved VertiPaq evaluation cycle by decoupling `stg_hospital_events (2)` into direct independent CSV import
+- [x] Implemented relative percentage change formula `(proposed - baseline) / baseline` with `+0.0%;-0.0%;0.0%` formatting
+- [x] Configured Segoe UI healthcare design system (`CY26SU05.json`) with deep navy (`#102A43`) and clinical teal (`#14B8A6`)
+- [x] Built 3 interactive analytical pages (Hospital Overview, Patient Flow, Transition Analysis & Process Improvement)
+- [x] Created standalone automated validator (`powerbi/test_validate_pbip.py`) verifying all 22 visual containers and TMSL model integrity
+
+### Day 18–19: CI/CD Pipeline & Dependency Hardening
+- [x] Established GitHub Actions CI workflow (`.github/workflows/ci.yml`) on Ubuntu Python 3.12
+- [x] Resolved dbt-core 1.12.6 package constraints (`click==8.3.1`, `google-cloud-bigquery==3.46.1`, `python-dotenv==1.2.4`, `python-dateutil==2.9.0.post0`)
+- [x] Resolved NumPy 1.x integer JSON serialization in `src/process_miner.py` via `_json_serial_default` and dataclass integer casting
+- [x] Resolved dbt offline parse isolation in `tests/test_dbt_setup.py` via ephemeral profile generation in temporary directories
+- [x] Verified test pass rate (175 passed with 14 warnings in GitHub Actions Run #42456452180 at commit a67f88d; 175 passed, 8 subtests passed locally)
+
+### Day 20: Final Technical Reporting & Presentation Deck
+- [x] Authored technical internship report (`reports/FINAL_INTERNSHIP_REPORT.md`)
+- [x] Prepared 12-slide presentation outline (`reports/FINAL_PRESENTATION.md`) with speaker delivery notes
+- [x] Documented technical evaluation of doctor-only and demographic filtering boundaries
+- [x] Conducted full repository factual-accuracy audit and whitespace verification
 
 ---
 

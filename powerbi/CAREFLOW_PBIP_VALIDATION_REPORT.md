@@ -40,7 +40,7 @@ powerbi/CareFlow_Dashboard_Project/
 │   ├── .platform                                    # Fabric platform metadata
 │   ├── definition.pbism                             # Semantic model manifest (v4.2)
 │   ├── diagramLayout.json                           # Model diagram layout
-│   └── model.bim                                    # 67KB TMSL model definition (5 tables, 11 DAX measures)
+│   └── model.bim                                    # 67KB TMSL model definition (10 total tables: 5 business/data tables + 5 auto date tables; 19 DAX measures: stg_hospital_events: 14, pathway_variants_summary: 3, bottleneck_analysis_summary: 1, pathway_improvement_comparison: 1)
 └── CareFlow_Dashboard.Report/                       # Visual layout definitions
     ├── .platform                                    # Fabric platform metadata
     ├── definition.pbir                              # Report manifest pointing to ../CareFlow_Dashboard.SemanticModel
@@ -65,7 +65,7 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
 - **Data Visual 5 (Card):** `card_retriage_rate` $\rightarrow$ Measure: `stg_hospital_events.Re-Triage Rate %` (**12.0%**, formatted `0.0%`).
 - **Data Visual 6 (Donut Chart):** `donut_dept_breakdown` $\rightarrow$ Category: `department`, Values: `Total Events` (`ER`: 2,825, `LAB`: 185, `RADIOLOGY`: 130).
 - **Data Visual 7 (Clustered Bar Chart):** `bar_activity_breakdown` $\rightarrow$ Category: `raw_activity_name` (labeled "Clinical Activity"), Values: `Total Events` (labeled "Event Count"). Volume across all 7 activities: Consultation, Triage, Registration, Treatment, Discharge, Laboratory, X-Ray.
-- **Data Visual 8 (Clustered Column Chart):** `col_daily_trend` $\rightarrow$ Category: `event_date`, Values: `Total Events` (Daily patient intake census).
+- **Data Visual 8 (Clustered Column Chart):** `col_daily_trend` $\rightarrow$ Category: `event_date`, Values: `Total Events` (Total daily recorded clinical events; reflects milestone activity load rather than unique patient arrival census).
 - **Textbox 1:** `hdr_page1` $\rightarrow$ Header banner: "CareFlow — Hospital Overview & Executive Summary".
 - **Textbox 2:** `txt_disclaimer_page1` $\rightarrow$ Clinical provenance disclaimer (100% simulated data).
 
@@ -75,7 +75,7 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
 - **Data Visual 3 (Card):** `card_conformance_rate` $\rightarrow$ Measure: `stg_hospital_events.Conformance Rate %` (**88.0%**).
 - **Data Visual 4 (Card):** `card_pathway_variants` $\rightarrow$ Measure: `pathway_variants_summary.Total Pathway Variants` (**6** variants).
 - **Data Visual 5 (Clustered Bar Chart):** `bar_pathway_variants` $\rightarrow$ Category: `pathway`, Values: `Total Variant Cases` (Ranks Variants 1–6).
-- **Data Visual 6 (Table):** `tbl_case_audit` $\rightarrow$ Columns: `case_id` (display: **Case ID**), `event_sequence` (display: **Seq #**), `raw_activity_name` (display: **Activity**), `department` (display: **Department**), `transition_minutes_from_previous` (display: **Elapsed (Mins)**).
+- **Data Visual 6 (Table):** `tbl_case_audit` $\rightarrow$ Columns: `case_id` (display: **Case ID**), `event_sequence` (display: **Event Sequence**), `raw_activity_name` (display: **Activity Name**), `department` (display: **Department**), `event_timestamp` (display: **Event Timestamp**). Subtitle: "Chronological event sequence by department and timestamp".
 - **Textbox 1:** `hdr_page2` $\rightarrow$ Header banner: "CareFlow — Patient Journey & Pathway Conformance".
 - **Textbox 2:** `txt_guidance_page2` $\rightarrow$ Sequential process-rule audit guidance note (repeat-triage identifies process repetition, not clinical appropriateness).
 
@@ -90,7 +90,7 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
   6. `interpretation` (display: **Operational Interpretation**)
 - **Textbox 1:** `hdr_page3` $\rightarrow$ Header banner: "CareFlow — Bottleneck Diagnostics & Scenario Simulation".
 - **Textbox 2:** `txt_safety_banner_page3` $\rightarrow$ Clinical disclaimers and explicit sign convention explanation:
-  1. *Elapsed Transition Duration != Waiting Time:* Captures specimen processing, imaging turnaround, and active clinical review.
+  1. *Elapsed Transition Duration != Waiting Time:* Captures elapsed clock intervals between milestone completion timestamps rather than pure patient waiting room idle time. Unmeasured internal sub-processes are not tracked.
   2. *Hypothetical Scenario Disclaimer:* Re-triage removal is a simulated operational model; qualified clinical staff must validate clinical necessity before real-world adoption.
   3. *Sign Convention Note:* Relative percentage change is calculated as `(Proposed - Baseline) / Baseline`. Negative values represent operational reductions (e.g., lower encounter cycle times, eliminated repeat triage steps, or reduced variant complexity).
 
@@ -115,9 +115,10 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
 
 | Verification Check | Target / Rule | Result |
 | :--- | :--- | :--- |
-| **`test_validate_pbip.py`** | PBIP schema, TMSL `model.bim` structure, table references, query definitions, `Table.ReplaceValue`, relative change formula | **PASS (4/4 test blocks passed)** |
+| **`test_validate_pbip.py` (Local Updated)** | PBIP schema, TMSL `model.bim` 10-table structure (5 data + 5 date), 19 DAX measures, query definitions, `Table.ReplaceValue`, relative change formula | **PASS (All 10 tables, 19 DAX measures, and 4/4 test blocks verified locally)** |
 | **`test_relative_percentage_difference_calculation`** | Mathematical ratios, edge cases (-10.3%, -33.3%, 0.0%, -100.0%, +25.0%, safe 0/0 and 0/50 blank handling), layout widths, display names | **PASS (100%)** |
-| **Full Pytest Suite** | 175 tests and 8 subtests across data gen, process miner, bottleneck analyzer, BQ loader, conformance checker, PBIP validator | **PASS (175 passed, 8 subtests passed in ~25s)** |
+| **Full Pytest Suite (Local Windows)** | 175 tests and 8 subtests across data gen, process miner, bottleneck analyzer, BQ loader, conformance checker, PBIP validator | **PASS (175 passed, 8 subtests passed in ~24s)** |
+| **GitHub Actions CI (Run #42456452180)** | Push to `main` at commit `a67f88d`; executed full pytest suite & PBIP validator on Ubuntu Python 3.12 | **PASS (175 passed with 14 warnings, successful run; executed earlier five-business/data-table validator assertion)** |
 | **dbt Model Parse** | `dbt parse` with BigQuery adapter | **PASS (clean parse)** |
 | **Simulated Dataset Integrity** | 3,140 events across 500 cases in `data/cleaned/stg_hospital_events.csv` | **PASS (verified)** |
 | **`Table.ReplaceValue`** | Converts `""` to `null` before numeric conversion in `stg_hospital_events` | **PASS (verified in model.bim & TMDL)** |
@@ -125,10 +126,15 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
 | **Percentage Scaling Formula** | `([proposed_value] - [baseline_value]) / [baseline_value]` in Power Query & DAX measure | **PASS (single 100x scaling)** |
 | **Table Visual Layout & Labels** | Widened to 745px; professional display names configured for all columns | **PASS (verified in report.json)** |
 | **`enableAutoAuth` Absent** | PBIP root JSON schema requirement for v2.154.956.0 | **PASS (empty settings object)** |
-| **Active Semantic Model** | Validated `CareFlow_Dashboard.SemanticModel/model.bim` (TMSL JSON format, 5 tables, 11 measures, zero circular references) | **PASS (verified TMSL)** |
-| **Reference TMDL Model** | Validated `powerbi/careflow_semantic_model/` (folder-based TMDL definitions preserved as modular template) | **PASS (verified TMDL)** |
+| **Active Semantic Model (Local)** | Validated `CareFlow_Dashboard.SemanticModel/model.bim` (TMSL JSON format, 10 total tables: 5 business/data tables + 5 auto date tables; 19 DAX measures: 14 in `stg_hospital_events`, 3 in `pathway_variants_summary`, 1 in `bottleneck_analysis_summary`, 1 in `pathway_improvement_comparison`; zero circular references) | **PASS (verified TMSL locally)** |
+| **Reference TMDL Model** | Validated `powerbi/careflow_semantic_model/` (folder-based TMDL definitions preserved as modular template; 14 measures in `stg_hospital_events.tmdl`) | **PASS (verified TMDL)** |
 | **Active Report Definition** | `CareFlow_Dashboard.Report/report.json` with `definition.pbir` model link (22 containers: 16 data visuals + 6 textboxes) | **PASS (verified)** |
 | **Total Events Card Units** | Display units explicitly set to None (`1D`) | **PASS (renders `3,140`)** |
+
+> [!NOTE]
+> **Audit Distinction — Local vs. CI Verification States:**
+> - **Remote CI State:** GitHub Actions Run #42456452180 verified commit `a67f88d` on Ubuntu Python 3.12 (successful run), where `python -m pytest -q --tb=short` passed 175 tests with 14 warnings and `python powerbi/test_validate_pbip.py` checked the earlier five-business/data-table validator assertion (`[VERIFIED BIM] model.bim verified with all 5 tables and measures`).
+> - **Local Working Tree State:** The local validator script (`powerbi/test_validate_pbip.py`) was subsequently enhanced to explicitly check all **10 tables** (5 business/data tables + 1 template date table + 4 local date tables) and all **19 DAX measures** (14 in `stg_hospital_events`, 3 in `pathway_variants_summary`, 1 in `bottleneck_analysis_summary`, 1 in `pathway_improvement_comparison`). This expanded 10-table / 19-measure validator check is verified in the local environment and has not been run on GitHub Actions CI.
 
 ---
 

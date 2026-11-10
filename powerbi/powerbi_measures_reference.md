@@ -7,6 +7,10 @@
 
 ---
 
+> [!NOTE]
+> **Implementation Evolution Notice:**
+> This reference document catalogs DAX expressions designed during preliminary 4-page dashboard planning. In the finalized, validated Power BI Project (`CareFlow_Dashboard.pbip`), the active semantic model (`model.bim`) contains **10 total tables** (5 business/data tables + 5 automatically generated date tables) and **19 DAX measures**: 14 in `stg_hospital_events`, 3 in `pathway_variants_summary`, 1 in `bottleneck_analysis_summary`, and 1 in `pathway_improvement_comparison`. See [`CAREFLOW_PBIP_VALIDATION_REPORT.md`](CAREFLOW_PBIP_VALIDATION_REPORT.md) and [`CAREFLOW_WEEK4_FINAL_REVIEW.md`](CAREFLOW_WEEK4_FINAL_REVIEW.md) for the active PBIP measure architecture.
+
 ## 1. Overview & Measure Organization
 
 This document provides verified, copy-paste ready DAX (Data Analysis Expressions) formulas designed for the CareFlow Clinical Pathway Power BI Dashboard.

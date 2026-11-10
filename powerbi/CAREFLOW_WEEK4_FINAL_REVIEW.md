@@ -1,4 +1,4 @@
-# CareFlow Clinical Pathway Analytics — Final Premium Power BI Dashboard Report
+# CareFlow Clinical Pathway Analytics — Final Power BI Dashboard Report
 
 **Project:** CareFlow Clinical Pathway Analytics
 **Power BI Project:** `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.pbip`
@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary & Design System
 
-The **CareFlow Clinical Pathway Analytics** dashboard has been transformed into a mentor-ready healthcare operations intelligence tool. The visual and analytical overhaul adheres strictly to hospital operations intelligence standards, providing executive KPI monitoring, algorithmic process-mining visibility, and clinical safety governance.
+This report summarizes the design, analytical architecture, and validation of the Power BI reporting layer for the CareFlow Clinical Pathway Analytics project. The dashboard provides operational visibility into patient encounter flow, bottleneck transitions, and pathway conformance across 500 simulated emergency department encounters.
 
 ### 1.1 Power Query Circular Dependency Resolution & Data Flow Architecture
 
@@ -29,7 +29,7 @@ During model evaluation in Power BI Desktop, a critical refresh deadlock error o
   3. Strict one-directional dependency graph: Raw CSV files $\rightarrow$ independent staging queries $\rightarrow$ VertiPaq semantic model tables.
   4. With zero inter-query references across all 5 queries, cyclic dependencies are physically impossible. All 5 queries evaluate and refresh in parallel without deadlocks.
 
-### 1.2 Premium Healthcare Design System
+### 1.2 Healthcare Visual Design System
 
 The visual design system establishes a clean, modern aesthetic:
 
@@ -64,7 +64,7 @@ An executive healthcare operations overview balancing cohort scale, turnaround t
 * **Core Analytical Visuals (`y = 170`, `height = 445 px`):**
   * **Department Workload (`donut_dept_breakdown`, w: 380 px):** Donut chart detailing exact department volume with data labels explicitly configured to `labelStyle: 'Both'`, `displayUnits: 1D` (None), and `labelPrecision: 0D`. Displays exact counts: Emergency Department (2,825; 89.97%), Laboratory (185; 5.89%), and Radiology (130; 4.14%) without rounding to 3K or 0K.
   * **Clinical Activity Volume (`bar_activity_breakdown`, w: 430 px):** Ranked horizontal bar chart sorted descending by event count. Direct data labels verify: Consultation (765), Triage (560), Registration (500), Treatment (500), Discharge (500), Laboratory (185), and X-Ray (130). Category axis title is explicitly configured as *Clinical Activity* (`showAxisTitle: true`) and value axis title is explicitly configured as *Event Count* (`showAxisTitle: true`), with Registration, Treatment, and Discharge exhibiting equal bar lengths.
-  * **Daily Event Trend (`col_daily_trend`, w: 400 px):** Clustered column chart tracking daily patient census intake sorted chronologically by date.
+  * **Daily Event Volume Trend (`col_daily_trend`, w: 400 px):** Clustered column chart tracking total daily recorded clinical events sorted chronologically by date (peaking at 354 events on October 6, 2024; reflects milestone activity load rather than unique patient arrival census).
 * **Executive Operations Insights Banner (`y = 635`, `w = 1240 px`):**
   Dynamically grounded operational findings detailing highest-volume actions, departmental workload share, re-triage loop prevalence (12.0%), and data provenance notes.
 
@@ -73,13 +73,14 @@ An executive healthcare operations overview balancing cohort scale, turnaround t
 ### 2.2 Page 2: Patient Journey & Pathway Analysis
 Demonstrates process-mining trace classification, pathway conformance, and granular encounter auditing:
 
-* **Conformance KPI Row (3 Symmetrical Cards, Width: 396 px, Gap: 26 px):**
+* **Conformance KPI Row (4 Symmetrical Cards, Width: 295 px, Gap: 20 px):**
   1. **Conformant Cases Count:** 440 encounters (`#,##0`) | Subtitle: *Forward Pathway Volume*
   2. **Repeat Triage Cases Count:** 60 encounters (`#,##0`) | Subtitle: *Operational Re-Triage Volume*
   3. **Conformance Rate %:** 88.0% (`0.0%`) | Subtitle: *Workflow Compliance Rate*
+  4. **Total Pathway Variants:** 6 variants (`#,##0`) | Subtitle: *Distinct Process Routes*
 * **Core Analytical Visuals (`y = 170`, `height = 445 px`):**
   * **Clinical Pathway Variants (`bar_pathway_variants`, w: 700 px):** Ranked horizontal bar chart mapping the 6 discovered process variants. Demonstrates that Variant 1 (Registration → Triage → Consultation → Treatment → Discharge) represents 40.0% of cohort volume (200 cases), with `maxMargin = 55%` preventing label clipping on 94-character pathway strings.
-  * **Patient Encounter Audit Trail (`tbl_case_audit`, w: 525 px):** Granular sequential audit matrix containing *Case ID*, *Seq #* (`#,##0`), *Activity*, *Department*, and *Elapsed (Mins)* (`#,##0.0`).
+  * **Patient Encounter Audit Trail (`tbl_case_audit`, w: 525 px):** Granular sequential audit matrix containing *Case ID*, *Event Sequence*, *Activity Name*, *Department*, and *Event Timestamp* (subtitle: *"Chronological event sequence by department and timestamp"*).
 * **Patient Journey & Clinical Guidance Banner (`y = 635`, `w = 1240 px`):**
   Explains the standard linear flow (88.0%) versus secondary triage loops (12.0%), emphasizing that repeat triage represents an operational pattern that does not automatically imply clinical mismanagement.
 
@@ -104,7 +105,7 @@ The core evaluative page linking process bottlenecks to simulated operational in
   1. *Laboratory-to-Consultation Handoff (67.4 mins):* Automated critical result notifications and digital tracking.
   2. *Diagnostic Radiology Coordination (60.4 mins):* Image archiving alerts and physician review notifications.
   3. *Repeat-Triage Reassessment Context (60 cases):* Standardized secondary triage criteria and intake acuity stratification.
-  * Comprehensive simulation disclaimer reiterating that elapsed transition duration captures active testing, transit, and review rather than pure queue delay.
+  * Simulation disclaimer noting that elapsed transition duration measures clock intervals between milestone timestamps rather than pure patient waiting room queue delay.
 
 ---
 
@@ -142,7 +143,7 @@ All measures are calculated dynamically without hardcoding:
 8. `powerbi/careflow_semantic_model/tables/stg_hospital_events.tmdl`: Synchronized source semantic model template.
 9. `powerbi/careflow_semantic_model/model.bim`: Synchronized source BIM template.
 10. `powerbi/test_validate_pbip.py`: Added regression coverage for duration iterators, activity volume chart title/labels/margins, bottleneck chart title, dataset baselines, and SHA-256 synchronization.
-11. `powerbi/CAREFLOW_WEEK4_FINAL_REVIEW.md`: Comprehensive internship review and walkthrough document.
+11. `powerbi/CAREFLOW_WEEK4_FINAL_REVIEW.md`: Power BI implementation and review documentation.
 
 ### 4.2 Backup and Recovery
 
@@ -161,9 +162,9 @@ All measures are calculated dynamically without hardcoding:
 * **Checks Passed:**
   * Clean JSON parsing across all PBIP manifests and reports.
   * Absence of forbidden `enableAutoAuth` setting.
-  * Folder-based TMDL and legacy `model.bim` validated with all 5 tables and 8 DAX measures.
+  * Semantic model validated across all 10 tables (5 business/data tables + 5 automatically generated date tables; 19 DAX measures in active `model.bim`: `stg_hospital_events`: 14, `pathway_variants_summary`: 3, `bottleneck_analysis_summary`: 1, `pathway_improvement_comparison`: 1; 14 measures in reference TMDL template `stg_hospital_events.tmdl`).
   * Canonical DAX iterators (`AVERAGEX`, `MEDIANX`) on `VALUES('stg_hospital_events'[case_id])` verified.
-  * All 15 data visuals validated with complete queries and dataTransforms.
+  * All 16 data visuals validated with complete queries and dataTransforms.
   * `card_total_events` confirmed with explicit `displayUnits = 1D`.
   * `bar_activity_breakdown` confirmed with title `"Clinical Activity Volume"`, category `"Clinical Activity"`, measure `"Event Count"`, and margin `35D`.
   * `bar_bottlenecks` confirmed with title `"Highest Observed Transition Durations"`.

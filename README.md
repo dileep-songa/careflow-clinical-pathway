@@ -16,7 +16,7 @@
 > All event log data in this repository is **100% synthetic (simulated Electronic Health Record encounters)**, generated across an observation window of **October 1–11, 2024** (500 patient encounters, 3,140 chronological milestone events). It contains no Protected Health Information (PHI) or real patient records.
 >
 > *Operational Notes:*
-> 1. **Elapsed Transition Duration vs. Patient Waiting Time:** Recorded transition latencies measure the total elapsed clock time between recorded activity timestamps (which includes clinical care, specimen analysis, imaging protocols, and patient movement), not confirmed patient waiting room duration.
+> 1. **Elapsed Transition Duration vs. Patient Waiting Time:** Recorded transition latencies measure the total elapsed clock time between recorded activity timestamps, not confirmed patient waiting room duration. The event log records discrete milestone completion timestamps and does not measure unrecorded internal sub-processes.
 > 2. **Hypothetical Improvement Scenarios:** The "To-Be" streamlined workflow projections are simulated scenario models created to explore potential queue improvements and require clinical validation before real-world operational use.
 
 ---
@@ -123,7 +123,7 @@ flowchart TD
     end
 
     subgraph S4["4. Business Intelligence & Reporting"]
-        CLEAN --> PBIP["Power BI Semantic Model (model.bim)<br/>5 Tables, M Queries, DAX Measures"]
+        CLEAN --> PBIP["Power BI Semantic Model (model.bim)<br/>10 Tables (5 Data + 5 Date), 19 DAX Measures"]
         BN --> PBIP
         DFG --> PBIP
         PI --> PBIP
@@ -142,7 +142,7 @@ flowchart TD
 
 The dashboard is built in the developer-friendly **Power BI Project (`.pbip`)** format. It includes version-controlled visual layouts in `report.json`, semantic model definitions in `model.bim` (TMSL JSON format), and custom styling (`CY26SU05.json`).
 
-> **Note on Dashboard Screenshots:** The screenshots below were exported from the finalized 3-page report in Power BI Desktop on November 6, 2026. The current Power BI Desktop report was exported to PDF and each page was rendered as a high-resolution PNG (2391 ? 1383 pixels). Open `CareFlow_Dashboard.pbip` in Power BI Desktop to explore the interactive report.
+> **Note on Dashboard Screenshots:** The screenshots below were exported from the finalized 3-page report in Power BI Desktop on November 6, 2026. The current Power BI Desktop report was exported to PDF and each page was rendered as a high-resolution PNG (2391 × 1383 pixels). Open `CareFlow_Dashboard.pbip` in Power BI Desktop to explore the interactive report.
 
 ### Page 1: Hospital Operations Overview
 Presents high-level encounter volumes, clinical activity distributions, encounter duration KPIs, and key operations takeaways.
@@ -152,7 +152,7 @@ Presents high-level encounter volumes, clinical activity distributions, encounte
 - **KPI Cards:** Total Cases (500), Total Process Events (3,140), Mean Cycle Time (202.5 mins), Median Cycle Time (211.0 mins), and Repeat Triage Rate (12.0%).
 - **Departmental Workload:** Donut chart showing Emergency Department volume (89.97% / 2,825 events) alongside Laboratory (185 events) and Radiology (130 events).
 - **Clinical Activity Volume:** Horizontal bar breakdown showing Physician Consultation as the most frequent activity (765 events; 24.4% of total recorded activity), followed by Triage (560), Registration (500), Treatment (500), Discharge (500), Laboratory (185), and X-Ray (130).
-- **Daily Encounter Trend:** Chronological column chart tracking event volume across the 11-day simulation period (peak at 354 events on October 6, 2024).
+- **Daily Event Volume Trend:** Chronological column chart tracking total recorded clinical event volume across the 11-day simulation period (peaking at 354 events on October 6, 2024; reflects milestone activity load rather than unique patient arrival census).
 - **Operations Insights:** Summary points detailing high-volume care milestones, service unit share, and secondary triage latency observations.
 
 ---
@@ -164,7 +164,7 @@ Focuses on workflow adherence, pathway variant frequencies, and chronological en
 
 - **Conformance KPIs:** Conformant Cases (440), Repeat Triage Cases (60), Conformance Rate (88.0%), and Total Pathway Variants (6).
 - **Pathway Variant Volume:** Ranked bar chart showing case counts across all 6 discovered variants, led by the Standard Forward Flow (40.0% / 200 cases).
-- **Patient Encounter Audit Trail:** Chronological table displaying individual patient milestones (`case_id`, `event_sequence`, `raw_activity_name`, `department`, and `event_timestamp`) for audit inspection.
+- **Patient Encounter Audit Trail (`tbl_case_audit`):** Chronological table displaying individual patient milestones with displayed columns: `Case ID`, `Event Sequence`, `Activity Name`, `Department`, and `Event Timestamp` (subtitle: *"Chronological event sequence by department and timestamp"*).
 - **Workflow Governance Notes:** Contextual notes documenting that secondary triage reassessments represent observed repeat evaluations prior to physician consultation, rather than procedure completion errors.
 
 ---
@@ -213,15 +213,15 @@ Using PM4Py trace extraction, the 500 patient encounters were grouped into **6 d
 
 ### Observed Transition Bottlenecks
 
-Directly-Follows Graph (DFG) edges were analyzed to calculate elapsed durations across all 10 observed milestone transitions. The event log records discrete activity milestone timestamps; intermediate factors such as transport, lab processing, PACS imaging archival, radiologist reviews, and administrative discharge steps are possible operational interpretations rather than individually measured sub-events in the data. The top 5 transitions by mean elapsed time are:
+Directly-Follows Graph (DFG) edges were analyzed to calculate elapsed durations across all 10 observed milestone transitions. The event log records discrete activity milestone timestamps; intermediate sub-steps are not measured directly in the data. The top 5 transitions by mean elapsed time are (verified against `outputs/bottleneck_analysis_summary.csv`):
 
-| Rank | Milestone Transition | Observed Count ($N$) | Mean Elapsed Time | Median Elapsed Time | Possible Operational Interpretation (Not Measured Directly) |
+| Rank | Milestone Transition | Observed Count ($N$) | Mean Elapsed Time | Median Elapsed Time | Operational Milestone Context |
 | :---: | :--- | :---: | :---: | :---: | :--- |
-| **1** | `Laboratory -> Consultation` | 135 | **67.44 mins** | 68.00 mins | Possible specimen transport, laboratory analysis, and clinician notification turnaround. |
-| **2** | `Triage -> Triage` | 60 | **65.63 mins** | 66.50 mins | Observed mean elapsed transition time during secondary triage reassessment (not confirmed patient waiting time). |
-| **3** | `X-Ray -> Consultation` | 130 | **60.36 mins** | 60.00 mins | Possible imaging acquisition, PACS processing, radiologist read, and ED clinician review. |
-| **4** | `Laboratory -> X-Ray` | 50 | **53.50 mins** | 53.50 mins | Possible inter-departmental patient transport and diagnostic sequencing. |
-| **5** | `Treatment -> Discharge` | 500 | **52.01 mins** | 52.00 mins | Possible bedside discharge instructions, pharmacy preparation, and patient transport. |
+| **1** | `Laboratory -> Consultation` | 135 | **67.44 mins** | 67.00 mins | Observed interval between laboratory completion and subsequent consultation. |
+| **2** | `Triage -> Triage` | 60 | **65.63 mins** | 64.50 mins | Observed interval between consecutive nursing triage assessments (not confirmed patient waiting time). |
+| **3** | `X-Ray -> Consultation` | 130 | **60.36 mins** | 61.00 mins | Observed interval between X-ray completion and subsequent consultation. |
+| **4** | `Laboratory -> X-Ray` | 50 | **53.50 mins** | 51.00 mins | Observed interval between sequential diagnostic events (Lab to X-Ray). |
+| **5** | `Treatment -> Discharge` | 500 | **52.01 mins** | 52.00 mins | Observed post-treatment interval prior to recorded discharge. |
 
 ---
 
@@ -248,13 +248,13 @@ The simulation script (`src/pathway_improvement.py`) models an exploratory scena
 
 | Evaluation Metric | As-Is Baseline | To-Be Proposed | Absolute Delta | Relative Change (%) | Analytical Provenance |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Mean Encounter Duration** | **202.54 mins** | **181.82 mins** | **-20.72 mins** | **-10.23%** | Simulated trace reconstruction |
-| **Median Encounter Duration** | **211.00 mins** | **191.17 mins** | **-19.83 mins** | **-9.40%** | Simulated trace reconstruction |
-| **25th Percentile Duration (P25)** | **142.00 mins** | **129.12 mins** | **-12.88 mins** | **-9.07%** | Calculated percentile delta |
-| **75th Percentile Duration (P75)** | **250.00 mins** | **227.27 mins** | **-22.73 mins** | **-9.09%** | Calculated percentile delta |
-| **90th Percentile Duration (P90)** | **284.00 mins** | **255.15 mins** | **-28.85 mins** | **-10.16%** | Calculated percentile delta |
-| **Max Encounter Duration** | **354.00 mins** | **315.42 mins** | **-38.58 mins** | **-10.90%** | Outlier trace recalculation |
-| **Standard Deviation** | **62.44 mins** | **55.84 mins** | **-6.60 mins** | **-10.57%** | Cohort variance reduction |
+| **Mean Encounter Duration** | **202.54 mins** | **181.77 mins** | **-20.77 mins** | **-10.25%** | Simulated trace reconstruction |
+| **Median Encounter Duration** | **211.00 mins** | **191.18 mins** | **-19.82 mins** | **-9.39%** | Simulated trace reconstruction |
+| **25th Percentile Duration (P25)** | **142.00 mins** | **129.10 mins** | **-12.90 mins** | **-9.08%** | Calculated percentile delta |
+| **75th Percentile Duration (P75)** | **250.00 mins** | **227.25 mins** | **-22.75 mins** | **-9.10%** | Calculated percentile delta |
+| **90th Percentile Duration (P90)** | **284.00 mins** | **255.18 mins** | **-28.82 mins** | **-10.15%** | Calculated percentile delta |
+| **Max Encounter Duration** | **354.00 mins** | **315.35 mins** | **-38.65 mins** | **-10.92%** | Outlier trace recalculation |
+| **Standard Deviation** | **62.44 mins** | **55.77 mins** | **-6.67 mins** | **-10.68%** | Cohort variance reduction |
 
 ---
 
@@ -265,7 +265,7 @@ The simulation script (`src/pathway_improvement.py`) models an exploratory scena
 | **Language & Environment** | `Python 3.12` | Core programming language, CLI pipelines, automated analysis |
 | **Data Processing** | `pandas==2.1.1`, `numpy==1.26.4`, `pyarrow==14.0.2` | Data manipulation, timestamp parsing, tabular export |
 | **Process Mining** | `pm4py==2.7.8` | Directly-Follows Graph discovery, variant extraction, trace statistics |
-| **Cloud Data Warehouse (Optional)** | `google-cloud-bigquery==3.13.0` | Optional raw ingestion, partitioned table schema validation |
+| **Cloud Data Warehouse (Optional)** | `google-cloud-bigquery==3.46.1` | Optional raw ingestion, partitioned table schema validation |
 | **Transformation (Optional)** | `dbt-core==1.12.6`, `dbt-bigquery==1.12.1` | Optional SQL ELT staging view materialization with 20 configured data tests |
 | **Business Intelligence** | `Power BI PBIP`, `model.bim (TMSL)`, `DAX` | Plain-text PBIP project, dimensional modeling, interactive reporting |
 | **Visualization** | `matplotlib==3.8.0`, `seaborn==0.13.0` | 300 DPI chart generation for bottleneck analysis |
@@ -320,9 +320,10 @@ careflow-clinical-pathway/
 │   ├── powerbi_dashboard_implementation_plan.md # Dashboard design & layout plan
 │   ├── powerbi_data_dictionary.md         # Semantic model field dictionary
 │   └── powerbi_measures_reference.md      # DAX measures reference documentation
-├── reports/                               # Milestone progress reports
+├── reports/                               # Project technical reports
 │   ├── MID_PROJECT_REVIEW.md              # Week 2 milestone review
-│   └── WEEK_3_PROGRESS_REPORT.md          # Week 3 milestone review
+│   ├── WEEK_3_PROGRESS_REPORT.md          # Week 3 milestone review
+│   └── FINAL_INTERNSHIP_REPORT.md         # Final technical internship report
 ├── sql/
 │   └── schema_hospital_events_raw.sql     # BigQuery DDL (partitioned by day, clustered by case)
 ├── src/                                   # Python analytical source modules
@@ -491,7 +492,7 @@ A standalone validator (`powerbi/test_validate_pbip.py`) verifies the Power BI P
 [VALID JSON] definition.pbir
 [VALID JSON] report.json
 [VERIFIED] definition.pbir references ../CareFlow_Dashboard.SemanticModel
-[VERIFIED BIM] model.bim verified with all 5 tables and measures (no circular reference).
+[VERIFIED BIM] model.bim verified with all 10 tables (5 data + 5 date) and 19 DAX measures (no circular reference).
 [VERIFIED visualContainers] All 16 data visuals have valid query and dataTransforms.
 [VERIFIED Theme] CY26SU05.json exists and is referenced correctly.
 === ALL PBIP VALIDATION CHECKS PASSED SUCCESSFULLY ===
@@ -511,7 +512,7 @@ If packaging the project into a standalone ZIP file for mentor or academic evalu
 - `outputs/`: Analytical CSV summaries, JSON metrics, Markdown findings reports, and the 3 high-resolution dashboard screenshot renders (`outputs/dashboard_renders/after_page*.png`).
 - `powerbi/`: `CareFlow_Dashboard_Project/` (complete `.pbip` project, `model.bim` semantic model, report layout, custom theme), validator `test_validate_pbip.py`, data dictionary, and measures reference.
 - `tests/`: All 9 Pytest regression test modules.
-- `reports/`: Progress reviews (`MID_PROJECT_REVIEW.md`, `WEEK_3_PROGRESS_REPORT.md`).
+- `reports/`: Technical reports (`MID_PROJECT_REVIEW.md`, `WEEK_3_PROGRESS_REPORT.md`, `FINAL_INTERNSHIP_REPORT.md`).
 - Root documentation & setup: `README.md`, `PROJECT_UNDERSTANDING.md`, `DATA_SCHEMA.md`, `DEVELOPMENT_PLAN.md`, `DAILY_LOG.md`, `requirements.txt`, `.env.example`, `.gitignore`.
 
 ### Strict Exclusions

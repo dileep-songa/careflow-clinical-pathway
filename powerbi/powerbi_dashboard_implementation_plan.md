@@ -9,6 +9,12 @@
 
 ---
 
+> [!NOTE]
+> **Implementation Evolution Notice:**
+> This document captures the preliminary 4-page dashboard design blueprint drafted during early planning. In the finalized, validated Power BI Project (`CareFlow_Dashboard.pbip`), Pages 3 and 4 were consolidated into Page 3: **Transition Analysis & Process Improvement** (22 visual containers total: 16 data visuals + 6 textboxes across 3 pages) and the active semantic model (`model.bim`) contains **10 total tables** (5 business/data tables + 5 automatically generated date tables) and **19 DAX measures**. The Patient Encounter Audit Trail (`tbl_case_audit`) displays `Case ID`, `Event Sequence`, `Activity Name`, `Department`, and `Event Timestamp` with subtitle `"Chronological event sequence by department and timestamp"`. See [`CAREFLOW_WEEK4_FINAL_REVIEW.md`](CAREFLOW_WEEK4_FINAL_REVIEW.md) and [`CAREFLOW_PBIP_VALIDATION_REPORT.md`](CAREFLOW_PBIP_VALIDATION_REPORT.md) for the active 3-page report documentation.
+
+---
+
 ## 1. Executive Summary & Dashboard Architecture
 
 This implementation plan provides a beginner-friendly, step-by-step roadmap for constructing a professional 4-page Power BI executive dashboard for the CareFlow Clinical Pathway Process Mining project.

@@ -3,7 +3,10 @@
 **Project:** CareFlow Clinical Pathway Process Mining
 **File Name:** `powerbi/powerbi_data_dictionary.md`
 **Data Provenance:** 100% Synthetic Event Log (`SIMULATED`)
-**Scope:** Covers all entities, attributes, data types, and business definitions used across the 4-page Power BI dashboard.
+**Scope:** Covers all entities, attributes, data types, and business definitions used across the CareFlow Power BI reporting layer.
+
+> [!NOTE]
+> **Dashboard Version Context:** This data dictionary was drafted alongside the preliminary 4-page dashboard blueprint. The finalized Power BI Project (`CareFlow_Dashboard.pbip`) consolidates reporting into an active 3-page layout (22 visual containers: 16 data visuals + 6 textboxes) powered by an active semantic model (`model.bim`) with **10 total tables** (5 business/data tables + 5 automatically generated date tables) and **19 DAX measures** (14 in `stg_hospital_events`, 3 in `pathway_variants_summary`, 1 in `bottleneck_analysis_summary`, 1 in `pathway_improvement_comparison`). See [`CAREFLOW_WEEK4_FINAL_REVIEW.md`](CAREFLOW_WEEK4_FINAL_REVIEW.md) and [`CAREFLOW_PBIP_VALIDATION_REPORT.md`](CAREFLOW_PBIP_VALIDATION_REPORT.md).
 
 ---
 
@@ -17,7 +20,7 @@ Attributes within the semantic model carry one of two provenance tags:
 
 > [!IMPORTANT]
 > **Operational Interpretation Warning:**
-> - **Transition Duration vs. Waiting Time:** `transition_minutes_from_previous` records total elapsed clock time between successive milestone timestamps. This duration encompasses active nursing/physician care, specimen processing, diagnostic image rendering, and patient transport. It is **not** purely idle waiting room time.
+> - **Transition Duration vs. Waiting Time:** `transition_minutes_from_previous` records total elapsed clock time between successive milestone timestamps. It must not be interpreted as pure patient waiting room idle time, as the event log records discrete milestone completion timestamps rather than unmeasured internal sub-processes.
 > - **Clinical Safety Assumption:** In the To-Be scenario, repeated triage events are removed as a hypothetical operational improvement. Simulated event logs cannot determine whether reassessment was clinically necessary due to patient clinical deterioration. Qualified medical staff must validate this assumption before clinical implementation.
 
 ---
