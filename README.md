@@ -142,7 +142,7 @@ flowchart TD
 
 The dashboard is built in the developer-friendly **Power BI Project (`.pbip`)** format. It includes version-controlled visual layouts in `report.json`, semantic model definitions in `model.bim` (TMSL JSON format), and custom styling (`CY26SU05.json`).
 
-> **Note on Dashboard Screenshots:** The screenshots below were exported from the finalized 3-page report in Power BI Desktop on November 6, 2026. The current Power BI Desktop report was exported to PDF and each page was rendered as a high-resolution PNG (2391 × 1383 pixels). Open `CareFlow_Dashboard.pbip` in Power BI Desktop to explore the interactive report.
+> **Note on Dashboard Screenshots:** The screenshots below were exported from the finalized 3-page report in Power BI Desktop on November 14, 2026. The current Power BI Desktop report was exported to PDF and each page was rendered as a high-resolution PNG (2988 × 1728 pixels). Open `CareFlow_Dashboard.pbip` in Power BI Desktop to explore the interactive report.
 
 ### Page 1: Hospital Operations Overview
 Presents high-level encounter volumes, clinical activity distributions, encounter duration KPIs, and key operations takeaways.
@@ -304,7 +304,7 @@ careflow-clinical-pathway/
 │   ├── pathway_improvement_report.md      # Simulation methodology & governance report
 │   ├── pathway_improvement_summary.json   # Machine-readable improvement statistics
 │   ├── process_mining_summary.json        # End-to-end cohort summary
-│   └── dashboard_renders/                 # 2391x1383 dashboard screenshot renders
+│   └── dashboard_renders/                 # 2988x1728 dashboard screenshot renders
 │       ├── after_page1_hospital_overview.png
 │       ├── after_page2_patient_flow.png
 │       └── after_page3_transition_analysis.png
