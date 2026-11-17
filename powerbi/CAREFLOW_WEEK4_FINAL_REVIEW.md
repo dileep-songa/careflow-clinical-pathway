@@ -13,21 +13,21 @@
 
 This report summarizes the design, analytical architecture, and validation of the Power BI reporting layer for the CareFlow Clinical Pathway Analytics project. The dashboard provides operational visibility into patient encounter flow, bottleneck transitions, and pathway conformance across 500 simulated emergency department encounters.
 
-### 1.1 Power Query Circular Dependency Resolution & Data Flow Architecture
+### 1.1 Refresh Evaluation Error Diagnostics & Data Flow Architecture
 
-During model evaluation in Power BI Desktop, a critical refresh deadlock error occurred:
-`stg_hospital_events: A cyclic reference was encountered during evaluation.` (blocking 3 downstream queries).
+During model evaluation and refresh in Power BI Desktop, an evaluation error was encountered:
+`A cyclic reference was encountered during evaluation.` (affecting staging queries and downstream tables).
 
-* **Detailed Root Cause Analysis:**
-  1. In the legacy model structure, `stg_hospital_events (2)` was configured in Power Query M as `Source = stg_hospital_events` with `excludeFromModelRefresh = true`.
-  2. In Power BI Desktop's VertiPaq tabular engine, `stg_hospital_events (2)` had active relationships to two calculated date tables: `LocalDateTable_49c443fd` (`event_timestamp`) and `LocalDateTable_e9b76cac` (`event_date`).
-  3. When refreshing the dataset, VertiPaq demands data for `stg_hospital_events (2)` to recalculate its date table variations. The Power Query Mashup container attempts to resolve `Source = stg_hospital_events` concurrently while `stg_hospital_events` is being imported and evaluated in the same transaction.
-  4. This query chaining combined with internal VertiPaq date table recalculation caused an evaluation deadlock/cycle in the Mashup engine, which halted `stg_hospital_events` and consequently blocked the 3 remaining queries (`pathway_variants_summary`, `bottleneck_analysis_summary`, and `pathway_improvement_comparison`).
-* **Architectural Resolution:**
-  1. Decoupled `stg_hospital_events (2)` completely from `stg_hospital_events`.
-  2. Configured `stg_hospital_events (2)` with an independent, direct CSV import expression: `Csv.Document(File.Contents("<repo>/data/cleaned/stg_hospital_events.csv"), ...)`.
-  3. Strict one-directional dependency graph: Raw CSV files $\rightarrow$ independent staging queries $\rightarrow$ VertiPaq semantic model tables.
-  4. With zero inter-query references across all 5 queries, cyclic dependencies are physically impossible. All 5 queries evaluate and refresh in parallel without deadlocks.
+* **Observed Symptoms & Analysis of Contributing Factors:**
+  1. **Query Dependency Chaining:** In earlier model configurations, `stg_hospital_events (2)` was chained to `stg_hospital_events` via `Source = stg_hospital_events`. In combination with automatically generated date table hierarchies (`LocalDateTable_*`), query chaining created interdependent evaluation paths during dataset refresh.
+  2. **Mashup Engine Concurrency & Auto-Relationships:** When `.pbi/editorSettings.json` has `parallelQueryLoading: true` and `autodetectRelationships: true`, concurrent multi-table evaluation and relationship detection heuristics across tables sharing identical schema columns can introduce evaluation locks or circular dependency warnings.
+  3. **Column Ordinal Alignment:** In tables with progressively appended calculated columns (such as `bottleneck_analysis_summary`), lacking an explicit terminal column selection step (`Table.SelectColumns`) can leave partition column orders misaligned with `model.bim` schema declarations.
+
+* **Implemented Resolutions:**
+  1. **Decoupled Staging Ingestion:** Decoupled `stg_hospital_events (2)` completely from `stg_hospital_events`, configuring both staging queries with direct, independent CSV import expressions: `Csv.Document(File.Contents("<repo>/data/cleaned/stg_hospital_events.csv"), ...)`.
+  2. **Strict One-Directional Data Flow:** Established a clean, decoupled dependency graph where each staging query reads its source CSV file independently without cross-query referencing: Local CSV files $\rightarrow$ independent Power Query M staging partitions $\rightarrow$ VertiPaq semantic model tables.
+  3. **Deterministic Evaluation Settings:** Configured `.pbi/editorSettings.json` with `parallelQueryLoading: false` and `autodetectRelationships: false` to ensure sequential, deterministic query evaluation and prevent unintended heuristic relationship loops.
+  4. **Explicit Partition Column Selection:** Standardized partition M expressions with explicit `Table.SelectColumns` matching the exact column list and ordinal sequence declared in `model.bim`.
 
 ### 1.2 Healthcare Visual Design System
 
@@ -52,8 +52,8 @@ The visual design system establishes a clean, modern aesthetic:
 
 ## 2. Multi-Page Analytical Architecture
 
-### 2.1 Page 1: Hospital Operations Overview
-An executive healthcare operations overview balancing cohort scale, turnaround times, and departmental workload:
+### 2.1 Page 1: Hospital Overview (10 Containers: 8 Data Visuals + 2 Textboxes)
+An executive healthcare operations overview balancing cohort scale, turnaround times, and departmental workload (referenced as *Hospital Operations Overview* in README documentation):
 
 * **Top KPI Row (5 Symmetrical Cards, Width: 236 px, Gap: 15 px):**
   1. **Total Cases:** 500 patient encounters (`#,##0`) | Subtitle: *Total Patient Volume*
@@ -70,8 +70,8 @@ An executive healthcare operations overview balancing cohort scale, turnaround t
 
 ---
 
-### 2.2 Page 2: Patient Journey & Pathway Analysis
-Demonstrates process-mining trace classification, pathway conformance, and granular encounter auditing:
+### 2.2 Page 2: Patient Flow (8 Containers: 6 Data Visuals + 2 Textboxes)
+Demonstrates process-mining trace classification, pathway conformance, and granular encounter auditing (referenced as *Patient Journey & Pathway Conformance* in README documentation):
 
 * **Conformance KPI Row (4 Symmetrical Cards, Width: 295 px, Gap: 20 px):**
   1. **Conformant Cases Count:** 440 encounters (`#,##0`) | Subtitle: *Forward Pathway Volume*
@@ -86,8 +86,8 @@ Demonstrates process-mining trace classification, pathway conformance, and granu
 
 ---
 
-### 2.3 Page 3: Transition Analysis & Process Improvement
-The core evaluative page linking process bottlenecks to simulated operational interventions:
+### 2.3 Page 3: Transition Analysis & Process Improvement (4 Containers: 2 Data Visuals + 2 Textboxes)
+The core evaluative page linking process bottlenecks to simulated operational interventions (referenced as *Operational Bottlenecks & Process Improvement* in README documentation):
 
 * **Highest Observed Transition Durations (`bar_bottlenecks`, w: 520 px, `height = 510 px`):**
   Ranked horizontal bar chart of the longest observed workflow transitions, featuring:
@@ -131,25 +131,23 @@ All measures are calculated dynamically without hardcoding:
 ## 4. Technical Reliability & Exact Files Changed
 
 ### 4.1 Exact Files Modified
-1. `powerbi/build_careflow_pbip.py`: Decoupled `stg_hospital_events (2)` with independent direct CSV load expression; added explicit `displayUnits: 1D` to card visuals; configured donut chart with `labelStyle: 'Both'`, `displayUnits: 1D`, and `labelPrecision: 0D`; added explicit axis titles (`Clinical Activity`, `Event Count`) to bar charts.
-2. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.SemanticModel/definition/tables/stg_hospital_events (2).tmdl`: Updated partition to independent CSV load expression.
-3. `powerbi/careflow_semantic_model/tables/stg_hospital_events (2).tmdl`: Synchronized template TMDL with independent CSV load expression.
-2. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/StaticResources/SharedResources/BaseThemes/CY26SU05.json`: Updated with healthcare palette, Segoe UI Semibold typography, and rounded card styling.
-3. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/definition/StaticResources/SharedResources/BaseThemes/CY26SU05.json`: Synchronized theme copy in definition folder.
-4. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/report.json`: Updated visual container configurations and dataTransforms.
-5. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/definition/report.json`: Re-generated byte-for-byte identical to root `report.json` (SHA-256 verified).
-6. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.SemanticModel/definition/tables/stg_hospital_events.tmdl`: Canonical `AVERAGEX` / `MEDIANX` DAX formulas and `0.0 "mins"` format string.
-7. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.SemanticModel/model.bim`: Synchronized BIM measures and format strings.
-8. `powerbi/careflow_semantic_model/tables/stg_hospital_events.tmdl`: Synchronized source semantic model template.
-9. `powerbi/careflow_semantic_model/model.bim`: Synchronized source BIM template.
-10. `powerbi/test_validate_pbip.py`: Added regression coverage for duration iterators, activity volume chart title/labels/margins, bottleneck chart title, dataset baselines, and SHA-256 synchronization.
-11. `powerbi/CAREFLOW_WEEK4_FINAL_REVIEW.md`: Power BI implementation and review documentation.
+1. `powerbi/build_careflow_pbip.py`: Decoupled `stg_hospital_events (2)` with independent direct CSV load expression; added explicit `displayUnits: 1D` to card visuals; configured donut chart with `labelStyle: 'Both'`, `displayUnits: 1D`, and `labelPrecision: 0D`; added explicit axis titles (`Clinical Activity`, `Event Count`) to bar charts; added explicit column reordering step to partition definitions.
+2. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.SemanticModel/.pbi/editorSettings.json`: Configured `parallelQueryLoading: false` and `autodetectRelationships: false` for deterministic sequential evaluation.
+3. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/StaticResources/SharedResources/BaseThemes/CY26SU05.json`: Updated with healthcare palette, Segoe UI Semibold typography, and rounded card styling.
+4. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.Report/report.json`: Updated visual container configurations, dataTransforms, and page styling.
+5. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.SemanticModel/model.bim`: Synchronized BIM measures, format strings, explicit column selection on `bottleneck_analysis_summary`, and independent CSV partitions.
+6. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.SemanticModel/definition/tables/stg_hospital_events (2).tmdl`: Updated partition to independent CSV load expression.
+7. `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.SemanticModel/definition/tables/stg_hospital_events.tmdl`: Canonical `AVERAGEX` / `MEDIANX` DAX formulas and `0.0 "mins"` format string.
+8. `powerbi/careflow_semantic_model/tables/stg_hospital_events (2).tmdl`: Synchronized template TMDL with independent CSV load expression.
+9. `powerbi/careflow_semantic_model/tables/stg_hospital_events.tmdl`: Synchronized source semantic model template.
+10. `powerbi/careflow_semantic_model/model.bim`: Synchronized source BIM template.
+11. `powerbi/test_validate_pbip.py`: Regression coverage for duration iterators, activity volume chart title/labels/margins, bottleneck chart title, dataset baselines, and report JSON validation.
+12. `powerbi/CAREFLOW_WEEK4_FINAL_REVIEW.md`: Power BI implementation and review documentation.
 
-### 4.2 Backup and Recovery
+### 4.2 Local Backup and Repository Hygiene
 
-- Pre-existing Power BI recovery backup preserved.
-- Dashboard redesign snapshots preserved locally.
-- Final dashboard files validated before delivery.
+- Local developer backups and auto-recovery snapshots are maintained in `powerbi/backup/` (excluded from Git tracking via `.gitignore`).
+- All active PBIP definitions, report manifests, semantic models, and test scripts are fully tracked, version-controlled, and validated in the repository.
 ---
 
 ## 5. Verification Commands & Test Results
@@ -169,7 +167,7 @@ All measures are calculated dynamically without hardcoding:
   * `bar_activity_breakdown` confirmed with title `"Clinical Activity Volume"`, category `"Clinical Activity"`, measure `"Event Count"`, and margin `35D`.
   * `bar_bottlenecks` confirmed with title `"Highest Observed Transition Durations"`.
   * Exact baseline data verified: 500 cases, 3,140 events, 202.5m mean, 211.0m median, Registration=Treatment=Discharge=500.
-  * `report.json` files confirmed byte-identical (SHA-256: `0ecf55fb6fbf5828...`).
+  * Active `report.json` confirmed valid JSON with all 3 pages and 22 visual containers.
 
 ### 5.2 Repository Pytest Suite
 ```powershell
@@ -195,15 +193,15 @@ git diff --cached --check
 
 1. **Open the Project:**
    Double-click `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.pbip`.
-2. **Page 1 (Hospital Operations Overview):**
+2. **Page 1: Hospital Overview (Hospital Operations Overview):**
    * Confirm the 5 top cards display **500**, **3,140**, **202.5 mins**, **211.0 mins**, and **12.0%** with their clean subtitles.
    * Verify that **"Clinical Activity Volume"** displays Consultation (765) and Triage (560) at the top, followed by Registration, Treatment, and Discharge exhibiting equal horizontal bar lengths labeled with **500**.
    * Test cross-filtering: click on the "Laboratory" slice in the department donut and observe the activity volume and census charts highlight laboratory events.
-3. **Page 2 (Patient Journey & Pathway Analysis):**
+3. **Page 2: Patient Flow (Patient Journey & Pathway Conformance):**
    * Confirm the top cards display **440**, **60**, and **88.0%**.
    * Verify that the pathway variants horizontal bars display full labels without truncation.
    * Inspect the case audit trail table for sequential ordering.
-4. **Page 3 (Transition Analysis & Process Improvement):**
+4. **Page 3: Transition Analysis & Process Improvement (Operational Bottlenecks & Process Improvement):**
    * Verify the bottleneck chart is titled **"Highest Observed Transition Durations"** with Lab → Consultation (67.4 mins) leading.
    * Verify the comparison table shows **-10.3%** for Mean Encounter Duration and **-33.3%** for Pathway Variants with proper `+` / `-` sign formatting.
    * Review the 3 actionable clinical recommendations in the bottom callout.

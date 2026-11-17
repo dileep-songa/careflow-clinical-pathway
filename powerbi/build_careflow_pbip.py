@@ -1109,9 +1109,10 @@ def update_model_bim(bim_path, repo_root=None):
                 '    #"Added Transition" = Table.AddColumn(#"Changed Type", "transition", each [source_activity] & " -> " & [target_activity], type text),',
                 '    #"Added Transition Label" = Table.AddColumn(#"Added Transition", "transition_label", each [source_activity] & " -> " & [target_activity], type text),',
                 '    #"Added Avg Duration Mins" = Table.AddColumn(#"Added Transition Label", "avg_duration_mins", each [mean_observed_transition_minutes], type number),',
-                '    #"Added Transition Display" = Table.AddColumn(#"Added Avg Duration Mins", "transition_display", each (if [source_activity] = "Triage" and [target_activity] = "Triage" then "Triage →#(lf)Re-Triage" else [source_activity] & " →#(lf)" & [target_activity]), type text)',
+                '    #"Added Transition Display" = Table.AddColumn(#"Added Avg Duration Mins", "transition_display", each (if [source_activity] = "Triage" and [target_activity] = "Triage" then "Triage →#(lf)Re-Triage" else [source_activity] & " →#(lf)" & [target_activity]), type text),',
+                '    #"Reordered Columns" = Table.SelectColumns(#"Added Transition Display", {"rank", "source_activity", "target_activity", "transition_label", "transition_count", "mean_observed_transition_minutes", "median_observed_transition_minutes", "min_observed_transition_minutes", "max_observed_transition_minutes", "transition", "avg_duration_mins", "transition_display"})',
                 'in',
-                '    #"Added Transition Display"'
+                '    #"Reordered Columns"'
             ]
             cols = {c['name']: c for c in t.get('columns', [])}
             needed_cols = [
@@ -1566,9 +1567,10 @@ def build():
 				    #"Added Transition" = Table.AddColumn(#"Changed Type", "transition", each [source_activity] & " -> " & [target_activity], type text),
 				    #"Added Transition Label" = Table.AddColumn(#"Added Transition", "transition_label", each [source_activity] & " -> " & [target_activity], type text),
 				    #"Added Avg Duration Mins" = Table.AddColumn(#"Added Transition Label", "avg_duration_mins", each [mean_observed_transition_minutes], type number),
-				    #"Added Transition Display" = Table.AddColumn(#"Added Avg Duration Mins", "transition_display", each (if [source_activity] = "Triage" and [target_activity] = "Triage" then "Triage →#(lf)Re-Triage" else [source_activity] & " →#(lf)" & [target_activity]), type text)
+				    #"Added Transition Display" = Table.AddColumn(#"Added Avg Duration Mins", "transition_display", each (if [source_activity] = "Triage" and [target_activity] = "Triage" then "Triage →#(lf)Re-Triage" else [source_activity] & " →#(lf)" & [target_activity]), type text),
+				    #"Reordered Columns" = Table.SelectColumns(#"Added Transition Display", {"rank", "source_activity", "target_activity", "transition_label", "transition_count", "mean_observed_transition_minutes", "median_observed_transition_minutes", "min_observed_transition_minutes", "max_observed_transition_minutes", "transition", "avg_duration_mins", "transition_display"})
 				in
-				    #"Added Transition Display"
+				    #"Reordered Columns"
 
 	annotation PBI_ResultType = Table
 """.replace("__CSV_BOTTLENECKS__", csv_bottlenecks)

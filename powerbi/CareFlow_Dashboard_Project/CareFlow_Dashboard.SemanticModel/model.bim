@@ -1749,7 +1749,8 @@
             "name": "transition_display",
             "dataType": "string",
             "lineageTag": "0af255ae-c68c-476c-b2e0-593a09136fc1",
-            "sourceColumn": "transition_display"
+            "sourceColumn": "transition_display",
+            "summarizeBy": "none"
           }
         ],
         "lineageTag": "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
@@ -1774,9 +1775,10 @@
                 "    #\"Added Transition\" = Table.AddColumn(#\"Changed Type\", \"transition\", each [source_activity] & \" -> \" & [target_activity], type text),",
                 "    #\"Added Transition Label\" = Table.AddColumn(#\"Added Transition\", \"transition_label\", each [source_activity] & \" -> \" & [target_activity], type text),",
                 "    #\"Added Avg Duration Mins\" = Table.AddColumn(#\"Added Transition Label\", \"avg_duration_mins\", each [mean_observed_transition_minutes], type number),",
-                "    #\"Added Transition Display\" = Table.AddColumn(#\"Added Avg Duration Mins\", \"transition_display\", each (if [source_activity] = \"Triage\" and [target_activity] = \"Triage\" then \"Triage →#(lf)Re-Triage\" else [source_activity] & \" →#(lf)\" & [target_activity]), type text)",
+                "    #\"Added Transition Display\" = Table.AddColumn(#\"Added Avg Duration Mins\", \"transition_display\", each (if [source_activity] = \"Triage\" and [target_activity] = \"Triage\" then \"Triage \u2192#(lf)Re-Triage\" else [source_activity] & \" \u2192#(lf)\" & [target_activity]), type text),",
+                "    #\"Reordered Columns\" = Table.SelectColumns(#\"Added Transition Display\", {\"rank\", \"source_activity\", \"target_activity\", \"transition_label\", \"transition_count\", \"mean_observed_transition_minutes\", \"median_observed_transition_minutes\", \"min_observed_transition_minutes\", \"max_observed_transition_minutes\", \"transition\", \"avg_duration_mins\", \"transition_display\"})",
                 "in",
-                "    #\"Added Transition Display\""
+                "    #\"Reordered Columns\""
               ],
               "type": "m"
             }

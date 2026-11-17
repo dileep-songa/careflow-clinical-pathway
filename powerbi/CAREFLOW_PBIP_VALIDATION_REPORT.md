@@ -12,17 +12,17 @@
 
 A fully resolved, standalone Power BI Project (`CareFlow_Dashboard.pbip`) has been systematically debugged, updated, and validated in [`powerbi/CareFlow_Dashboard_Project/`](CareFlow_Dashboard_Project/).
 
-All three core issues identified during forensic analysis have been definitively resolved:
+The four core issues identified during forensic analysis have been addressed:
 1. **Power Query M Empty String Conversion Error:** In `stg_hospital_events.csv`, 500 rows (event 1 of each of the 500 patient cases) have empty strings `""` for `previous_activity` and `transition_minutes_from_previous`. Power Query M's `Table.TransformColumnTypes` was directly casting `transition_minutes_from_previous` to `Int64.Type` without first converting empty strings to `null`. This threw 500 cell-level `DataFormat.Error: We couldn't convert to Number.` exceptions, causing the VertiPaq engine to abort partition processing (`Partition.State = 3`).
    - **Resolution:** Added `Table.ReplaceValue(#"Promoted Headers", "", null, Replacer.ReplaceValue, {"previous_activity", "transition_minutes_from_previous"})` prior to `Table.TransformColumnTypes`, and configured UTF-8 encoding (`Encoding=65001`).
-2. **BigQuery Authentication Barrier:** `stg_hospital_events (2)` still referenced `GoogleBigQuery.Database([Implementation="2.0"])`. Even with `excludeFromModelRefresh: true`, opening or refreshing the project in Desktop triggered pending credential evaluation prompts that blocked local table processing.
-   - **Resolution:** Updated `stg_hospital_events (2)` partition M expression to `Source = stg_hospital_events` while preserving `excludeFromModelRefresh: true`. This preserves all column metadata and date variations while making the entire project 100% offline and local.
+2. **Decoupled Local Staging Queries:** In earlier iterations, `stg_hospital_events (2)` referenced an external cloud source or chained query references.
+   - **Resolution:** Updated `stg_hospital_events (2)` to independently import `data/cleaned/stg_hospital_events.csv` directly via `Csv.Document(File.Contents(...))` with identical schema types and null replacements, matching `stg_hospital_events`. Both staging queries read the local staging CSV independently with zero inter-query dependencies and zero external cloud connections.
 3. **Percentage Difference Scaling & Formula Correction:** In `pathway_improvement_comparison.csv`, the percentage difference column contained values already pre-scaled by 100 (e.g., `-10.25` for -10.25%). In Power BI, the column was assigned the percentage format string `+0.0%;-0.0%;0.0%`, which automatically multiplies the value by 100 again, causing values to render as `-1025.0%` instead of `-10.3%`.
    - **Resolution:** Implemented relative difference formula `([proposed_value] - [baseline_value]) / [baseline_value]` in Power Query M with safe handling of null/zero baselines. Preserved single percentage formatting (`+0.0%;-0.0%;0.0%`). Added explicit DAX measure `Relative % Difference`. Labeled table column as `"% Difference (Negative = Reduction)"` and documented sign convention in the Page 3 safety banner.
 4. **DAX Syntax Error in `Conformant Cases Count`:** The formula evaluated `NOT('stg_hospital_events'[case_id] IN ReTriageCases)` inside `CALCULATE` where `ReTriageCases` was a table variable. DAX does not permit table variables in boolean filter arguments of `CALCULATE`.
    - **Resolution:** Replaced with the clean, mathematically equivalent DAX formula: `[Total Cases] - [Repeat Triage Cases Count]`.
 
-All existing work—including the user's active session, the auto-recovery backup ([`powerbi/backup/CareFlow_AutoRecovery_Backup.pbix`](backup/CareFlow_AutoRecovery_Backup.pbix)), and raw simulated datasets—remains **100% preserved and untouched**.
+Existing repository files, visual definitions, semantic model schemas, and simulated datasets have been retained. Local developer backups and auto-recovery snapshots remain outside Git tracking.
 
 ---
 
@@ -122,7 +122,7 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
 | **dbt Model Parse** | `dbt parse` with BigQuery adapter | **PASS (clean parse)** |
 | **Simulated Dataset Integrity** | 3,140 events across 500 cases in `data/cleaned/stg_hospital_events.csv` | **PASS (verified)** |
 | **`Table.ReplaceValue`** | Converts `""` to `null` before numeric conversion in `stg_hospital_events` | **PASS (verified in model.bim & TMDL)** |
-| **BigQuery Dependency Isolated** | Replaced with local reference and `excludeFromModelRefresh: true` | **PASS (zero BigQuery blockers)** |
+| **Independent Staging Queries** | Both staging queries read local CSV directly with zero cloud dependencies | **PASS (zero external blockers)** |
 | **Percentage Scaling Formula** | `([proposed_value] - [baseline_value]) / [baseline_value]` in Power Query & DAX measure | **PASS (single 100x scaling)** |
 | **Table Visual Layout & Labels** | Widened to 745px; professional display names configured for all columns | **PASS (verified in report.json)** |
 | **`enableAutoAuth` Absent** | PBIP root JSON schema requirement for v2.154.956.0 | **PASS (empty settings object)** |
@@ -148,9 +148,9 @@ Because Power BI Desktop projects (`.pbip`) load semantic definitions from disk 
 
 2. **Populate Visual Data:**
    - On the top ribbon, click **Home $\rightarrow$ Refresh** (or press `F5`).
-   - Power BI Desktop will read the 4 local CSV tables (`stg_hospital_events`, `bottleneck_analysis_summary`, `pathway_variants_summary`, `pathway_improvement_comparison`) directly from the workspace.
+   - Power BI Desktop will read the 4 local source CSV files across 5 data tables (`stg_hospital_events`, `stg_hospital_events (2)`, `bottleneck_analysis_summary`, `pathway_variants_summary`, `pathway_improvement_comparison`) directly from the workspace.
    - With the `Table.ReplaceValue` fix in place, all 3,140 rows will process without type-conversion errors.
-   - With `stg_hospital_events (2)` referencing local data, no cloud authentication dialogs will appear.
+   - With all queries referencing local CSV files, no cloud authentication dialogs or external connection prompts will appear.
    - All 22 visual containers across the 3 pages will instantly populate with their verified measures, formatted callouts, charts, and tables.
 
 3. **Updating Local CSV Source Paths (Portability Guide):**

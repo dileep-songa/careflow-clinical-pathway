@@ -27,7 +27,7 @@
 The **CareFlow Clinical Pathway Analytics** project addresses the critical operational challenge of workflow opacity, clinical bottlenecks, and protocol non-conformance in acute healthcare delivery. Using emergency department (ED) patient journeys as a clinical archetype, CareFlow establishes an end-to-end modern data stack and process-mining pipeline:
 
 1. **Synthetic Data Engineering:** Generates a deterministic, reproducible cohort of 500 emergency patient encounters comprising 3,140 clinical milestone events across 7 distinct activities.
-2. **Cloud & Local Warehouse Architecture:** Staged in Google Cloud BigQuery (partitioned raw tables and dbt staging views) with a 100% offline-compatible local normalization adapter (`src/normalize_event_log.py`) that eliminates cloud cost risks while preserving analytical parity.
+2. **Warehouse Architecture & Local Staging Pipeline:** Designed with an optional Google Cloud BigQuery warehouse schema and dbt Core staging architecture, fully decoupled via a 100% offline-compatible local normalization pipeline (`src/normalize_event_log.py`) that eliminates cloud cost risks, avoids external authentication requirements, and provides complete local reproducibility.
 3. **Algorithmic Process Mining (PM4Py):** Discovers the underlying Directly-Follows Graph (DFG) across 10 distinct transitions, uncovering 6 distinct clinical pathway variants. Establishes a cohort mean encounter cycle time of **202.54 minutes** and a median of **211.00 minutes**.
 4. **Transition Friction Diagnostics:** Quantifies operational delays across clinical milestones, identifying diagnostic result turnaround (`Laboratory -> Consultation` at **67.44 min** mean; `X-Ray -> Consultation` at **60.36 min** mean) and repeated triage queuing loops (`Triage -> Triage` at **65.63 min** mean) as the primary sources of encounter latency.
 5. **Rule-Based Workflow Conformance:** Implements a 7-rule clinical protocol audit engine evaluating encounter boundaries, mandatory milestones, chronological sequence, diagnostic review integrity, and duplicate checks. Classifies **440 encounters (88.0%)** as fully conformant and identifies **60 encounters (12.0%)** as secondary triage review candidates.
@@ -59,10 +59,10 @@ CareFlow was engineered to deliver:
 
 | Phase | Scheduled Objectives | Key Technical Deliverables | Verification Status |
 | :--- | :--- | :--- | :---: |
-| **Week 1** | Data setup, schema design, BigQuery ingestion, dbt staging, test expansion | `src/data_generator.py`, BigQuery loader (`src/bq_loader.py`), `careflow_dbt` staging view & schema tests, 37 automated tests | **Completed** |
+| **Week 1** | Data setup, schema design, optional BigQuery loader, dbt staging models, test expansion | `src/data_generator.py`, BigQuery loader module (`src/bq_loader.py`), `careflow_dbt` staging view & schema tests, 37 automated tests | **Completed** |
 | **Week 2** | Event cleaning, PM4Py integration, DFG discovery, As-Is visualization, mid-term review | `src/process_miner.py`, `src/normalize_event_log.py`, `data/cleaned/stg_hospital_events.csv`, DFG render (`outputs/dfg_visualization.png`), `reports/MID_PROJECT_REVIEW.md`, 68 automated tests | **Completed** |
 | **Week 3** | Bottleneck detection, visualization, 7-rule conformance checking, As-Is vs. To-Be simulation | `src/bottleneck_analyzer.py`, `src/bottleneck_visualizer.py`, `src/conformance_checker.py`, `src/pathway_improvement.py`, `reports/WEEK_3_PROGRESS_REPORT.md`, 171 automated tests | **Completed** |
-| **Week 4** | Power BI PBIP dashboard, CI workflow hardening, submission documentation | `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.pbip`, `.github/workflows/ci.yml`, `reports/FINAL_INTERNSHIP_REPORT.md`, `reports/FINAL_PRESENTATION.md`, 175 automated tests | **Completed** |
+| **Week 4** | Power BI PBIP dashboard, CI workflow hardening, submission documentation | `powerbi/CareFlow_Dashboard_Project/CareFlow_Dashboard.pbip`, `.github/workflows/ci.yml`, `reports/FINAL_INTERNSHIP_REPORT.md`, 175 automated tests | **Completed** |
 
 ---
 
@@ -79,9 +79,9 @@ flowchart TD
     end
 
     subgraph Warehouse["2. Warehouse & Staging Layer"]
-        BQ["Google BigQuery (Cloud)<br/>careflow_raw.hospital_events_raw"]
-        dbt["careflow_dbt<br/>(dbt Core 1.12.6 + dbt-bigquery 1.12.1)"]
-        Norm["src/normalize_event_log.py<br/>(Local Staging Transformation Adapter)"]
+        BQ["Google BigQuery (Optional Cloud Specification)<br/>careflow_raw.hospital_events_raw"]
+        dbt["careflow_dbt (Optional Cloud Model)<br/>(dbt Core 1.12.6 + dbt-bigquery 1.12.1)"]
+        Norm["src/normalize_event_log.py<br/>(Implemented Local Staging Pipeline)"]
         CleanCSV["data/cleaned/stg_hospital_events.csv<br/>(Normalized 11-Column Schema)"]
 
         RawCSV -.-> BQ
@@ -120,8 +120,8 @@ flowchart TD
 - **Core Programming Language:** Python 3.12 (CPython, 64-bit).
 - **Process Mining Engine:** PM4Py 2.7.8 (Directly-Follows Graphs, performance DFGs, variant mining).
 - **Data Engineering & Manipulation:** pandas 2.1.1, NumPy 1.26.4, PyArrow 14.0.2.
-- **SQL Transformation & Modeling:** dbt Core 1.12.6, dbt-bigquery 1.12.1, Jinja2, YAML.
-- **Cloud Data Warehouse:** Google Cloud BigQuery (Standard SQL, date partitioning, composite clustering).
+- **SQL Transformation & Modeling (Optional Integration):** dbt Core 1.12.6, dbt-bigquery 1.12.1, Jinja2, YAML (offline compilation validated via ephemeral test profiles).
+- **Cloud Data Warehouse Architecture (Optional Integration):** Google Cloud BigQuery (Standard SQL, date partitioning, composite clustering specifications designed for scale).
 - **Executive Business Intelligence:** Microsoft Power BI Desktop 2.154+ (Power BI Project `.pbip`, Tabular Model Scripting Language `model.bim`, Power BI Report Definition `report.json`).
 - **Data Visualization & Export:** Matplotlib 3.8.0, Seaborn 0.13.0, Graphviz 0.21.
 - **Testing & Continuous Integration:** pytest 7.4.2, pytest-subtests, GitHub Actions (Ubuntu-latest).
@@ -169,10 +169,10 @@ The generator ([`src/data_generator.py`](file:///c:/project/careflow-clinical-pa
 - **Inter-Event Transition Lags:** Standard waiting/coordination transitions range from 5 to 25 minutes; diagnostic and secondary triage bottleneck transitions introduce 35 to 75 minutes of latency.
 - **Deterministic Reproducibility:** Controlled via Python's pseudorandom generator using fixed seed `42` (`python -m src.data_generator --cases 500 --seed 42`).
 
-### 5.2 BigQuery Warehouse & dbt Core Staging
-- **Raw Partitioned Table:** Provisioned at `exalted-mode-467509-h1.careflow_raw.hospital_events_raw` in Google Cloud BigQuery. Configured with daily partitioning on `DATE(Timestamp)` and clustered on `Activity_Name, Department`.
-- **dbt Staging Model (`stg_hospital_events`):** Authored as a dbt staging SQL view model (`careflow_dbt/models/staging/stg_hospital_events.sql`) targeting `careflow_staging.stg_hospital_events`. Utilizes SQL window functions (`ROW_NUMBER()` and `LAG()`) with deterministic multi-key ordering (`Case_ID ASC, Timestamp ASC, Activity_Name ASC`), validated offline via `dbt parse` and mirrored locally by `src/normalize_event_log.py` under zero-spend policies.
-- **Zero-Spend Governance & Ephemeral Profile Isolation:** Cloud writes and materializations remain bounded to avoid recurring cloud charges. Offline automated testing validates dbt compilation using dynamic, ephemeral profiles created in temporary directories with `method: oauth` and dummy project identifiers (`test_dbt_parse_offline_execution`).
+### 5.2 Optional BigQuery Warehouse Specification & dbt Staging Models
+- **Optional Raw Partitioned Table Architecture:** Configured as an optional cloud schema specification (`sql/schema_hospital_events_raw.sql` and `src/bq_loader.py`) targeting `careflow_raw.hospital_events_raw` in Google Cloud BigQuery. Designed with daily partitioning on `DATE(Timestamp)` and clustered on `Activity_Name, Department`. Ingestion scripts support dry-run validation without requiring active cloud provisioning or network access.
+- **Optional dbt Staging Model (`stg_hospital_events`):** Authored as a modular dbt SQL staging model (`careflow_dbt/models/staging/stg_hospital_events.sql`) targeting `careflow_staging.stg_hospital_events`. Utilizes SQL window functions (`ROW_NUMBER()` and `LAG()`) with deterministic multi-key ordering (`Case_ID ASC, Timestamp ASC, Activity_Name ASC`), validated offline via `dbt parse`.
+- **Local Implementation Parity & Zero-Spend Boundary:** To ensure 100% offline testability, zero cloud billing exposure, and zero external credential requirements, the primary analytics pipeline executes via the local normalization adapter (`src/normalize_event_log.py`), producing `data/cleaned/stg_hospital_events.csv` with identical schema and window calculations. Automated testing validates dbt compilation offline using ephemeral profiles created in temporary directories with `method: oauth` and dummy project identifiers (`test_dbt_parse_offline_execution`), keeping cloud provisioning entirely optional.
 
 ---
 
@@ -400,7 +400,7 @@ The repository maintains an automated GitHub Actions CI pipeline (`.github/workf
 The CareFlow internship project demonstrates how modern data engineering, algorithmic process mining, and business intelligence can be unified to provide deep operational visibility into complex healthcare workflows:
 
 ### 13.1 Summary of Deliverables
-- **Data Engineering Pipeline:** Built modular Python data generation, normalization, and staging scripts verified offline and in Google Cloud BigQuery.
+- **Data Engineering Pipeline:** Built modular Python data generation, normalization, and local staging scripts with full offline verification and an optional Google Cloud BigQuery / dbt architecture.
 - **Process Mining & Analytics:** Discovered 6 pathway variants, ranked 10 milestone transitions, audited 7 clinical conformance rules, and modeled an illustrative 10.3% encounter duration reduction.
 - **Reporting & Business Intelligence:** Built an interactive 3-page, 22-container Power BI report backed by a TMSL semantic model (`model.bim`).
 - **Automated Testing & CI:** Validated all analytical modules and PBIP structures across 175 passing tests (with 8 subtests) and GitHub Actions CI.
