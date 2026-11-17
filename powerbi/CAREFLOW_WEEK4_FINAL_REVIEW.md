@@ -80,7 +80,7 @@ Demonstrates process-mining trace classification, pathway conformance, and granu
   4. **Total Pathway Variants:** 6 variants (`#,##0`) | Subtitle: *Distinct Process Routes*
 * **Core Analytical Visuals (`y = 170`, `height = 445 px`):**
   * **Clinical Pathway Variants (`bar_pathway_variants`, w: 700 px):** Ranked horizontal bar chart mapping the 6 discovered process variants. Demonstrates that Variant 1 (Registration → Triage → Consultation → Treatment → Discharge) represents 40.0% of cohort volume (200 cases), with `maxMargin = 55%` preventing label clipping on 94-character pathway strings.
-  * **Patient Encounter Audit Trail (`tbl_case_audit`, w: 525 px):** Granular sequential audit matrix containing *Case ID*, *Event Sequence*, *Activity Name*, *Department*, and *Event Timestamp* (subtitle: *"Chronological event sequence by department and timestamp"*).
+  * **Patient Encounter Audit Trail (`tbl_case_audit`, w: 525 px):** Granular sequential audit matrix containing *Case ID*, *Event Sequence*, *Clinical Activity*, *Department*, and *Event Timestamp* (subtitle: *"Chronological event sequence by department and timestamp"*).
 * **Patient Journey & Clinical Guidance Banner (`y = 635`, `w = 1240 px`):**
   Explains the standard linear flow (88.0%) versus secondary triage loops (12.0%), emphasizing that repeat triage represents an operational pattern that does not automatically imply clinical mismanagement.
 
@@ -89,12 +89,12 @@ Demonstrates process-mining trace classification, pathway conformance, and granu
 ### 2.3 Page 3: Transition Analysis & Process Improvement (4 Containers: 2 Data Visuals + 2 Textboxes)
 The core evaluative page linking process bottlenecks to simulated operational interventions (referenced as *Operational Bottlenecks & Process Improvement* in README documentation):
 
-* **Highest Observed Transition Durations (`bar_bottlenecks`, w: 520 px, `height = 510 px`):**
+* **Highest Observed Transition Durations (`bar_bottlenecks`, w: 520 px, `height = 434 px`):**
   Ranked horizontal bar chart of the longest observed workflow transitions, featuring:
   * **Laboratory → Consultation:** 67.4 mins mean elapsed duration.
   * **X-Ray → Consultation:** 60.4 mins mean elapsed duration.
   * Configured with direct data labels and `categoryAxis.maxMargin = 45%`.
-* **As-Is vs. Proposed To-Be Comparison Table (`tbl_improvement_comparison`, w: 705 px, `height = 510 px`):**
+* **As-Is vs. Proposed To-Be Comparison Table (`tbl_improvement_comparison`, w: 705 px, `height = 434 px`):**
   Full operational matrix comparing baseline values against hypothetical streamlined scenarios:
   * *Mean Encounter Duration:* 202.54 mins → 181.77 mins (**-10.3%**).
   * *Pathway Variants:* 6 variants → 4 variants (**-33.3%**).

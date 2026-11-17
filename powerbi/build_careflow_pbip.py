@@ -651,7 +651,7 @@ def get_column_chart(name, x, y, w, h, z, entity, category_col, val_measure, tit
         {
             "properties": {
                 "showAxisTitle": {"expr": {"Literal": {"Value": "true"}}},
-                "titleText": {"expr": {"Literal": {"Value": "'Intake Date'"}}},
+                "titleText": {"expr": {"Literal": {"Value": "'Event Date'"}}},
                 "fontSize": {"expr": {"Literal": {"Value": "8.5D"}}},
                 "fontFamily": {"expr": {"Literal": {"Value": "'Segoe UI'"}}}
             }
@@ -1716,7 +1716,7 @@ def build():
             show_data_labels=True,
             bar_color="#0D9488"
         ),
-        get_column_chart("col_daily_trend", 860, 188, 400, 390, 8, "stg_hospital_events", "event_date", "Total Events", title="Daily Patient Intake & Activity Trend", subtitle="Chronological daily event volume across observation window", col_color="#3B82F6"),
+        get_column_chart("col_daily_trend", 860, 188, 400, 390, 8, "stg_hospital_events", "event_date", "Total Events", title="Daily Event Volume Trend", subtitle="Chronological daily event volume across observation window", col_color="#3B82F6"),
         get_textbox_visual("txt_disclaimer_page1", 20, 588, 1240, 122, 9, p1_disclaimer)
     ]
 
@@ -1747,7 +1747,7 @@ def build():
             "tbl_case_audit", 615, 188, 645, 390, 6,
             "stg_hospital_events",
             ["case_id", "event_sequence", "raw_activity_name", "department", "event_timestamp"],
-            display_names={"case_id": "Case ID", "event_sequence": "Event Sequence", "raw_activity_name": "Activity Name", "department": "Department", "event_timestamp": "Event Timestamp"},
+            display_names={"case_id": "Case ID", "event_sequence": "Event Sequence", "raw_activity_name": "Clinical Activity", "department": "Department", "event_timestamp": "Event Timestamp"},
             title="Sequential Patient Encounter Audit Trail",
             subtitle="Chronological event sequence with department and elapsed interval",
             formats={"event_sequence": "#,##0"}
@@ -1771,7 +1771,7 @@ def build():
             subtitle="Mean elapsed duration between sequential milestone activities (mins)",
             category_display_name="Workflow Transition",
             val_display_name="Mean Elapsed Minutes",
-            max_margin=50,
+            max_margin=45,
             show_data_labels=True,
             bar_color="#DC6B6B",
             show_category_title=False
@@ -1784,7 +1784,7 @@ def build():
                 "metric_name": "Metric",
                 "baseline_value": "Baseline",
                 "proposed_value": "Proposed",
-                "percentage_difference": "Change %"
+                "percentage_difference": "Change (%)"
             },
             title="Operational Impact Comparison (Baseline vs. Proposed Streamlining)",
             subtitle="Hypothetical process optimization modeling (Simulated To-Be Scenario)",

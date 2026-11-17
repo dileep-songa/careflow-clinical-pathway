@@ -75,19 +75,17 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
 - **Data Visual 3 (Card):** `card_conformance_rate` $\rightarrow$ Measure: `stg_hospital_events.Conformance Rate %` (**88.0%**).
 - **Data Visual 4 (Card):** `card_pathway_variants` $\rightarrow$ Measure: `pathway_variants_summary.Total Pathway Variants` (**6** variants).
 - **Data Visual 5 (Clustered Bar Chart):** `bar_pathway_variants` $\rightarrow$ Category: `pathway`, Values: `Total Variant Cases` (Ranks Variants 1–6).
-- **Data Visual 6 (Table):** `tbl_case_audit` $\rightarrow$ Columns: `case_id` (display: **Case ID**), `event_sequence` (display: **Event Sequence**), `raw_activity_name` (display: **Activity Name**), `department` (display: **Department**), `event_timestamp` (display: **Event Timestamp**). Subtitle: "Chronological event sequence by department and timestamp".
+- **Data Visual 6 (Table):** `tbl_case_audit` $\rightarrow$ Columns: `case_id` (display: **Case ID**), `event_sequence` (display: **Event Sequence**), `raw_activity_name` (display: **Clinical Activity**), `department` (display: **Department**), `event_timestamp` (display: **Event Timestamp**). Subtitle: "Chronological event sequence by department and timestamp".
 - **Textbox 1:** `hdr_page2` $\rightarrow$ Header banner: "CareFlow — Patient Journey & Pathway Conformance".
 - **Textbox 2:** `txt_guidance_page2` $\rightarrow$ Sequential process-rule audit guidance note (repeat-triage identifies process repetition, not clinical appropriateness).
 
 ### Page 3: Transition Analysis & Process Improvement (4 Containers: 2 Data Visuals + 2 Textboxes)
-- **Data Visual 1 (Clustered Bar Chart):** `bar_bottlenecks` $\rightarrow$ Category: `transition_label`, Values: `Avg Transition Duration`. Title: "Highest Observed Transition Durations" (Ranks top delays: `Laboratory -> Consultation` at 67.4m, `Triage -> Triage` at 65.6m, `X-Ray -> Consultation` at 60.4m, etc.). Layout: x: 20, y: 20, width: 480, height: 510.
-- **Data Visual 2 (Table):** `tbl_improvement_comparison` $\rightarrow$ Widened to **745px** (width 745, height 510, x: 515) to comfortably display all 6 columns without horizontal clipping:
+- **Data Visual 1 (Clustered Bar Chart):** `bar_bottlenecks` $\rightarrow$ Category: `transition_label`, Values: `Avg Transition Duration`. Title: "Highest Observed Transition Durations" (Ranks top delays: `Laboratory -> Consultation` at 67.4m, `Triage -> Triage` at 65.6m, `X-Ray -> Consultation` at 60.4m, etc.). Layout: x: 20, y: 68, width: 520, height: 434.
+- **Data Visual 2 (Table):** `tbl_improvement_comparison` $\rightarrow$ 4-column comparison matrix (width 705, height 434, x: 555, y: 68):
   1. `metric_name` (display: **Metric**)
-  2. `baseline_value` (display: **Baseline (As-Is)**)
-  3. `proposed_value` (display: **Proposed (To-Be)**)
-  4. `percentage_difference` (display: **% Difference (Relative)**, formatted `+0.0%;-0.0%;0.0%`)
-  5. `unit` (display: **Unit**)
-  6. `interpretation` (display: **Operational Interpretation**)
+  2. `baseline_value` (display: **Baseline**)
+  3. `proposed_value` (display: **Proposed**)
+  4. `percentage_difference` (display: **Change (%)**, formatted `+0.0%;-0.0%;0.0%`)
 - **Textbox 1:** `hdr_page3` $\rightarrow$ Header banner: "CareFlow — Bottleneck Diagnostics & Scenario Simulation".
 - **Textbox 2:** `txt_safety_banner_page3` $\rightarrow$ Clinical disclaimers and explicit sign convention explanation:
   1. *Elapsed Transition Duration != Waiting Time:* Captures elapsed clock intervals between milestone completion timestamps rather than pure patient waiting room idle time. Unmeasured internal sub-processes are not tracked.
@@ -124,7 +122,7 @@ The dashboard contains 3 interactive analytical pages comprising **22 visual con
 | **`Table.ReplaceValue`** | Converts `""` to `null` before numeric conversion in `stg_hospital_events` | **PASS (verified in model.bim & TMDL)** |
 | **Independent Staging Queries** | Both staging queries read local CSV directly with zero cloud dependencies | **PASS (zero external blockers)** |
 | **Percentage Scaling Formula** | `([proposed_value] - [baseline_value]) / [baseline_value]` in Power Query & DAX measure | **PASS (single 100x scaling)** |
-| **Table Visual Layout & Labels** | Widened to 745px; professional display names configured for all columns | **PASS (verified in report.json)** |
+| **Table Visual Layout & Labels** | Width >= 700px; professional display names configured for all columns | **PASS (verified in report.json)** |
 | **`enableAutoAuth` Absent** | PBIP root JSON schema requirement for v2.154.956.0 | **PASS (empty settings object)** |
 | **Active Semantic Model (Local)** | Validated `CareFlow_Dashboard.SemanticModel/model.bim` (TMSL JSON format, 10 total tables: 5 business/data tables + 5 auto date tables; 19 DAX measures: 14 in `stg_hospital_events`, 3 in `pathway_variants_summary`, 1 in `bottleneck_analysis_summary`, 1 in `pathway_improvement_comparison`; zero circular references) | **PASS (verified TMSL locally)** |
 | **Reference TMDL Model** | Validated `powerbi/careflow_semantic_model/` (folder-based TMDL definitions preserved as modular template; 14 measures in `stg_hospital_events.tmdl`) | **PASS (verified TMDL)** |

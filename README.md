@@ -164,7 +164,7 @@ Focuses on workflow adherence, pathway variant frequencies, and chronological en
 
 - **Conformance KPIs:** Conformant Cases (440), Repeat Triage Cases (60), Conformance Rate (88.0%), and Total Pathway Variants (6).
 - **Pathway Variant Volume:** Ranked bar chart showing case counts across all 6 discovered variants, led by the Standard Forward Flow (40.0% / 200 cases).
-- **Patient Encounter Audit Trail (`tbl_case_audit`):** Chronological table displaying individual patient milestones with displayed columns: `Case ID`, `Event Sequence`, `Activity Name`, `Department`, and `Event Timestamp` (subtitle: *"Chronological event sequence by department and timestamp"*).
+- **Patient Encounter Audit Trail (`tbl_case_audit`):** Chronological table displaying individual patient milestones with displayed columns: `Case ID`, `Event Sequence`, `Clinical Activity`, `Department`, and `Event Timestamp` (subtitle: *"Chronological event sequence by department and timestamp"*).
 - **Workflow Governance Notes:** Contextual notes documenting that secondary triage reassessments represent observed repeat evaluations prior to physician consultation, rather than procedure completion errors.
 
 ---
