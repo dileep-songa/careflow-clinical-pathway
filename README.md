@@ -147,7 +147,7 @@ The dashboard is built in the developer-friendly **Power BI Project (`.pbip`)** 
 ### Page 1: Hospital Operations Overview
 Presents high-level encounter volumes, clinical activity distributions, encounter duration KPIs, and key operations takeaways.
 
-![CareFlow Hospital Operations Overview](outputs/dashboard_renders/after_page1_hospital_overview.png)
+![CareFlow Power BI Dashboard — Page 1: Hospital Operations Overview](outputs/dashboard_renders/after_page1_hospital_overview.png)
 
 - **KPI Cards:** Total Cases (500), Total Process Events (3,140), Mean Cycle Time (202.5 mins), Median Cycle Time (211.0 mins), and Repeat Triage Rate (12.0%).
 - **Departmental Workload:** Donut chart showing Emergency Department volume (89.97% / 2,825 events) alongside Laboratory (185 events) and Radiology (130 events).
@@ -160,7 +160,7 @@ Presents high-level encounter volumes, clinical activity distributions, encounte
 ### Page 2: Patient Journey & Pathway Conformance
 Focuses on workflow adherence, pathway variant frequencies, and chronological encounter audit trails.
 
-![CareFlow Patient Journey & Pathway Conformance](outputs/dashboard_renders/after_page2_patient_flow.png)
+![CareFlow Power BI Dashboard — Page 2: Patient Journey & Pathway Conformance](outputs/dashboard_renders/after_page2_patient_flow.png)
 
 - **Conformance KPIs:** Conformant Cases (440), Repeat Triage Cases (60), Conformance Rate (88.0%), and Total Pathway Variants (6).
 - **Pathway Variant Volume:** Ranked bar chart showing case counts across all 6 discovered variants, led by the Standard Forward Flow (40.0% / 200 cases).
@@ -172,10 +172,10 @@ Focuses on workflow adherence, pathway variant frequencies, and chronological en
 ### Page 3: Operational Bottlenecks & Process Improvement
 Compares baseline transition latencies with an illustrative, simulated "To-Be" streamlined workflow.
 
-![CareFlow Operational Bottlenecks & Process Improvement](outputs/dashboard_renders/after_page3_transition_analysis.png)
+![CareFlow Power BI Dashboard — Page 3: Operational Bottlenecks & Process Improvement](outputs/dashboard_renders/after_page3_transition_analysis.png)
 
 - **Bottleneck Transition Ranking:** Horizontal bar chart highlighting the longest observed transition times, led by Laboratory-to-Consultation notification (67.4 mins mean elapsed time) and Triage-to-Triage secondary reassessment (65.6 mins mean elapsed time).
-- **Baseline vs. Proposed Comparison Table:** Comparative matrix displaying duration percentiles (P25, P75, P90, Mean, Median, Min, Max) comparing current operations with a simulated improvement model.
+- **Baseline vs. Proposed Comparison Table:** 4-column comparative matrix displaying Metric, Baseline, Proposed, and Change (%) comparing current operations with a simulated improvement model.
 - **Clinical Safety Disclaimer:** Explanatory banner noting that observed durations reflect total elapsed time (not idle waiting time) and that simulated improvements are hypothetical operational models requiring clinical review.
 
 ---
