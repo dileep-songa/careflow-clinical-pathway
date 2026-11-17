@@ -7,6 +7,17 @@
 **Internship Type:** Data Analytics & Process Mining  
 **Timeline:** 4 weeks
 
+> [!NOTE] Historical Planning Record & Evolution Notice
+> This document records the **preliminary Day 1 understanding and initial project planning assumptions** authored at the start of the internship.
+>
+> **Evolution to Final Implementation:**
+> 1. **Repeat Triage Rate:** The early exploratory question (Line 18: *"e.g., 40% of patients are sent back to triage"*) was an initial scoping estimate; the actual empirical process-mining implementation verified an exact **12.0% repeat-triage rate** (60 out of 500 cases).
+> 2. **Event Schema & Activity Names:** Preliminary drafts assumed an `admission` event and an exploratory 7-column schema. The finalized canonical raw event log implements a strict 6-column contract (`Case_ID`, `Activity_Name`, `Timestamp`, `Department`, `Resource`, `Data_Type`) starting with `Registration` and ending with `Discharge` across 7 distinct clinical activities.
+> 3. **Elapsed Duration vs. Waiting Time:** Early notes colloquially referred to inter-event times as "wait times"; the finalized engineering architecture strictly defines these as **observed elapsed transition durations** between milestone timestamps, recognizing that unmeasured internal clinical, specimen, and transport sub-processes are not captured as pure idle waiting.
+> 4. **Cohort Scale:** Scaled from the initial exploratory target (100–200 cases) to a full deterministic cohort of **500 cases** and **3,140 events** across 6 pathway variants.
+>
+> *This historical document is preserved for development provenance without altering original Day 1 notes.*
+
 ---
 
 ## Business Problem

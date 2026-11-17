@@ -33,7 +33,7 @@ def apply_stg_hospital_events_transformation(
        AND Timestamp IS NOT NULL
     2. QUALIFY deduplication:
        QUALIFY ROW_NUMBER() OVER (PARTITION BY raw_case_id, raw_activity_name, raw_timestamp
-                                  ORDER BY raw_timestamp ASC) = 1
+                                  ORDER BY raw_resource ASC, raw_department ASC) = 1
     3. Window functions:
        ROW_NUMBER() OVER (PARTITION BY raw_case_id ORDER BY raw_timestamp ASC) AS event_sequence
        LAG(raw_activity_name) OVER (PARTITION BY raw_case_id ORDER BY raw_timestamp ASC) AS previous_activity
